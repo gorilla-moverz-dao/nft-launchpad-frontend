@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
-import { launchpadClient } from '@/lib/aptos';
+import { useQuery } from "@tanstack/react-query";
+import { launchpadClient } from "@/lib/aptos";
 
 export interface MintStageInfo {
   name: string;
@@ -11,12 +11,13 @@ export interface MintStageInfo {
 
 export const useMintStages = (collectionAddress: `0x${string}`) => {
   return useQuery<Array<MintStageInfo>>({
-    queryKey: ['stages', collectionAddress],
+    queryKey: ["stages", collectionAddress],
     queryFn: async () => {
       const [res] = await launchpadClient.view.get_mint_stages_info({
         functionArguments: [collectionAddress],
         typeArguments: [],
       });
+
       return res as Array<MintStageInfo>;
     },
   });

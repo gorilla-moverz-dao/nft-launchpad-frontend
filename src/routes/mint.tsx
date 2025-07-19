@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { oaptToApt, toShortAddress } from "@/lib/utils";
 import { useClients } from "@/hooks/useClients";
 import { WalletSelector } from "@/components/WalletSelector";
+import { useMintBalance } from "@/hooks/useMintBalance";
 
 export const Route = createFileRoute("/mint")({
   component: RouteComponent,
@@ -22,12 +23,14 @@ export const Route = createFileRoute("/mint")({
 function RouteComponent() {
   const [mintAmount, setMintAmount] = useState<Record<string, number>>({});
   const [minting, setMinting] = useState<string | null>(null);
-  const { address, launchpadClient, connected } = useClients();
+  const { address, launchpadClient, connected, network } = useClients();
 
+  console.log(network);
   const { data: stages = [], isLoading: isLoadingStages } = useMintStages(COLLECTION_ID as `0x${string}`);
+  const { data: mintBalance, isLoading: isLoadingMintBalance } = useMintBalance(COLLECTION_ID as `0x${string}`);
   const { data: collectionData, isLoading: isLoadingCollection } = useCollectionData(COLLECTION_ID as `0x${string}`);
 
-  const isLoading = isLoadingStages || isLoadingCollection;
+  const isLoading = isLoadingStages || isLoadingCollection || isLoadingMintBalance;
   if (isLoading) return <div>Loading...</div>;
 
   async function handleMint(stage: MintStageInfo) {
@@ -132,6 +135,7 @@ function RouteComponent() {
             const start = new Date(Number(stage.start_time) * 1000);
             const end = new Date(Number(stage.end_time) * 1000);
             const isActive = now >= start && now <= end;
+            const walletBalance = Number(mintBalance?.find((b) => b.stage === stage.name)?.balance || 0);
 
             return (
               <GlassCard
@@ -152,31 +156,37 @@ function RouteComponent() {
                     <div>End: {end.toLocaleString()}</div>
                     <div>Mint Fee: {oaptToApt(stage.mint_fee)}</div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    {isActive && (
-                      <Input
-                        type="number"
-                        min={1}
-                        value={mintAmount[stage.name] ?? 1}
-                        onChange={(e) => {
-                          const value = Math.max(1, Number(e.target.value));
-                          setMintAmount((prev) => ({ ...prev, [stage.name]: value }));
-                        }}
-                        className="w-20"
-                        disabled={minting === stage.name}
-                        aria-label="Mint amount"
-                      />
-                    )}
-                    {connected && (
-                      <Button
-                        disabled={!isActive || minting === stage.name}
-                        className={!isActive ? "opacity-50 cursor-not-allowed" : ""}
-                        onClick={() => handleMint(stage)}
-                      >
-                        {minting === stage.name ? "Minting..." : "Mint"}
-                      </Button>
-                    )}
-                    {!connected && isActive && <WalletSelector />}
+                  <div className="flex flex-col items-end gap-2">
+                    {walletBalance > 0 && <div className="text-xs text-muted-foreground">Mint spots: {walletBalance}</div>}
+                    {walletBalance === 0 && <div className="text-xs text-destructive">No spots left</div>}
+
+                    <div className="flex items-center gap-2">
+                      {isActive && (
+                        <Input
+                          type="number"
+                          min={1}
+                          max={walletBalance}
+                          value={mintAmount[stage.name] ?? 1}
+                          onChange={(e) => {
+                            const value = Math.max(1, Math.min(walletBalance, Number(e.target.value)));
+                            setMintAmount((prev) => ({ ...prev, [stage.name]: value }));
+                          }}
+                          className="w-20"
+                          disabled={minting === stage.name || walletBalance === 0}
+                          aria-label="Mint amount"
+                        />
+                      )}
+                      {connected && (
+                        <Button
+                          disabled={!isActive || minting === stage.name || walletBalance === 0}
+                          className={!isActive ? "opacity-50 cursor-not-allowed" : ""}
+                          onClick={() => handleMint(stage)}
+                        >
+                          {minting === stage.name ? "Minting..." : "Mint"}
+                        </Button>
+                      )}
+                      {!connected && isActive && <WalletSelector />}
+                    </div>
                   </div>
                 </CardContent>
               </GlassCard>
