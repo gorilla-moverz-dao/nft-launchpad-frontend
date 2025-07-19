@@ -26,7 +26,6 @@ export const Route = createFileRoute("/mint")({
 function RouteComponent() {
   const [mintAmount, setMintAmount] = useState<Record<string, number>>({});
   const [minting, setMinting] = useState<string | null>(null);
-  const [mintedTokenIds, setMintedTokenIds] = useState<Array<string>>([]);
   const [showMintDialog, setShowMintDialog] = useState(false);
   const [recentlyMintedTokenIds, setRecentlyMintedTokenIds] = useState<Array<string>>([]);
   const { address, launchpadClient, connected, network } = useClients();
@@ -39,7 +38,7 @@ function RouteComponent() {
     refetch: refetchMintBalance,
   } = useMintBalance(COLLECTION_ID as `0x${string}`);
   const { data: collectionData, isLoading: isLoadingCollection } = useCollectionData(COLLECTION_ID as `0x${string}`);
-  const { data: nfts, isLoading: isLoadingNFTs } = useCollectionNFTs(COLLECTION_ID as string);
+  const { data: nfts, isLoading: isLoadingNFTs, refetch: refetchNFTs } = useCollectionNFTs(COLLECTION_ID as string);
 
   const isLoading = isLoadingStages || isLoadingCollection || isLoadingMintBalance;
   if (isLoading) return <div>Loading...</div>;
@@ -80,12 +79,11 @@ function RouteComponent() {
         transactionHash: tx.hash,
       });
       refetchMintBalance();
+      refetchNFTs();
 
       // Extract token IDs from the result
       const newTokenIds = extractTokenIds(result);
-      console.log(newTokenIds);
       if (newTokenIds.length > 0) {
-        setMintedTokenIds((prev) => [...prev, ...newTokenIds]);
         setRecentlyMintedTokenIds(newTokenIds);
         setShowMintDialog(true);
         toast.success(`Successfully minted ${newTokenIds.length} NFT(s)`, {
