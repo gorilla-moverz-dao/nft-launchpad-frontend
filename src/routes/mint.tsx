@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { oaptToApt, toShortAddress } from "@/lib/utils";
 import { useClients } from "@/hooks/useClients";
+import { WalletSelector } from "@/components/WalletSelector";
 
 export const Route = createFileRoute("/mint")({
   component: RouteComponent,
@@ -21,7 +22,7 @@ export const Route = createFileRoute("/mint")({
 function RouteComponent() {
   const [mintAmount, setMintAmount] = useState<Record<string, number>>({});
   const [minting, setMinting] = useState<string | null>(null);
-  const { address, launchpadClient } = useClients();
+  const { address, launchpadClient, connected } = useClients();
 
   const { data: stages = [], isLoading: isLoadingStages } = useMintStages(COLLECTION_ID as `0x${string}`);
   const { data: collectionData, isLoading: isLoadingCollection } = useCollectionData(COLLECTION_ID as `0x${string}`);
@@ -166,13 +167,16 @@ function RouteComponent() {
                         aria-label="Mint amount"
                       />
                     )}
-                    <Button
-                      disabled={!isActive || minting === stage.name}
-                      className={!isActive ? "opacity-50 cursor-not-allowed" : ""}
-                      onClick={() => handleMint(stage)}
-                    >
-                      {minting === stage.name ? "Minting..." : "Mint"}
-                    </Button>
+                    {connected && (
+                      <Button
+                        disabled={!isActive || minting === stage.name}
+                        className={!isActive ? "opacity-50 cursor-not-allowed" : ""}
+                        onClick={() => handleMint(stage)}
+                      >
+                        {minting === stage.name ? "Minting..." : "Mint"}
+                      </Button>
+                    )}
+                    {!connected && isActive && <WalletSelector />}
                   </div>
                 </CardContent>
               </GlassCard>
