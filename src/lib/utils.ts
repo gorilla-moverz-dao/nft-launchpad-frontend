@@ -1,0 +1,25 @@
+import { clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+import type { ClassValue } from "clsx";
+
+export function cn(...inputs: Array<ClassValue>) {
+  return twMerge(clsx(inputs));
+}
+
+/**
+ * Convert APT to oapt (smallest unit, integer)
+ */
+export function aptToOapt(apt: string | number): number {
+  return Math.round(Number(apt) * 1e8);
+}
+
+/**
+ * Convert oapt (smallest unit) to APT
+ */
+export function oaptToApt(oapt: string | number): number {
+  return Number(oapt) / 1e8;
+}
+
+export function toShortAddress(address: string): string {
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+}
