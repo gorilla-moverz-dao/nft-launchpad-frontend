@@ -1,0 +1,184 @@
+import { ExternalLinkIcon } from "lucide-react";
+import { GlassCard } from "./shared/GlassCard";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { toShortAddress } from "@/lib/utils";
+
+interface NFTData {
+  token_data_id: string;
+  current_token_data?: {
+    token_name?: string;
+    description?: string;
+    token_properties?: any;
+    token_uri?: string;
+  };
+}
+
+interface AssetDetailDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  nft: NFTData | null;
+  collectionData: any;
+}
+
+export function AssetDetailDialog({ open, onOpenChange, nft, collectionData }: AssetDetailDialogProps) {
+  if (!nft) return null;
+
+  const tokenProperties = nft.current_token_data?.token_properties || {};
+  const hasProperties = Object.keys(tokenProperties).length > 0;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="w-[1200px] max-w-[95vw] max-h-[85vh] overflow-y-auto !max-w-none">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <span>NFT Details</span>
+            {nft.current_token_data?.token_name && <Badge variant="secondary">{nft.current_token_data.token_name}</Badge>}
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column - NFT Image and Collection Info */}
+          <div className="flex flex-col space-y-4 lg:col-span-1">
+            <div className="w-full max-w-sm aspect-square bg-muted rounded-lg overflow-hidden border mx-auto">
+              {nft.current_token_data?.token_uri ? (
+                <img
+                  src={nft.current_token_data.token_uri}
+                  alt={nft.current_token_data.token_name || "NFT"}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = collectionData?.collection.uri || "";
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                  <div className="text-center">
+                    <div className="text-4xl mb-2">🖼️</div>
+                    <p>No Image Available</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Collection Information */}
+            <GlassCard className="w-full">
+              <CardHeader>
+                <CardTitle className="text-lg">Collection Information</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">Collection Name</label>
+                    <p className="text-sm">{collectionData?.collection.collection_name || "Unknown Collection"}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">Collection ID</label>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-mono">{toShortAddress(collectionData?.collection.collection_id || "")}</p>
+                      <button
+                        onClick={() => navigator.clipboard.writeText(collectionData?.collection.collection_id || "")}
+                        className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                        title="Copy collection ID"
+                      >
+                        📋
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {collectionData?.collection.description && (
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">Collection Description</label>
+                    <p className="text-sm mt-1">{collectionData.collection.description}</p>
+                  </div>
+                )}
+              </CardContent>
+            </GlassCard>
+          </div>
+
+          {/* Right Column - Information */}
+          <div className="space-y-4 lg:col-span-2">
+            {/* Basic Information */}
+            <GlassCard>
+              <CardHeader>
+                <CardTitle className="text-lg">Basic Information</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="grid grid-cols-1 gap-3">
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">Token Name</label>
+                    <p className="text-sm">{nft.current_token_data?.token_name || "Unnamed Token"}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">Token ID</label>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-mono">{toShortAddress(nft.token_data_id)}</p>
+                      <button
+                        onClick={() => navigator.clipboard.writeText(nft.token_data_id)}
+                        className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                        title="Copy full token ID"
+                      >
+                        📋
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {nft.current_token_data?.description && (
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">Description</label>
+                    <p className="text-sm mt-1">{nft.current_token_data.description}</p>
+                  </div>
+                )}
+
+                {nft.current_token_data?.token_uri && (
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">Token URI</label>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-mono truncate">{nft.current_token_data.token_uri}</p>
+                      <a
+                        href={nft.current_token_data.token_uri}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                        title="Open token URI"
+                      >
+                        <ExternalLinkIcon className="w-3 h-3" />
+                      </a>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </GlassCard>
+
+            {/* Token Properties */}
+            {hasProperties && (
+              <GlassCard>
+                <CardHeader>
+                  <CardTitle className="text-lg">Token Properties</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-3">
+                    {Object.entries(tokenProperties).map(([key, value]) => (
+                      <div key={key} className="space-y-1">
+                        <label className="text-sm font-medium text-muted-foreground capitalize">{key.replace(/_/g, " ")}</label>
+                        <div className="text-sm">
+                          {typeof value === "object" ? (
+                            <pre className="text-xs bg-muted p-2 rounded overflow-auto">{JSON.stringify(value, null, 2)}</pre>
+                          ) : (
+                            <span className="break-all">{String(value)}</span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </GlassCard>
+            )}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}

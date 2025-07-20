@@ -18,6 +18,7 @@ import { WalletSelector } from "@/components/WalletSelector";
 import { useMintBalance } from "@/hooks/useMintBalance";
 import { aptos } from "@/lib/aptos";
 import { MintResultDialog } from "@/components/MintResultDialog";
+import { AssetDetailDialog } from "@/components/AssetDetailDialog";
 
 export const Route = createFileRoute("/mint")({
   component: RouteComponent,
@@ -28,6 +29,8 @@ function RouteComponent() {
   const [minting, setMinting] = useState<string | null>(null);
   const [showMintDialog, setShowMintDialog] = useState(false);
   const [recentlyMintedTokenIds, setRecentlyMintedTokenIds] = useState<Array<string>>([]);
+  const [showAssetDetailDialog, setShowAssetDetailDialog] = useState(false);
+  const [selectedNFT, setSelectedNFT] = useState<any>(null);
   const { address, launchpadClient, connected, network } = useClients();
 
   console.log(network);
@@ -103,6 +106,11 @@ function RouteComponent() {
   const total = collectionData?.collection.max_supply;
   const reserved = collectionData?.ownerCount;
   const percent = Math.round((minted / total) * 100);
+
+  const handleNFTClick = (nft: any) => {
+    setSelectedNFT(nft);
+    setShowAssetDetailDialog(true);
+  };
 
   return (
     <div className="flex flex-col gap-8">
@@ -256,7 +264,11 @@ function RouteComponent() {
             ) : nfts?.current_token_ownerships_v2 && nfts.current_token_ownerships_v2.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {nfts.current_token_ownerships_v2.map((nft, index) => (
-                  <div key={index} className="border rounded-lg p-4 space-y-2">
+                  <div
+                    key={index}
+                    className="border rounded-lg p-4 space-y-2 cursor-pointer hover:border-primary/50 hover:shadow-md transition-all duration-200"
+                    onClick={() => handleNFTClick(nft)}
+                  >
                     <div className="aspect-square bg-muted rounded-lg overflow-hidden">
                       {nft.current_token_data?.token_uri ? (
                         <img
@@ -293,6 +305,14 @@ function RouteComponent() {
         open={showMintDialog}
         onOpenChange={setShowMintDialog}
         recentlyMintedTokenIds={recentlyMintedTokenIds}
+        collectionData={collectionData}
+      />
+
+      {/* Asset Detail Dialog */}
+      <AssetDetailDialog
+        open={showAssetDetailDialog}
+        onOpenChange={setShowAssetDetailDialog}
+        nft={selectedNFT}
         collectionData={collectionData}
       />
     </div>
