@@ -195,7 +195,7 @@ function RouteComponent() {
               return (
                 <GlassCard
                   key={stage.name}
-                  className={`mb-4 transition-all duration-300 pt-4 pb-2 ${isActive ? "relative z-10 bg-gradient-to-br from-primary/40 via-primary/20 to-background border-1 border-primary/50 shadow-lg shadow-primary/20 ring-1 ring-primary/30" : "z-0 bg-muted/20 hover:bg-muted/30"}`}
+                  className={`mb-4 transition-all duration-300 pt-4 pb-2 gap-0 ${isActive ? "relative z-10 bg-gradient-to-br from-primary/40 via-primary/20 to-background border-1 border-primary/50 shadow-lg shadow-primary/20 ring-1 ring-primary/30" : "z-0 bg-muted/20 hover:bg-muted/30"}`}
                 >
                   <CardHeader className="pb-2 flex flex-row items-center justify-between px-6">
                     <CardTitle className="text-base flex-1">{stage.name}</CardTitle>
@@ -209,7 +209,7 @@ function RouteComponent() {
                     <div className="flex-1 text-xs space-y-1">
                       <div>Start: {start.toLocaleString()}</div>
                       <div>End: {end.toLocaleString()}</div>
-                      <div>Mint Fee: {oaptToApt(stage.mint_fee)}</div>
+                      <div>Mint Fee: {oaptToApt(stage.mint_fee)} MOVE</div>
                     </div>
                     <div className="flex flex-col items-end gap-2">
                       {walletBalance > 0 && <div className="text-xs text-muted-foreground">Mint spots: {walletBalance}</div>}
