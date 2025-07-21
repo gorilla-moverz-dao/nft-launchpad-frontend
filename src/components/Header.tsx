@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { WalletSelector } from "./WalletSelector";
-import ModeToggle from "./mode-toggle";
 
 export default function Header() {
   const { connected } = useWallet();
@@ -35,10 +34,6 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center">
-            <div className="px-2 font-bold">
-              <ModeToggle />
-            </div>
-
             <div className="px-2 font-bold">
               <WalletSelector />
             </div>
