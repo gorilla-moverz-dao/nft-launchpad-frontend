@@ -1,5 +1,3 @@
-import { toShortAddress } from "@/lib/utils";
-
 interface NFTThumbnailProps {
   nft: any;
   collectionData?: any;
@@ -28,11 +26,7 @@ export function NFTThumbnail({ nft, collectionData, onClick, className = "" }: N
         )}
       </div>
       <div className="space-y-1">
-        <h4 className="font-semibold truncate">{nft.current_token_data?.token_name || `Token ${nft.token_data_id}`}</h4>
-        {nft.current_token_data?.description && (
-          <p className="text-sm text-muted-foreground line-clamp-2">{nft.current_token_data.description}</p>
-        )}
-        <p className="text-xs text-muted-foreground">Token ID: {toShortAddress(nft.token_data_id)}</p>
+        <h4 className="text-sm line-clamp-2">{nft.current_token_data?.token_name || `Token ${nft.token_data_id}`}</h4>
       </div>
     </div>
   );

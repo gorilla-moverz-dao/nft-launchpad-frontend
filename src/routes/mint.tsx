@@ -249,25 +249,25 @@ function RouteComponent() {
               );
             })}
           </div>
+
+          {/* My NFTs Section */}
+          {connected && !isLoadingNFTs && nfts?.current_token_ownerships_v2 && nfts.current_token_ownerships_v2.length > 0 && (
+            <GlassCard className="w-full">
+              <CardHeader>
+                <CardTitle>My NFTs</CardTitle>
+                <CardDescription>NFTs from this collection in your wallet</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {nfts.current_token_ownerships_v2.map((nft) => (
+                    <NFTThumbnail key={nft.token_data_id} nft={nft} collectionData={collectionData} onClick={() => handleNFTClick(nft)} />
+                  ))}
+                </div>
+              </CardContent>
+            </GlassCard>
+          )}
         </div>
       </div>
-
-      {/* My NFTs Section */}
-      {connected && !isLoadingNFTs && nfts?.current_token_ownerships_v2 && nfts.current_token_ownerships_v2.length > 0 && (
-        <GlassCard className="w-full">
-          <CardHeader>
-            <CardTitle>My NFTs</CardTitle>
-            <CardDescription>NFTs from this collection in your wallet</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {nfts.current_token_ownerships_v2.map((nft) => (
-                <NFTThumbnail key={nft.token_data_id} nft={nft} collectionData={collectionData} onClick={() => handleNFTClick(nft)} />
-              ))}
-            </div>
-          </CardContent>
-        </GlassCard>
-      )}
 
       {/* Mint Success Dialog */}
       <MintResultDialog
