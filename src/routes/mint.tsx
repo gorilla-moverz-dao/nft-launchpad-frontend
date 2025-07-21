@@ -179,7 +179,7 @@ function RouteComponent() {
             <GlassCard className="text-center">
               <CardContent>
                 <div className="text-sm font-semibold text-muted-foreground mb-1">Unique Holders</div>
-                <div className="text-2xl font-bold">{collectionData?.ownerCount?.toLocaleString() || 0}</div>
+                <div className="text-2xl font-bold">{collectionData?.ownerCount.toLocaleString() || 0}</div>
               </CardContent>
             </GlassCard>
           </div>
