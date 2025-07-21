@@ -104,7 +104,7 @@ function RouteComponent() {
 
   const minted = collectionData?.collection.current_supply;
   const total = collectionData?.collection.max_supply;
-  const reserved = collectionData?.ownerCount;
+  const reserved = collectionData?.premint_amount;
   const percent = Math.round((minted / total) * 100);
 
   const handleNFTClick = (nft: any) => {
@@ -179,7 +179,7 @@ function RouteComponent() {
             <GlassCard className="text-center">
               <CardContent>
                 <div className="text-sm font-semibold text-muted-foreground mb-1">Unique Holders</div>
-                <div className="text-2xl font-bold">{reserved?.toLocaleString() || 0}</div>
+                <div className="text-2xl font-bold">{collectionData?.ownerCount?.toLocaleString() || 0}</div>
               </CardContent>
             </GlassCard>
           </div>
@@ -252,50 +252,44 @@ function RouteComponent() {
       </div>
 
       {/* My NFTs Section */}
-      {connected && (
+      {connected && !isLoadingNFTs && nfts?.current_token_ownerships_v2 && nfts.current_token_ownerships_v2.length > 0 && (
         <GlassCard className="w-full">
           <CardHeader>
             <CardTitle>My NFTs</CardTitle>
             <CardDescription>NFTs from this collection in your wallet</CardDescription>
           </CardHeader>
           <CardContent>
-            {isLoadingNFTs ? (
-              <div className="text-center py-8">Loading your NFTs...</div>
-            ) : nfts?.current_token_ownerships_v2 && nfts.current_token_ownerships_v2.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {nfts.current_token_ownerships_v2.map((nft, index) => (
-                  <div
-                    key={index}
-                    className="border rounded-lg p-4 space-y-2 cursor-pointer hover:border-primary/50 hover:shadow-md transition-all duration-200"
-                    onClick={() => handleNFTClick(nft)}
-                  >
-                    <div className="aspect-square bg-muted rounded-lg overflow-hidden">
-                      {nft.current_token_data?.token_uri ? (
-                        <img
-                          src={nft.current_token_data.token_uri}
-                          alt={nft.current_token_data.token_name || "NFT"}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.currentTarget.src = collectionData?.collection.uri || "";
-                          }}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-muted-foreground">No Image</div>
-                      )}
-                    </div>
-                    <div className="space-y-1">
-                      <h4 className="font-semibold truncate">{nft.current_token_data?.token_name || `Token ${index + 1}`}</h4>
-                      {nft.current_token_data?.description && (
-                        <p className="text-sm text-muted-foreground line-clamp-2">{nft.current_token_data.description}</p>
-                      )}
-                      <p className="text-xs text-muted-foreground">Token ID: {toShortAddress(nft.token_data_id)}</p>
-                    </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {nfts.current_token_ownerships_v2.map((nft, index) => (
+                <div
+                  key={index}
+                  className="border rounded-lg p-4 space-y-2 cursor-pointer hover:border-primary/50 hover:shadow-md transition-all duration-200"
+                  onClick={() => handleNFTClick(nft)}
+                >
+                  <div className="aspect-square bg-muted rounded-lg overflow-hidden">
+                    {nft.current_token_data?.token_uri ? (
+                      <img
+                        src={nft.current_token_data.token_uri}
+                        alt={nft.current_token_data.token_name || "NFT"}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = collectionData?.collection.uri || "";
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-muted-foreground">No Image</div>
+                    )}
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">No NFTs found in your wallet for this collection</div>
-            )}
+                  <div className="space-y-1">
+                    <h4 className="font-semibold truncate">{nft.current_token_data?.token_name || `Token ${index + 1}`}</h4>
+                    {nft.current_token_data?.description && (
+                      <p className="text-sm text-muted-foreground line-clamp-2">{nft.current_token_data.description}</p>
+                    )}
+                    <p className="text-xs text-muted-foreground">Token ID: {toShortAddress(nft.token_data_id)}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </GlassCard>
       )}
