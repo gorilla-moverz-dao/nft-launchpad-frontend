@@ -29,14 +29,14 @@ export function AssetDetailDialog({ open, onOpenChange, nft, collectionData }: A
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[calc(100%-16px)] max-w-[calc(100%-16px)] h-[calc(100%-16px)] max-h-[calc(100%-16px)] md:max-w-[95vw] md:max-h-[85vh] md:w-[1200px] flex flex-col p-0 md:m-4">
+      <DialogContent className="w-[calc(100%-32px)] max-w-[calc(100%-16px)] max-h-[98vh] md:max-w-[95vw] md:w-[1200px] flex flex-col p-0 md:m-4">
         <DialogHeader className="p-4 md:p-6 pb-0 md:pb-0 flex-shrink-0">
           <DialogTitle className="flex flex-col sm:flex-row sm:items-center gap-2">
             <span>{nft.current_token_data?.token_name || "NFT Details"}</span>
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 pt-0 md:pt-0">
+        <div className="overflow-y-auto p-4 md:p-6 pt-0 md:pt-0">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
             {/* Left Column - NFT Image and Collection Info */}
             <div className="flex flex-col space-y-4 lg:col-span-1">
