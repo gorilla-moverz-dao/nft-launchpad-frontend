@@ -261,7 +261,7 @@ function RouteComponent() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {nfts.current_token_ownerships_v2.map((nft, index) => (
+              {nfts.current_token_ownerships_v2.map((nft) => (
                 <NFTThumbnail key={nft.token_data_id} nft={nft} collectionData={collectionData} onClick={() => handleNFTClick(nft)} />
               ))}
             </div>

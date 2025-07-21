@@ -2,7 +2,6 @@ import { ExternalLinkIcon } from "lucide-react";
 import { GlassCard } from "./shared/GlassCard";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { toShortAddress } from "@/lib/utils";
 
 interface NFTData {
@@ -33,12 +32,7 @@ export function AssetDetailDialog({ open, onOpenChange, nft, collectionData }: A
       <DialogContent className="w-[calc(100%-16px)] max-w-[calc(100%-16px)] h-[calc(100%-16px)] max-h-[calc(100%-16px)] md:max-w-[95vw] md:max-h-[85vh] md:w-[1200px] flex flex-col p-0 md:m-4">
         <DialogHeader className="p-4 md:p-6 pb-0 md:pb-0 flex-shrink-0">
           <DialogTitle className="flex flex-col sm:flex-row sm:items-center gap-2">
-            <span>NFT Details</span>
-            {nft.current_token_data?.token_name && (
-              <Badge variant="secondary" className="w-fit">
-                {nft.current_token_data.token_name}
-              </Badge>
-            )}
+            <span>{nft.current_token_data?.token_name || "NFT Details"}</span>
           </DialogTitle>
         </DialogHeader>
 
