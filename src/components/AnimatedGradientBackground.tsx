@@ -69,26 +69,26 @@ const AnimatedGradientBackground: React.FC = () => {
           }
         `}
       </style>
-      {/* Banana tree left */}
+      {/* Banana tree left - visible on mobile and desktop */}
       <img
         src="/images/banana-tree.webp"
         alt="Banana Tree Left"
-        className="hidden sm:block fixed left-0 bottom-0 z-0 pointer-events-none select-none wind-animation"
+        className="fixed left-0 bottom-0 z-0 pointer-events-none select-none wind-animation sm:max-w-[35vw] sm:max-h-[60vh] sm:w-auto sm:h-auto"
         style={{
-          maxHeight: "90vh",
-          maxWidth: "40vw",
-          width: "auto",
-          height: "auto",
+          maxHeight: "100vh",
+          maxWidth: "100vw",
+          width: "100vw",
+          height: "100vh",
           opacity: 0.35,
           filter: "blur(0.5px)",
-          objectFit: "contain",
+          objectFit: "cover",
           mixBlendMode: "lighten",
           transition: "opacity 0.3s",
           maskImage: "linear-gradient(to right, black 80%, transparent 100%)",
           WebkitMaskImage: "linear-gradient(to right, black 80%, transparent 100%)",
         }}
       />
-      {/* Banana tree right */}
+      {/* Banana tree right - only visible on desktop */}
       <img
         src="/images/banana-tree.webp"
         alt="Banana Tree Right"
