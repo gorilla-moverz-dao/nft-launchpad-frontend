@@ -19,6 +19,7 @@ import { useMintBalance } from "@/hooks/useMintBalance";
 import { aptos } from "@/lib/aptos";
 import { MintResultDialog } from "@/components/MintResultDialog";
 import { AssetDetailDialog } from "@/components/AssetDetailDialog";
+import { NFTThumbnail } from "@/components/shared/NFTThumbnail";
 
 export const Route = createFileRoute("/mint")({
   component: RouteComponent,
@@ -261,33 +262,7 @@ function RouteComponent() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {nfts.current_token_ownerships_v2.map((nft, index) => (
-                <div
-                  key={index}
-                  className="border rounded-lg p-4 space-y-2 cursor-pointer hover:border-primary/50 hover:shadow-md transition-all duration-200"
-                  onClick={() => handleNFTClick(nft)}
-                >
-                  <div className="aspect-square bg-muted rounded-lg overflow-hidden">
-                    {nft.current_token_data?.token_uri ? (
-                      <img
-                        src={nft.current_token_data.token_uri}
-                        alt={nft.current_token_data.token_name || "NFT"}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.src = collectionData?.collection.uri || "";
-                        }}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-muted-foreground">No Image</div>
-                    )}
-                  </div>
-                  <div className="space-y-1">
-                    <h4 className="font-semibold truncate">{nft.current_token_data?.token_name || `Token ${index + 1}`}</h4>
-                    {nft.current_token_data?.description && (
-                      <p className="text-sm text-muted-foreground line-clamp-2">{nft.current_token_data.description}</p>
-                    )}
-                    <p className="text-xs text-muted-foreground">Token ID: {toShortAddress(nft.token_data_id)}</p>
-                  </div>
-                </div>
+                <NFTThumbnail key={nft.token_data_id} nft={nft} collectionData={collectionData} onClick={() => handleNFTClick(nft)} />
               ))}
             </div>
           </CardContent>
