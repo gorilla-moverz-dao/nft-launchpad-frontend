@@ -43,7 +43,7 @@ export function WalletSelector({ isModalOpen, setModalOpen, ...walletSortingOpti
 
   const buttonText = account?.ansName || truncateAddress(account?.address.toString() ?? "") || "Unknown";
 
-  if (MOVE_NETWORK.chainId !== network?.chainId) {
+  if (network && MOVE_NETWORK.chainId !== network.chainId) {
     return (
       <Button variant="destructive" className="wallet-button">
         Wrong Network

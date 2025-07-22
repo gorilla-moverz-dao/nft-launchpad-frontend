@@ -5,6 +5,7 @@ import { Menu } from "lucide-react";
 import { WalletSelector } from "./WalletSelector";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 import { Button } from "./ui/button";
+import { SINGLE_COLLECTION_MODE } from "@/constants";
 
 export default function Header() {
   const { connected } = useWallet();
@@ -12,17 +13,19 @@ export default function Header() {
 
   const NavigationLinks = () => (
     <>
-      <div className="px-2 font-bold">
-        <Link to="/" onClick={() => setIsOpen(false)}>
-          Home
-        </Link>
-      </div>
-
-      <div className="px-2 font-bold">
-        <Link to="/mint" onClick={() => setIsOpen(false)}>
-          Mint
-        </Link>
-      </div>
+      {!SINGLE_COLLECTION_MODE ? (
+        <div className="px-2 font-bold">
+          <Link to="/" onClick={() => setIsOpen(false)}>
+            Home
+          </Link>
+        </div>
+      ) : (
+        <div className="px-2 font-bold">
+          <Link to="/mint" onClick={() => setIsOpen(false)}>
+            Mint
+          </Link>
+        </div>
+      )}
 
       {connected && (
         <div className="px-2 font-bold">
