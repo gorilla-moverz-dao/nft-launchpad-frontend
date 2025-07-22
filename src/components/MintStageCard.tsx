@@ -42,7 +42,7 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
   const { launchpadClient, connected, address } = useClients();
   const { refetch: refetchMintBalance } = useMintBalance(collectionId);
   const { refetch: refetchNFTs } = useCollectionNFTs(collectionId);
-  const { data: nativeBalance } = useGetAccountNativeBalance();
+  const { data: nativeBalance, isLoading: isLoadingNativeBalance } = useGetAccountNativeBalance();
 
   const [minting, setMinting] = useState(false);
   const [mintAmount, setMintAmount] = useState(1);
@@ -53,7 +53,7 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
   const isActive = now >= start && now <= end;
 
   const walletBalance = Number(mintBalance?.find((b) => b.stage === stage.name)?.balance || 0);
-  const insufficientBalance = !nativeBalance || nativeBalance.balance < oaptToApt(stage.mint_fee);
+  const insufficientBalance = !isLoadingNativeBalance && (!nativeBalance || nativeBalance.balance < oaptToApt(stage.mint_fee));
 
   const handleMintAmountChange = (value: number) => {
     setMintAmount(value);
@@ -141,7 +141,7 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
         <div className="flex flex-col items-end gap-2">
           {walletBalance > 0 && (
             <Badge variant="outline" className="text-muted-foreground">
-              Mint spots: {walletBalance}
+              Mint spots: <span className="text-foreground font-bold">{walletBalance}</span>
             </Badge>
           )}
           {walletBalance === 0 && (
