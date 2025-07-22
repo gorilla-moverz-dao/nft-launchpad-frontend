@@ -11326,6 +11326,13 @@ export type GetAllNfTsQueryVariables = Exact<{
 
 export type GetAllNfTsQuery = { __typename?: 'query_root', current_token_ownerships_v2: Array<{ __typename?: 'current_token_ownerships_v2', token_data_id: string, current_token_data?: { __typename?: 'current_token_datas_v2', token_name: string, description: string, token_properties: any, token_uri: string } | null }> };
 
+export type MintingCollectionsQueryVariables = Exact<{
+  collection_ids: Array<Scalars['String']['input']> | Scalars['String']['input'];
+}>;
+
+
+export type MintingCollectionsQuery = { __typename?: 'query_root', current_collections_v2: Array<{ __typename?: 'current_collections_v2', collection_id: string, collection_name: string, current_supply: any, max_supply?: any | null, uri: string, description: string }> };
+
 export class TypedDocumentString<TResult, TVariables>
   extends String
   implements DocumentTypeDecoration<TResult, TVariables>
@@ -11407,3 +11414,15 @@ export const GetAllNfTsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<GetAllNfTsQuery, GetAllNfTsQueryVariables>;
+export const MintingCollectionsDocument = new TypedDocumentString(`
+    query MintingCollections($collection_ids: [String!]!) {
+  current_collections_v2(where: {collection_id: {_in: $collection_ids}}) {
+    collection_id
+    collection_name
+    current_supply
+    max_supply
+    uri
+    description
+  }
+}
+    `) as unknown as TypedDocumentString<MintingCollectionsQuery, MintingCollectionsQueryVariables>;

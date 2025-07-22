@@ -8,7 +8,7 @@ interface NFTThumbnailProps {
 export function NFTThumbnail({ nft, collectionData, onClick, className = "" }: NFTThumbnailProps) {
   return (
     <div
-      className={`border rounded-lg p-4 space-y-2 cursor-pointer hover:border-primary/50 hover:shadow-md hover:bg-muted/30 transition-all duration-200 ${className}`}
+      className={`border rounded-lg p-4 space-y-2 cursor-pointer hover:border-primary/50 hover:shadow-md hover:bg-muted/30 transition-all duration-200 group ${className}`}
       onClick={onClick}
     >
       <div className="aspect-square bg-muted rounded-lg overflow-hidden">
@@ -16,7 +16,7 @@ export function NFTThumbnail({ nft, collectionData, onClick, className = "" }: N
           <img
             src={nft.current_token_data.token_uri}
             alt={nft.current_token_data.token_name || "NFT"}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
             onError={(e) => {
               e.currentTarget.src = collectionData?.collection.uri || "";
             }}
