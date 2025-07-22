@@ -196,12 +196,12 @@ function RouteComponent() {
               return (
                 <GlassCard
                   key={stage.name}
-                  className={`mb-4 transition-all duration-300 pt-4 pb-2 gap-0 ${isActive ? "relative z-10 bg-gradient-to-br from-primary/40 via-primary/20 to-background border-1 border-primary/50 shadow-lg shadow-primary/20 ring-1 ring-primary/30" : "z-0 bg-muted/20 hover:bg-muted/30"}`}
+                  className={`mb-4 transition-all duration-300 pt-4 pb-2 gap-0 ${isActive ? "relative z-10 bg-gradient-to-br from-primary/70 via-primary/50 to-background border-1 border-primary/50 shadow-lg shadow-primary/20 ring-1 ring-primary/30" : "z-0 bg-muted/20 hover:bg-muted/30"}`}
                 >
                   <CardHeader className="pb-2 flex flex-row items-center justify-between px-6">
                     <CardTitle className="text-base flex-1">{stage.name}</CardTitle>
                     {isActive && (
-                      <span className="block text-right text-base text-muted-foreground mt-1 font-semibold min-w-[120px]">
+                      <span className="block text-right text-base text-foreground mt-1 font-semibold min-w-[120px]">
                         Total: {((oaptToApt(stage.mint_fee) || 0) * (mintAmount[stage.name] ?? 1)).toLocaleString()} MOVE
                       </span>
                     )}
