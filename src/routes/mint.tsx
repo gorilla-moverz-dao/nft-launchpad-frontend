@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { ExternalLinkIcon } from "lucide-react";
 import type { MintStageInfo } from "@/hooks/useMintStages";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { COLLECTION_ID, EXPLORER_NETWORK } from "@/constants";
 import { useMintStages } from "@/hooks/useMintStages";
 import { useCollectionData } from "@/hooks/useCollectionData";
@@ -208,8 +209,30 @@ function RouteComponent() {
                   </CardHeader>
                   <CardContent className="flex flex-col md:flex-row md:items-center gap-2 pb-4 px-6">
                     <div className="flex-1 text-xs space-y-1">
-                      <div>Start: {start.toLocaleString()}</div>
-                      <div>End: {end.toLocaleString()}</div>
+                      <div>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span>
+                              Start: {start.toLocaleString()} <span className="text-muted-foreground">(Local Time)</span>
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent className="drop-shadow-lg">
+                            <p>UTC: {start.toUTCString()}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                      <div>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span>
+                              End: {end.toLocaleString()} <span className="text-muted-foreground">(Local Time)</span>
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent className="drop-shadow-lg">
+                            <p>UTC: {end.toUTCString()}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
                       <div>Mint Fee: {oaptToApt(stage.mint_fee)} MOVE</div>
                     </div>
                     <div className="flex flex-col items-end gap-2">
