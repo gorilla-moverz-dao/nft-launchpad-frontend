@@ -1,9 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { toast } from "sonner";
 import { ExternalLinkIcon } from "lucide-react";
-import type { MintStageInfo } from "@/hooks/useMintStages";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { COLLECTION_ID, MOVE_NETWORK } from "@/constants";
 import { useMintStages } from "@/hooks/useMintStages";
 import { useCollectionData } from "@/hooks/useCollectionData";
@@ -11,100 +8,34 @@ import { useCollectionNFTs } from "@/hooks/useCollectionNFTs";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { oaptToApt, toShortAddress } from "@/lib/utils";
+import { toShortAddress } from "@/lib/utils";
 import { useClients } from "@/hooks/useClients";
-import { WalletSelector } from "@/components/WalletSelector";
 import { useMintBalance } from "@/hooks/useMintBalance";
-import { aptos } from "@/lib/aptos";
 import { MintResultDialog } from "@/components/MintResultDialog";
 import { AssetDetailDialog } from "@/components/AssetDetailDialog";
 import { NFTThumbnail } from "@/components/shared/NFTThumbnail";
-import { useGetAccountNativeBalance } from "@/hooks/useGetAccountNativeBalance";
-import { Badge } from "@/components/ui/badge";
+import { MintStageCard } from "@/components/MintStageCard";
 
 export const Route = createFileRoute("/mint")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { data: nativeBalance } = useGetAccountNativeBalance();
-  const [mintAmount, setMintAmount] = useState<Record<string, number>>({});
-  const [minting, setMinting] = useState<string | null>(null);
   const [showMintDialog, setShowMintDialog] = useState(false);
   const [recentlyMintedTokenIds, setRecentlyMintedTokenIds] = useState<Array<string>>([]);
   const [showAssetDetailDialog, setShowAssetDetailDialog] = useState(false);
   const [selectedNFT, setSelectedNFT] = useState<any>(null);
-  const { address, launchpadClient, connected } = useClients();
+  const { connected } = useClients();
 
-  const { data: stages = [], isLoading: isLoadingStages } = useMintStages(COLLECTION_ID as `0x${string}`);
-  const {
-    data: mintBalance,
-    isLoading: isLoadingMintBalance,
-    refetch: refetchMintBalance,
-  } = useMintBalance(COLLECTION_ID as `0x${string}`);
-  const { data: collectionData, isLoading: isLoadingCollection } = useCollectionData(COLLECTION_ID as `0x${string}`);
-  const { data: nfts, isLoading: isLoadingNFTs, refetch: refetchNFTs } = useCollectionNFTs(COLLECTION_ID as string);
+  const collectionId = COLLECTION_ID as `0x${string}`;
+
+  const { data: stages = [], isLoading: isLoadingStages } = useMintStages(collectionId);
+  const { data: mintBalance, isLoading: isLoadingMintBalance } = useMintBalance(collectionId);
+  const { data: collectionData, isLoading: isLoadingCollection } = useCollectionData(collectionId);
+  const { data: nfts, isLoading: isLoadingNFTs } = useCollectionNFTs(collectionId);
 
   const isLoading = isLoadingStages || isLoadingCollection || isLoadingMintBalance;
   if (isLoading) return <div>Loading...</div>;
-
-  // Function to extract token IDs from mint result
-  const extractTokenIds = (result: any): Array<string> => {
-    const tokenIds: Array<string> = [];
-
-    // Navigate through the result structure to find token IDs
-    if (result?.events) {
-      result.events.forEach((event: any) => {
-        // Check for BatchMintNftsEvent structure
-        if (event?.type?.includes("BatchMintNftsEvent") && event?.data?.nft_objs) {
-          event.data.nft_objs.forEach((nftObj: any) => {
-            if (nftObj?.inner) {
-              tokenIds.push(nftObj.inner);
-            }
-          });
-        }
-      });
-    }
-    return tokenIds;
-  };
-
-  async function handleMint(stage: MintStageInfo) {
-    const amount = mintAmount[stage.name] || 1;
-    if (!address || !collectionData || !launchpadClient) {
-      toast.error("Connect your wallet to mint");
-      return;
-    }
-    setMinting(stage.name);
-    try {
-      const tx = await launchpadClient.mint_nft({
-        arguments: [collectionData.collection.collection_id as `0x${string}`, amount],
-        type_arguments: [],
-      });
-      const result = await aptos.waitForTransaction({
-        transactionHash: tx.hash,
-      });
-      refetchMintBalance();
-      refetchNFTs();
-
-      // Extract token IDs from the result
-      const newTokenIds = extractTokenIds(result);
-      if (newTokenIds.length > 0) {
-        setRecentlyMintedTokenIds(newTokenIds);
-        setShowMintDialog(true);
-        toast.success(`Successfully minted ${newTokenIds.length} NFT(s)`, {
-          description: `Token IDs: ${newTokenIds.join(", ")}`,
-        });
-      } else {
-        toast.success("Mint transaction submitted", { description: `Tx: ${tx.hash}` });
-      }
-    } catch (err: any) {
-      toast.error("Mint failed", { description: err?.message || String(err) });
-    } finally {
-      setMinting(null);
-    }
-  }
 
   const minted = collectionData?.collection.current_supply;
   const total = collectionData?.collection.max_supply;
@@ -189,98 +120,18 @@ function RouteComponent() {
           </div>
 
           <div className="space-y-2">
-            {stages.map((stage) => {
-              const now = new Date();
-              const start = new Date(Number(stage.start_time) * 1000);
-              const end = new Date(Number(stage.end_time) * 1000);
-              const isActive = now >= start && now <= end;
-              const walletBalance = Number(mintBalance?.find((b) => b.stage === stage.name)?.balance || 0);
-              const insufficientBalance = !nativeBalance || nativeBalance.balance < oaptToApt(stage.mint_fee);
-
-              return (
-                <GlassCard
-                  key={stage.name}
-                  className={`mb-4 transition-all duration-300 pt-4 pb-2 gap-0 ${isActive ? "relative z-10 bg-gradient-to-br from-primary/70 via-primary/50 to-background border-1 border-primary/50 shadow-lg shadow-primary/20 ring-1 ring-primary/30" : "z-0 bg-muted/20 hover:bg-muted/30"}`}
-                >
-                  <CardHeader className="pb-2 flex flex-row items-center justify-between px-6">
-                    <CardTitle className="text-base flex-1">{stage.name}</CardTitle>
-                    {isActive && walletBalance > 0 && (
-                      <div className="flex flex-col gap-1">
-                        <span className="block text-right text-base text-foreground mt-1 font-semibold min-w-[120px]">
-                          Total: {((oaptToApt(stage.mint_fee) || 0) * (mintAmount[stage.name] ?? 1)).toLocaleString()} MOVE
-                        </span>
-                        {insufficientBalance && (
-                          <Badge variant="destructive" className="text-xs">
-                            Insufficient balance: {nativeBalance?.balance.toLocaleString()} MOVE
-                          </Badge>
-                        )}
-                      </div>
-                    )}
-                  </CardHeader>
-                  <CardContent className="flex flex-col md:flex-row md:items-center gap-2 pb-4 px-6">
-                    <div className="flex-1 text-xs space-y-1">
-                      <div>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span>
-                              Start: {start.toLocaleString()} <span className="text-muted-foreground">(Local Time)</span>
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent className="drop-shadow-lg">
-                            <p>UTC: {start.toUTCString()}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </div>
-                      <div>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span>
-                              End: {end.toLocaleString()} <span className="text-muted-foreground">(Local Time)</span>
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent className="drop-shadow-lg">
-                            <p>UTC: {end.toUTCString()}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </div>
-                      <div>Mint Fee: {oaptToApt(stage.mint_fee)} MOVE</div>
-                    </div>
-                    <div className="flex flex-col items-end gap-2">
-                      {walletBalance > 0 && <div className="text-xs text-muted-foreground">Mint spots: {walletBalance}</div>}
-                      {walletBalance === 0 && <div className="text-xs text-destructive">No spots left</div>}
-
-                      <div className="flex items-center gap-2">
-                        {isActive && (
-                          <Input
-                            type="number"
-                            min={1}
-                            max={walletBalance}
-                            value={mintAmount[stage.name] ?? 1}
-                            onChange={(e) => {
-                              const value = Math.max(1, Math.min(walletBalance, Number(e.target.value)));
-                              setMintAmount((prev) => ({ ...prev, [stage.name]: value }));
-                            }}
-                            className="w-20"
-                            disabled={minting === stage.name || walletBalance === 0}
-                            aria-label="Mint amount"
-                          />
-                        )}
-                        {connected && (
-                          <Button
-                            disabled={!isActive || minting === stage.name || walletBalance === 0 || insufficientBalance}
-                            className={!isActive ? "opacity-50 cursor-not-allowed" : ""}
-                            onClick={() => handleMint(stage)}
-                          >
-                            {minting === stage.name ? "Minting..." : "Mint"}
-                          </Button>
-                        )}
-                        {!connected && isActive && <WalletSelector />}
-                      </div>
-                    </div>
-                  </CardContent>
-                </GlassCard>
-              );
-            })}
+            {stages.map((stage) => (
+              <MintStageCard
+                key={stage.name}
+                stage={stage}
+                collectionId={collectionId}
+                mintBalance={mintBalance}
+                onMintSuccess={(tokenIds) => {
+                  setRecentlyMintedTokenIds(tokenIds);
+                  setShowMintDialog(true);
+                }}
+              />
+            ))}
           </div>
 
           {/* My NFTs Section */}
