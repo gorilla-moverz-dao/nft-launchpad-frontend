@@ -11307,24 +11307,24 @@ export type TokenQueryQuery = { __typename?: 'query_root', current_collections_v
 
 export type GetNfTsQueryVariables = Exact<{
   address?: InputMaybe<Scalars['String']['input']>;
-  collection_id?: InputMaybe<Scalars['String']['input']>;
+  collection_ids?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   token_ids?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
 }>;
 
 
-export type GetNfTsQuery = { __typename?: 'query_root', current_token_ownerships_v2: Array<{ __typename?: 'current_token_ownerships_v2', token_data_id: string, current_token_data?: { __typename?: 'current_token_datas_v2', token_name: string, description: string, token_properties: any, token_uri: string } | null }> };
+export type GetNfTsQuery = { __typename?: 'query_root', current_token_ownerships_v2: Array<{ __typename?: 'current_token_ownerships_v2', token_data_id: string, current_token_data?: { __typename?: 'current_token_datas_v2', collection_id: string, token_name: string, description: string, token_properties: any, token_uri: string } | null }> };
 
 export type GetAllNfTsQueryVariables = Exact<{
   address?: InputMaybe<Scalars['String']['input']>;
-  collection_id?: InputMaybe<Scalars['String']['input']>;
+  collection_ids?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 
-export type GetAllNfTsQuery = { __typename?: 'query_root', current_token_ownerships_v2: Array<{ __typename?: 'current_token_ownerships_v2', token_data_id: string, current_token_data?: { __typename?: 'current_token_datas_v2', token_name: string, description: string, token_properties: any, token_uri: string } | null }> };
+export type GetAllNfTsQuery = { __typename?: 'query_root', current_token_ownerships_v2: Array<{ __typename?: 'current_token_ownerships_v2', token_data_id: string, current_token_data?: { __typename?: 'current_token_datas_v2', collection_id: string, token_name: string, description: string, token_properties: any, token_uri: string } | null }> };
 
 export type MintingCollectionsQueryVariables = Exact<{
   collection_ids: Array<Scalars['String']['input']> | Scalars['String']['input'];
@@ -11379,15 +11379,16 @@ export const TokenQueryDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<TokenQueryQuery, TokenQueryQueryVariables>;
 export const GetNfTsDocument = new TypedDocumentString(`
-    query getNFTs($address: String, $collection_id: String, $limit: Int, $offset: Int, $token_ids: [String!]) {
+    query getNFTs($address: String, $collection_ids: [String!], $limit: Int, $offset: Int, $token_ids: [String!]) {
   current_token_ownerships_v2(
-    where: {owner_address: {_eq: $address}, amount: {_gt: "0"}, current_token_data: {current_collection: {collection_id: {_eq: $collection_id}}}, token_data_id: {_in: $token_ids}}
+    where: {owner_address: {_eq: $address}, amount: {_gt: "0"}, current_token_data: {current_collection: {collection_id: {_in: $collection_ids}}}, token_data_id: {_in: $token_ids}}
     order_by: [{last_transaction_timestamp: desc}]
     limit: $limit
     offset: $offset
   ) {
     token_data_id
     current_token_data {
+      collection_id
       token_name
       description
       token_properties
@@ -11397,15 +11398,16 @@ export const GetNfTsDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<GetNfTsQuery, GetNfTsQueryVariables>;
 export const GetAllNfTsDocument = new TypedDocumentString(`
-    query getAllNFTs($address: String, $collection_id: String, $limit: Int, $offset: Int) {
+    query getAllNFTs($address: String, $collection_ids: [String!], $limit: Int, $offset: Int) {
   current_token_ownerships_v2(
-    where: {owner_address: {_eq: $address}, amount: {_gt: "0"}, current_token_data: {current_collection: {collection_id: {_eq: $collection_id}}}}
+    where: {owner_address: {_eq: $address}, amount: {_gt: "0"}, current_token_data: {current_collection: {collection_id: {_in: $collection_ids}}}}
     order_by: [{last_transaction_timestamp: desc}]
     limit: $limit
     offset: $offset
   ) {
     token_data_id
     current_token_data {
+      collection_id
       token_name
       description
       token_properties

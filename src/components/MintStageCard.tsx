@@ -41,7 +41,7 @@ function extractTokenIds(result: any): Array<string> {
 export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess }: MintStageCardProps) {
   const { launchpadClient, connected, address } = useClients();
   const { refetch: refetchMintBalance } = useMintBalance(collectionId);
-  const { refetch: refetchNFTs } = useCollectionNFTs(collectionId);
+  const { refetch: refetchNFTs } = useCollectionNFTs([collectionId]);
   const { data: nativeBalance, isLoading: isLoadingNativeBalance } = useGetAccountNativeBalance();
 
   const [minting, setMinting] = useState(false);

@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toShortAddress } from "@/lib/utils";
 
-interface NFTData {
+export interface NFTData {
   token_data_id: string;
   current_token_data?: {
     token_name?: string;
@@ -14,11 +14,18 @@ interface NFTData {
   };
 }
 
+export interface CollectionData {
+  collection_id: string;
+  collection_name: string;
+  description: string;
+  uri: string;
+}
+
 interface AssetDetailDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   nft: NFTData | null;
-  collectionData: any;
+  collectionData: CollectionData;
 }
 
 export function AssetDetailDialog({ open, onOpenChange, nft, collectionData }: AssetDetailDialogProps) {
@@ -47,7 +54,7 @@ export function AssetDetailDialog({ open, onOpenChange, nft, collectionData }: A
                     alt={nft.current_token_data.token_name || "NFT"}
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      e.currentTarget.src = collectionData?.collection.uri || "";
+                      e.currentTarget.src = collectionData.uri || "";
                     }}
                   />
                 ) : (
@@ -69,14 +76,14 @@ export function AssetDetailDialog({ open, onOpenChange, nft, collectionData }: A
                   <div className="space-y-3">
                     <div>
                       <label className="text-sm font-medium text-muted-foreground">Collection Name</label>
-                      <p className="text-sm">{collectionData?.collection.collection_name || "Unknown Collection"}</p>
+                      <p className="text-sm">{collectionData.collection_name || "Unknown Collection"}</p>
                     </div>
                     <div>
                       <label className="text-sm font-medium text-muted-foreground">Collection ID</label>
                       <div className="flex items-center gap-2">
-                        <p className="text-sm font-mono">{toShortAddress(collectionData?.collection.collection_id || "")}</p>
+                        <p className="text-sm font-mono">{toShortAddress(collectionData.collection_id)}</p>
                         <button
-                          onClick={() => navigator.clipboard.writeText(collectionData?.collection.collection_id || "")}
+                          onClick={() => navigator.clipboard.writeText(collectionData.collection_id)}
                           className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                           title="Copy collection ID"
                         >
@@ -86,10 +93,10 @@ export function AssetDetailDialog({ open, onOpenChange, nft, collectionData }: A
                     </div>
                   </div>
 
-                  {collectionData?.collection.description && (
+                  {collectionData.description && (
                     <div>
                       <label className="text-sm font-medium text-muted-foreground">Collection Description</label>
-                      <p className="text-sm mt-1">{collectionData.collection.description}</p>
+                      <p className="text-sm mt-1">{collectionData.description}</p>
                     </div>
                   )}
                 </CardContent>
