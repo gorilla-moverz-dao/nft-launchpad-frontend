@@ -1,8 +1,8 @@
-import { APTOS_INDEXER_URL } from "./src/constants";
+import { MOVE_NETWORK } from "./src/constants";
 import type { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
-  schema: APTOS_INDEXER_URL,
+  schema: MOVE_NETWORK.indexerUrl,
   documents: ["src/**/*.tsx", "src/**/*.ts"],
   ignoreNoDocuments: true,
   generates: {

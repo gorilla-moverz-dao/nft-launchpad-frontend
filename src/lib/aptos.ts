@@ -1,14 +1,14 @@
 import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
 import { createSurfClient } from "@thalalabs/surf";
-import { APTOS_FAUCET_URL, APTOS_INDEXER_URL, APTOS_RPC_URL } from "@/constants";
+import { MOVE_NETWORK } from "@/constants";
 import { ABI as launchpadABI } from "@/abi/nft_launchpad";
 
 // Network configuration
 const config = new AptosConfig({
   network: Network.CUSTOM,
-  fullnode: APTOS_RPC_URL,
-  indexer: APTOS_INDEXER_URL,
-  faucet: APTOS_FAUCET_URL,
+  fullnode: MOVE_NETWORK.rpcUrl,
+  indexer: MOVE_NETWORK.indexerUrl,
+  faucet: MOVE_NETWORK.faucetUrl,
 });
 
 // Initialize client

@@ -2,14 +2,14 @@ import { promises as fs } from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 import axios from "axios";
-import { APTOS_RPC_URL, LAUNCHPAD_MODULE_ADDRESS } from "../src/constants";
+import { LAUNCHPAD_MODULE_ADDRESS, MOVE_NETWORK } from "../src/constants";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function getABI(address: string, moduleName: string) {
   try {
-    const response = await axios.get(`${APTOS_RPC_URL}/accounts/${address}/module/${moduleName}`);
+    const response = await axios.get(`${MOVE_NETWORK.rpcUrl}/accounts/${address}/module/${moduleName}`);
     const abi = response.data.abi;
 
     const content = `export const ABI = ${JSON.stringify(abi)} as const`;

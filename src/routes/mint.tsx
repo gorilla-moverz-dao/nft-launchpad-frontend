@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { ExternalLinkIcon } from "lucide-react";
 import type { MintStageInfo } from "@/hooks/useMintStages";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { COLLECTION_ID, EXPLORER_NETWORK } from "@/constants";
+import { COLLECTION_ID, MOVE_NETWORK } from "@/constants";
 import { useMintStages } from "@/hooks/useMintStages";
 import { useCollectionData } from "@/hooks/useCollectionData";
 import { useCollectionNFTs } from "@/hooks/useCollectionNFTs";
@@ -21,21 +21,23 @@ import { aptos } from "@/lib/aptos";
 import { MintResultDialog } from "@/components/MintResultDialog";
 import { AssetDetailDialog } from "@/components/AssetDetailDialog";
 import { NFTThumbnail } from "@/components/shared/NFTThumbnail";
+import { useGetAccountNativeBalance } from "@/hooks/useGetAccountNativeBalance";
+import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/mint")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
+  const { data: nativeBalance } = useGetAccountNativeBalance();
   const [mintAmount, setMintAmount] = useState<Record<string, number>>({});
   const [minting, setMinting] = useState<string | null>(null);
   const [showMintDialog, setShowMintDialog] = useState(false);
   const [recentlyMintedTokenIds, setRecentlyMintedTokenIds] = useState<Array<string>>([]);
   const [showAssetDetailDialog, setShowAssetDetailDialog] = useState(false);
   const [selectedNFT, setSelectedNFT] = useState<any>(null);
-  const { address, launchpadClient, connected, network } = useClients();
+  const { address, launchpadClient, connected } = useClients();
 
-  console.log(network);
   const { data: stages = [], isLoading: isLoadingStages } = useMintStages(COLLECTION_ID as `0x${string}`);
   const {
     data: mintBalance,
@@ -135,7 +137,7 @@ function RouteComponent() {
               <div className="text-sm break-all">
                 <p className="font-semibold text-muted-foreground">Collection Address:</p>{" "}
                 <a
-                  href={`https://explorer.movementnetwork.xyz/object/${collectionData?.collection.collection_id}?network=${EXPLORER_NETWORK}`}
+                  href={MOVE_NETWORK.explorerUrl.replace("{0}", `object/${collectionData?.collection.collection_id}`)}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -193,6 +195,7 @@ function RouteComponent() {
               const end = new Date(Number(stage.end_time) * 1000);
               const isActive = now >= start && now <= end;
               const walletBalance = Number(mintBalance?.find((b) => b.stage === stage.name)?.balance || 0);
+              const insufficientBalance = !nativeBalance || nativeBalance.balance < oaptToApt(stage.mint_fee);
 
               return (
                 <GlassCard
@@ -201,10 +204,17 @@ function RouteComponent() {
                 >
                   <CardHeader className="pb-2 flex flex-row items-center justify-between px-6">
                     <CardTitle className="text-base flex-1">{stage.name}</CardTitle>
-                    {isActive && (
-                      <span className="block text-right text-base text-foreground mt-1 font-semibold min-w-[120px]">
-                        Total: {((oaptToApt(stage.mint_fee) || 0) * (mintAmount[stage.name] ?? 1)).toLocaleString()} MOVE
-                      </span>
+                    {isActive && walletBalance > 0 && (
+                      <div className="flex flex-col gap-1">
+                        <span className="block text-right text-base text-foreground mt-1 font-semibold min-w-[120px]">
+                          Total: {((oaptToApt(stage.mint_fee) || 0) * (mintAmount[stage.name] ?? 1)).toLocaleString()} MOVE
+                        </span>
+                        {insufficientBalance && (
+                          <Badge variant="destructive" className="text-xs">
+                            Insufficient balance: {nativeBalance?.balance.toLocaleString()} MOVE
+                          </Badge>
+                        )}
+                      </div>
                     )}
                   </CardHeader>
                   <CardContent className="flex flex-col md:flex-row md:items-center gap-2 pb-4 px-6">
@@ -257,7 +267,7 @@ function RouteComponent() {
                         )}
                         {connected && (
                           <Button
-                            disabled={!isActive || minting === stage.name || walletBalance === 0}
+                            disabled={!isActive || minting === stage.name || walletBalance === 0 || insufficientBalance}
                             className={!isActive ? "opacity-50 cursor-not-allowed" : ""}
                             onClick={() => handleMint(stage)}
                           >

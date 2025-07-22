@@ -4,6 +4,7 @@ import type { AdapterNotDetectedWallet, AdapterWallet, WalletSortingOptions } fr
 import type { Dispatch, SetStateAction } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { MOVE_NETWORK } from "@/constants";
 
 interface WalletSelectorProps extends WalletSortingOptions {
   isModalOpen?: boolean;
@@ -20,7 +21,7 @@ export function WalletSelector({ isModalOpen, setModalOpen, ...walletSortingOpti
     }
   }, [isModalOpen]);
 
-  const { account, connected, disconnect, wallets = [] } = useWallet();
+  const { account, connected, disconnect, wallets = [], network } = useWallet();
 
   const { availableWallets } = groupAndSortWallets(wallets, walletSortingOptions);
   const installableWallets = [] as Array<AdapterWallet>;
@@ -41,6 +42,14 @@ export function WalletSelector({ isModalOpen, setModalOpen, ...walletSortingOpti
   };
 
   const buttonText = account?.ansName || truncateAddress(account?.address.toString() ?? "") || "Unknown";
+
+  if (MOVE_NETWORK.chainId !== network?.chainId) {
+    return (
+      <Button variant="destructive" className="wallet-button">
+        Wrong Network
+      </Button>
+    );
+  }
 
   return (
     <>
