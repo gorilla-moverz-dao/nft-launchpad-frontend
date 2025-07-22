@@ -5,7 +5,7 @@ import { COLLECTION_ID, MOVE_NETWORK } from "@/constants";
 import { useMintStages } from "@/hooks/useMintStages";
 import { useCollectionData } from "@/hooks/useCollectionData";
 import { useCollectionNFTs } from "@/hooks/useCollectionNFTs";
-import { GlassCard } from "@/components/shared/GlassCard";
+import { GlassCard } from "@/components/GlassCard";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { toShortAddress } from "@/lib/utils";
@@ -13,7 +13,7 @@ import { useClients } from "@/hooks/useClients";
 import { useMintBalance } from "@/hooks/useMintBalance";
 import { MintResultDialog } from "@/components/MintResultDialog";
 import { AssetDetailDialog } from "@/components/AssetDetailDialog";
-import { NFTThumbnail } from "@/components/shared/NFTThumbnail";
+import { NFTThumbnail } from "@/components/NFTThumbnail";
 import { MintStageCard } from "@/components/MintStageCard";
 
 export const Route = createFileRoute("/mint")({

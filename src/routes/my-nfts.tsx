@@ -3,9 +3,9 @@ import { useState } from "react";
 import { COLLECTION_ID } from "@/constants";
 import { useCollectionNFTs } from "@/hooks/useCollectionNFTs";
 import { useCollectionData } from "@/hooks/useCollectionData";
-import { GlassCard } from "@/components/shared/GlassCard";
+import { GlassCard } from "@/components/GlassCard";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { NFTThumbnail } from "@/components/shared/NFTThumbnail";
+import { NFTThumbnail } from "@/components/NFTThumbnail";
 import { AssetDetailDialog } from "@/components/AssetDetailDialog";
 
 export const Route = createFileRoute("/my-nfts")({

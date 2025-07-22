@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import type { MintStageInfo } from "@/hooks/useMintStages";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
-import { GlassCard } from "@/components/shared/GlassCard";
+import { GlassCard } from "@/components/GlassCard";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";

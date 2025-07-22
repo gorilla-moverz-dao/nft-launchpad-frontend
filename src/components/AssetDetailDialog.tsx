@@ -1,5 +1,5 @@
 import { ExternalLinkIcon } from "lucide-react";
-import { GlassCard } from "./shared/GlassCard";
+import { GlassCard } from "./GlassCard";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toShortAddress } from "@/lib/utils";
