@@ -67,17 +67,24 @@ const AnimatedGradientBackground: React.FC = () => {
             animation: windSway 4s ease-in-out infinite;
             transform-origin: bottom center;
           }
+          .banana-tree-mobile {
+            width: 100vw;
+          }
+          @media (min-width: 640px) {
+            .banana-tree-mobile {
+              width: 70vw;  
+            }
+          }
         `}
       </style>
       {/* Banana tree left - visible on mobile and desktop */}
       <img
         src="/images/banana-tree.webp"
         alt="Banana Tree Left"
-        className="fixed left-0 bottom-0 z-0 pointer-events-none select-none wind-animation sm:max-w-[35vw] sm:max-h-[60vh] sm:w-auto sm:h-auto"
+        className="fixed left-[-20px] bottom-0 z-0 pointer-events-none select-none wind-animation sm:max-w-[35vw] sm:max-h-[60vh] sm:w-auto sm:h-auto banana-tree-mobile"
         style={{
           maxHeight: "100vh",
           maxWidth: "100vw",
-          width: "100vw",
           height: "100vh",
           opacity: 0.35,
           filter: "blur(0.5px)",
