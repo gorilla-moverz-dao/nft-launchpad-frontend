@@ -60,12 +60,15 @@ const AnimatedGradientBackground: React.FC = () => {
         {`
           @keyframes windSway {
             0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(0.5deg); }
-            75% { transform: rotate(-0.5deg); }
+            25% { transform: rotate(1deg); }
+            75% { transform: rotate(-1deg); }
           }
           .wind-animation {
-            animation: windSway 4s ease-in-out infinite;
+            animation: windSway 5s ease-in-out infinite;
             transform-origin: bottom center;
+          }
+          .wind-animation-slow {
+            animation: windSway 8s ease-in-out infinite;
           }
           .banana-tree-mobile {
             width: 100vw;
@@ -81,7 +84,7 @@ const AnimatedGradientBackground: React.FC = () => {
       <img
         src="/images/banana-tree.webp"
         alt="Banana Tree Left"
-        className="fixed left-[-20px] bottom-0 z-0 pointer-events-none select-none wind-animation sm:max-w-[35vw] sm:max-h-[60vh] sm:w-auto sm:h-auto banana-tree-mobile"
+        className="fixed left-[-20px] bottom-0 z-0 pointer-events-none select-none wind-animation-slow sm:max-w-[35vw] sm:max-h-[60vh] sm:w-auto sm:h-auto banana-tree-mobile"
         style={{
           maxHeight: "100vh",
           maxWidth: "100vw",

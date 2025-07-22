@@ -93,7 +93,7 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
 
   return (
     <GlassCard
-      className={`mb-4 transition-all duration-300 pt-4 pb-2 gap-0 ${isActive ? "relative z-10 bg-gradient-to-br from-primary/70 via-primary/50 to-background border-1 border-primary/50 shadow-lg shadow-primary/20 ring-1 ring-primary/30" : "z-0 bg-muted/20 hover:bg-muted/30"}`}
+      className={`mb-4 transition-all duration-300 pt-4 pb-2 gap-0 ${isActive ? "relative z-10 bg-gradient-to-br from-yellow-400/80 via-orange-400/60 to-yellow-500/40 border-1 border-orange-400/50 shadow-lg shadow-orange-400/20 ring-1 ring-orange-400/30 [&_*]:drop-shadow-lg [&_*]:text-shadow-sm" : "z-0 bg-muted/20 hover:bg-muted/30"}`}
     >
       <CardHeader className="pb-2 flex flex-row items-center justify-between px-6">
         <CardTitle className="text-base flex-1">{stage.name}</CardTitle>
