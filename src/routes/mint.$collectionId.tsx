@@ -25,12 +25,12 @@ function RouteComponent() {
   const [recentlyMintedTokenIds, setRecentlyMintedTokenIds] = useState<Array<string>>([]);
   const [showAssetDetailDialog, setShowAssetDetailDialog] = useState(false);
   const [selectedNFT, setSelectedNFT] = useState<any>(null);
-  const { connected } = useClients();
+  const { connected, address } = useClients();
   const { collectionId } = Route.useParams();
 
   const collectionIdTyped = collectionId as `0x${string}`;
 
-  const { data: stages = [], isLoading: isLoadingStages } = useMintStages(collectionIdTyped);
+  const { data: stages = [], isLoading: isLoadingStages } = useMintStages(address?.toString() as `0x${string}`, collectionIdTyped);
   const { data: mintBalance, isLoading: isLoadingMintBalance } = useMintBalance(collectionIdTyped);
   const { data: collectionData, isLoading: isLoadingCollection } = useCollectionData(collectionIdTyped);
   const { data: nfts, isLoading: isLoadingNFTs } = useCollectionNFTs([collectionIdTyped]);

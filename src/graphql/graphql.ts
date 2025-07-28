@@ -11333,6 +11333,14 @@ export type MintingCollectionsQueryVariables = Exact<{
 
 export type MintingCollectionsQuery = { __typename?: 'query_root', current_collections_v2: Array<{ __typename?: 'current_collections_v2', collection_id: string, collection_name: string, current_supply: any, max_supply?: any | null, uri: string, description: string }> };
 
+export type GetUserReductionNfTsQueryVariables = Exact<{
+  owner_address: Scalars['String']['input'];
+  collection_addresses: Array<Scalars['String']['input']> | Scalars['String']['input'];
+}>;
+
+
+export type GetUserReductionNfTsQuery = { __typename?: 'query_root', current_token_ownerships_v2: Array<{ __typename?: 'current_token_ownerships_v2', token_data_id: string, owner_address: string, amount: any, token_properties_mutated_v1?: any | null, current_token_data?: { __typename?: 'current_token_datas_v2', collection_id: string, token_name: string, description: string, token_uri: string } | null }> };
+
 export class TypedDocumentString<TResult, TVariables>
   extends String
   implements DocumentTypeDecoration<TResult, TVariables>
@@ -11428,3 +11436,22 @@ export const MintingCollectionsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<MintingCollectionsQuery, MintingCollectionsQueryVariables>;
+export const GetUserReductionNfTsDocument = new TypedDocumentString(`
+    query getUserReductionNFTs($owner_address: String!, $collection_addresses: [String!]!) {
+  current_token_ownerships_v2(
+    where: {owner_address: {_eq: $owner_address}, current_token_data: {collection_id: {_in: $collection_addresses}}}
+    order_by: [{last_transaction_timestamp: desc}]
+  ) {
+    token_data_id
+    owner_address
+    amount
+    token_properties_mutated_v1
+    current_token_data {
+      collection_id
+      token_name
+      description
+      token_uri
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<GetUserReductionNfTsQuery, GetUserReductionNfTsQueryVariables>;
