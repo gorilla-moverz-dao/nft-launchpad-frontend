@@ -47,7 +47,7 @@ export const useUserReductionNFTs = (ownerAddress: string) => {
         collection_addresses: collectionAddresses,
       });
 
-      const allNFTs = result.current_token_ownerships_v2 || [];
+      const allNFTs = result.current_token_ownerships_v2;
 
       // Group NFTs by collection and return only one per collection
       const nftsByCollection = new Map<string, (typeof allNFTs)[0]>();
