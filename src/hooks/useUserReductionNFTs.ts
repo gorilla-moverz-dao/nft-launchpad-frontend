@@ -23,10 +23,14 @@ const getUserReductionNFTsQuery = graphql(`
   }
 `);
 
-export const useUserReductionNFTs = (ownerAddress: string) => {
+export const useUserReductionNFTs = (ownerAddress: string | undefined) => {
   return useQuery({
     queryKey: ["user-reduction-nfts", ownerAddress],
     queryFn: async () => {
+      if (!ownerAddress) {
+        return [];
+      }
+
       // First, get all collection addresses that provide protocol fee reductions
       const [reductionCollections] = await nftReductionManagerClient.view.get_all_collection_protocol_fee_reductions({
         functionArguments: [],

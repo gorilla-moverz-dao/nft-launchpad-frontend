@@ -148,7 +148,7 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
               Mint spots: <span className="text-foreground font-bold">{walletBalance}</span>
             </Badge>
           )}
-          {walletBalance === 0 && (
+          {walletBalance === 0 && address && (
             <Badge variant="destructive" className="text-xs">
               No spots left
             </Badge>

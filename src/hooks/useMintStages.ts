@@ -11,14 +11,18 @@ export interface MintStageInfo {
   stage_type: number;
 }
 
-export const useMintStages = (senderAddress: `0x${string}`, collectionAddress: `0x${string}`) => {
+export const useMintStages = (senderAddress: `0x${string}` | undefined, collectionAddress: `0x${string}`) => {
   const { data: reductionNFTs = [], isLoading: isLoadingReductionNFTs } = useUserReductionNFTs(senderAddress);
   return useQuery<Array<MintStageInfo>>({
     queryKey: ["stages", collectionAddress],
     enabled: !isLoadingReductionNFTs,
     queryFn: async () => {
       const [res] = await launchpadClient.view.get_mint_stages_info({
-        functionArguments: [senderAddress, collectionAddress, reductionNFTs.slice(0, 1).map((nft) => nft.token_data_id as `0x${string}`)],
+        functionArguments: [
+          senderAddress ?? "0x0",
+          collectionAddress,
+          reductionNFTs.slice(0, 1).map((nft) => nft.token_data_id as `0x${string}`),
+        ],
         typeArguments: [],
       });
 
