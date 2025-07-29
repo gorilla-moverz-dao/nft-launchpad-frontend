@@ -1,20 +1,24 @@
 import { useQuery } from "@tanstack/react-query";
+import { useUserReductionNFTs } from "./useUserReductionNFTs";
 import { launchpadClient } from "@/lib/aptos";
 
 export interface MintStageInfo {
   name: string;
-  mint_fee: string; // Move u64 is usually returned as string
+  mint_fee: string;
+  mint_fee_with_reduction: string;
   start_time: string;
   end_time: string;
   stage_type: number;
 }
 
-export const useMintStages = (collectionAddress: `0x${string}`) => {
+export const useMintStages = (senderAddress: `0x${string}`, collectionAddress: `0x${string}`) => {
+  const { data: reductionNFTs = [], isLoading: isLoadingReductionNFTs } = useUserReductionNFTs(senderAddress);
   return useQuery<Array<MintStageInfo>>({
     queryKey: ["stages", collectionAddress],
+    enabled: !isLoadingReductionNFTs,
     queryFn: async () => {
       const [res] = await launchpadClient.view.get_mint_stages_info({
-        functionArguments: [collectionAddress],
+        functionArguments: [senderAddress, collectionAddress, reductionNFTs.slice(0, 1).map((nft) => nft.token_data_id as `0x${string}`)],
         typeArguments: [],
       });
 

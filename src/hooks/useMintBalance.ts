@@ -4,8 +4,9 @@ import { useClients } from "./useClients";
 import { launchpadClient } from "@/lib/aptos";
 
 export const useMintBalance = (collectionAddress: `0x${string}`) => {
-  const { data: stages, isLoading: isLoadingStages } = useMintStages(collectionAddress);
   const { address } = useClients();
+  const { data: stages, isLoading: isLoadingStages } = useMintStages(address?.toString() as `0x${string}`, collectionAddress);
+
   return useQuery({
     queryKey: ["mint-balance", collectionAddress, address],
     enabled: !isLoadingStages && !!address,

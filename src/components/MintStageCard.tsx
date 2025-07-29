@@ -14,6 +14,7 @@ import { useClients } from "@/hooks/useClients";
 import { useMintBalance } from "@/hooks/useMintBalance";
 import { useCollectionNFTs } from "@/hooks/useCollectionNFTs";
 import { useGetAccountNativeBalance } from "@/hooks/useGetAccountNativeBalance";
+import { useUserReductionNFTs } from "@/hooks/useUserReductionNFTs";
 
 interface MintStageCardProps {
   stage: MintStageInfo;
@@ -43,6 +44,7 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
   const { refetch: refetchMintBalance } = useMintBalance(collectionId);
   const { refetch: refetchNFTs } = useCollectionNFTs([collectionId]);
   const { data: nativeBalance, isLoading: isLoadingNativeBalance } = useGetAccountNativeBalance();
+  const { data: reductionNFTs = [] } = useUserReductionNFTs(address?.toString() || "");
 
   const [minting, setMinting] = useState(false);
   const [mintAmount, setMintAmount] = useState(1);
@@ -66,8 +68,10 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
     }
     setMinting(true);
     try {
+      const reductionTokenIds = reductionNFTs.map((nft) => nft.token_data_id as `0x${string}`);
+      console.log("reductionTokenIds", reductionTokenIds);
       const tx = await launchpadClient.mint_nft({
-        arguments: [collectionId, mintAmount],
+        arguments: [collectionId, mintAmount, reductionTokenIds],
         type_arguments: [],
       });
       const result = await aptos.waitForTransaction({
@@ -100,7 +104,7 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
         {isActive && walletBalance > 0 && (
           <div className="flex flex-col gap-1">
             <span className="block text-right text-base text-foreground mt-1 font-semibold min-w-[120px]">
-              Total: {((oaptToApt(stage.mint_fee) || 0) * mintAmount).toLocaleString()} MOVE
+              Total: {((oaptToApt(stage.mint_fee_with_reduction) || 0) * mintAmount).toLocaleString()} MOVE
             </span>
             {insufficientBalance && (
               <Badge variant="destructive" className="text-xs">
@@ -136,7 +140,7 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
               </TooltipContent>
             </Tooltip>
           </div>
-          <div>Mint Fee: {oaptToApt(stage.mint_fee)} MOVE</div>
+          <div>Mint Fee: {oaptToApt(stage.mint_fee_with_reduction)} MOVE</div>
         </div>
         <div className="flex flex-col items-end gap-2">
           {walletBalance > 0 && (
