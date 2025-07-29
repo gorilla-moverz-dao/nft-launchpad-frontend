@@ -18,11 +18,7 @@ export const useMintStages = (senderAddress: `0x${string}` | undefined, collecti
     enabled: !isLoadingReductionNFTs,
     queryFn: async () => {
       const [res] = await launchpadClient.view.get_mint_stages_info({
-        functionArguments: [
-          senderAddress ?? "0x0",
-          collectionAddress,
-          reductionNFTs.slice(0, 1).map((nft) => nft.token_data_id as `0x${string}`),
-        ],
+        functionArguments: [senderAddress ?? "0x0", collectionAddress, reductionNFTs.map((nft) => nft.token_data_id as `0x${string}`)],
         typeArguments: [],
       });
 
