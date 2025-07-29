@@ -183,6 +183,54 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
           </div>
         </div>
       </CardContent>
+
+      {/* Reduction NFTs Information */}
+      {reductionNFTs.length > 0 && (
+        <div className="px-6 pb-4 border-t border-border/50 pt-3">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary" className="text-xs">
+                🎫 Reduction Applied
+              </Badge>
+              <span className="text-xs text-muted-foreground">
+                {reductionNFTs.length} NFT{reductionNFTs.length > 1 ? "s" : ""}
+              </span>
+            </div>
+            <div className="text-xs text-green-600 font-medium">
+              Save {(oaptToApt(stage.mint_fee) - oaptToApt(stage.mint_fee_with_reduction) || 0).toFixed(2)} MOVE
+            </div>
+          </div>
+
+          <div className="flex gap-2 mb-2">
+            {reductionNFTs.slice(0, 4).map((nft) => (
+              <div key={nft.token_data_id} className="relative">
+                <img
+                  src={nft.current_token_data?.token_uri || "/placeholder-nft.png"}
+                  alt={nft.current_token_data?.token_name || "Reduction NFT"}
+                  className="w-12 h-12 rounded-lg object-cover border border-border/50"
+                  onError={(e) => {
+                    e.currentTarget.src = "/placeholder-nft.png";
+                  }}
+                />
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                  <span className="text-xs text-white">✓</span>
+                </div>
+              </div>
+            ))}
+            {reductionNFTs.length > 4 && (
+              <div className="w-12 h-12 bg-muted/50 rounded-lg border border-border/50 flex items-center justify-center">
+                <span className="text-xs text-muted-foreground">+{reductionNFTs.length - 4}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="text-xs text-muted-foreground">
+            <span className="font-medium">{oaptToApt(stage.mint_fee)} MOVE</span>
+            <span className="mx-2">→</span>
+            <span className="font-medium text-green-600">{oaptToApt(stage.mint_fee_with_reduction)} MOVE</span>
+          </div>
+        </div>
+      )}
     </GlassCard>
   );
 }
