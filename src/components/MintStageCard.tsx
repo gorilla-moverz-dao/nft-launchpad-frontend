@@ -40,7 +40,7 @@ function extractTokenIds(result: any): Array<string> {
 }
 
 export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess }: MintStageCardProps) {
-  const { launchpadClient, connected, address } = useClients();
+  const { launchpadClient, connected, address, correctNetwork } = useClients();
   const { refetch: refetchMintBalance } = useMintBalance(collectionId);
   const { refetch: refetchNFTs } = useCollectionNFTs([collectionId]);
   const { data: nativeBalance, isLoading: isLoadingNativeBalance } = useGetAccountNativeBalance();
@@ -170,7 +170,7 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
                 aria-label="Mint amount"
               />
             )}
-            {connected && (
+            {connected && correctNetwork && (
               <Button
                 disabled={!isActive || minting || walletBalance === 0 || insufficientBalance}
                 className={!isActive ? "opacity-50 cursor-not-allowed" : ""}
@@ -179,7 +179,7 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
                 {minting ? "Minting..." : "Mint"}
               </Button>
             )}
-            {!connected && isActive && <WalletSelector />}
+            {(!connected && isActive) || (!correctNetwork && <WalletSelector />)}
           </div>
         </div>
       </CardContent>

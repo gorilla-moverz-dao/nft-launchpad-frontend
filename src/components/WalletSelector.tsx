@@ -1,5 +1,6 @@
 import { WalletItem, groupAndSortWallets, isInstallRequired, truncateAddress, useWallet } from "@aptos-labs/wallet-adapter-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import type { AdapterNotDetectedWallet, AdapterWallet, WalletSortingOptions } from "@aptos-labs/wallet-adapter-react";
 import type { Dispatch, SetStateAction } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -34,6 +35,10 @@ export function WalletSelector({ isModalOpen, setModalOpen, ...walletSortingOpti
     }
   };
 
+  const handleWrongNetworkClick = () => {
+    toast.error(`Please switch to ${MOVE_NETWORK.name} in your wallet`);
+  };
+
   const closeModal = () => {
     setWalletSelectorModalOpen(false);
     if (setModalOpen) {
@@ -45,8 +50,8 @@ export function WalletSelector({ isModalOpen, setModalOpen, ...walletSortingOpti
 
   if (network && MOVE_NETWORK.chainId !== network.chainId) {
     return (
-      <Button variant="destructive" className="wallet-button">
-        Wrong Network
+      <Button variant="destructive" className="wallet-button" onClick={handleWrongNetworkClick}>
+        Switch to {MOVE_NETWORK.name}
       </Button>
     );
   }
