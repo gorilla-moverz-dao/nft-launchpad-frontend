@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { GlassCard } from "./GlassCard";
 import { useMintingCollections } from "@/hooks/useMintingCollections";
 
-export function CollectionBrowser() {
+export function CollectionBrowser({ path }: { path: "mint" | "collections" }) {
   const { data, isLoading, error } = useMintingCollections();
 
   if (isLoading) return <div>Loading collections...</div>;
@@ -11,12 +11,9 @@ export function CollectionBrowser() {
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl pb-4">Active & Upcoming Mints</h1>
-      </div>
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3">
         {data.map((collection, idx) => (
-          <Link key={idx} to="/mint/$collectionId" params={{ collectionId: collection.collection_id }} className="block">
+          <Link key={idx} to={`/${path}/$collectionId`} params={{ collectionId: collection.collection_id }} className="block">
             <GlassCard hoverEffect={true} className="flex flex-col items-center p-4 h-full group gap-2 cursor-pointer">
               <div className="w-full aspect-square flex items-center justify-center mb-3 overflow-hidden">
                 <img

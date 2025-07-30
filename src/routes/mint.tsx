@@ -19,7 +19,7 @@ function RouteComponent() {
   const collectionId: string | undefined = useParams({ from: "/mint/$collectionId", shouldThrow: false });
 
   if (!collectionId) {
-    return <CollectionBrowser />;
+    return <CollectionBrowser path="mint" />;
   }
 
   return <Outlet />;

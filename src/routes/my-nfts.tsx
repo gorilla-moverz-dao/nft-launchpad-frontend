@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
 import { useCollectionNFTs } from "@/hooks/useCollectionNFTs";
 import { GlassCard } from "@/components/GlassCard";
-import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import { NFTThumbnail } from "@/components/NFTThumbnail";
 import { AssetDetailDialog } from "@/components/AssetDetailDialog";
 import { useMintingCollections } from "@/hooks/useMintingCollections";
@@ -61,13 +61,11 @@ function RouteComponent() {
   };
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl pb-0">My NFTs</h1>
+      </div>
       <GlassCard className="w-full">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>My NFTs</CardTitle>
-          </div>
-        </CardHeader>
         <CardContent className="space-y-4">
           {collectionNfts &&
             collectionNfts.length > 0 &&

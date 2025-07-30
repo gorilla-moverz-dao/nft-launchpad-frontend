@@ -14,11 +14,18 @@ export default function Header() {
   const NavigationLinks = () => (
     <>
       {!SINGLE_COLLECTION_MODE ? (
-        <div className="px-2 font-bold">
-          <Link to="/" onClick={() => setIsOpen(false)}>
-            Home
-          </Link>
-        </div>
+        <>
+          <div className="px-2 font-bold">
+            <Link to="/" onClick={() => setIsOpen(false)}>
+              Mint
+            </Link>
+          </div>
+          <div className="px-2 font-bold">
+            <Link to="/collections" onClick={() => setIsOpen(false)}>
+              Collections
+            </Link>
+          </div>
+        </>
       ) : (
         <div className="px-2 font-bold">
           <Link to="/mint" onClick={() => setIsOpen(false)}>

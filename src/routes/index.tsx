@@ -16,7 +16,10 @@ export const Route = createFileRoute("/")({
 function App() {
   return (
     <>
-      <CollectionBrowser />
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl pb-4">Active & Upcoming Mints</h1>
+      </div>
+      <CollectionBrowser path="mint" />
     </>
   );
 }
