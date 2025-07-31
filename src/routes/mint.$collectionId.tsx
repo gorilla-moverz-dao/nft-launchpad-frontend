@@ -33,7 +33,7 @@ function RouteComponent() {
   const { data: stages = [], isLoading: isLoadingStages } = useMintStages(address?.toString() as `0x${string}`, collectionIdTyped);
   const { data: mintBalance, isLoading: isLoadingMintBalance } = useMintBalance(collectionIdTyped);
   const { data: collectionData, isLoading: isLoadingCollection } = useCollectionData(collectionIdTyped);
-  const { data: nfts, isLoading: isLoadingNFTs } = useCollectionNFTs([collectionIdTyped]);
+  const { data: nfts, isLoading: isLoadingNFTs } = useCollectionNFTs(true, [collectionIdTyped]);
 
   const isLoading = isLoadingStages || isLoadingCollection || isLoadingMintBalance;
   if (isLoading) return <div>Loading...</div>;

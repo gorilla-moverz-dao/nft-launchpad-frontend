@@ -6,7 +6,7 @@ import type { NFTData } from "@/components/AssetDetailDialog";
 import { AssetDetailDialog } from "@/components/AssetDetailDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { GlassCard } from "@/components/GlassCard";
@@ -48,7 +48,7 @@ function RouteComponent() {
   const { data: collectionData, isLoading: collectionLoading } = useCollectionData(collectionId as `0x${string}`);
 
   // Fetch NFTs in the collection
-  const { data: nftsData, isLoading: nftsLoading } = useCollectionNFTs([collectionId]);
+  const { data: nftsData, isLoading: nftsLoading } = useCollectionNFTs(search.filter === "owned", [collectionId]);
 
   // Filter and sort NFTs
   const filteredAndSortedNFTs = useMemo(() => {
@@ -280,7 +280,7 @@ function RouteComponent() {
           <div className="text-lg">Loading NFTs...</div>
         </div>
       ) : filteredAndSortedNFTs.length === 0 ? (
-        <Card>
+        <GlassCard>
           <CardContent className="flex items-center justify-center min-h-[200px]">
             <div className="text-center space-y-2">
               <div className="text-lg font-medium">No NFTs found</div>
@@ -289,7 +289,7 @@ function RouteComponent() {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </GlassCard>
       ) : (
         <>
           {search.view === "grid" ? (

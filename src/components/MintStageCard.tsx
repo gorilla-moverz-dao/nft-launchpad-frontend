@@ -42,7 +42,7 @@ function extractTokenIds(result: any): Array<string> {
 export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess }: MintStageCardProps) {
   const { launchpadClient, connected, address, correctNetwork } = useClients();
   const { refetch: refetchMintBalance } = useMintBalance(collectionId);
-  const { refetch: refetchNFTs } = useCollectionNFTs([collectionId]);
+  const { refetch: refetchNFTs } = useCollectionNFTs(true, [collectionId]);
   const { data: nativeBalance, isLoading: isLoadingNativeBalance } = useGetAccountNativeBalance();
   const { data: reductionNFTs = [] } = useUserReductionNFTs(address?.toString() || "");
 
