@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, useParams, useSearch } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight, Filter, Grid, List, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Filter, Grid, List, Search, X } from "lucide-react";
 
 import type { NFTData } from "@/components/AssetDetailDialog";
 import { AssetDetailDialog } from "@/components/AssetDetailDialog";
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { GlassCard } from "@/components/GlassCard";
 import { NFTThumbnail } from "@/components/NFTThumbnail";
 import { useCollectionData } from "@/hooks/useCollectionData";
@@ -120,6 +121,20 @@ function RouteComponent() {
     });
   };
 
+  // Check if there are any active filters (non-default values)
+  const hasActiveFilters = search.search || search.sort !== "newest" || search.filter !== "all";
+
+  // Helper function to clear all filters
+  const clearAllFilters = () => {
+    updateSearchParams({
+      search: "",
+      sort: "newest",
+      filter: "all",
+      page: 1,
+    });
+    setLocalSearch("");
+  };
+
   if (collectionLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -164,107 +179,269 @@ function RouteComponent() {
         </div>
       </div>
 
-      {/* Filters and Search */}
-      <GlassCard>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Filter className="w-5 h-5" />
-            Filters & Search
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Search Bar */}
-          <div className="flex gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-              <Input
-                placeholder="Search by name, description, or token ID..."
-                value={localSearch}
-                onChange={(e) => setLocalSearch(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    updateSearchParams({ search: localSearch, page: 1 });
-                  }
-                }}
-                className="pl-10"
-              />
-            </div>
-            <Button
-              onClick={() => {
-                updateSearchParams({ search: localSearch, page: 1 });
+      {/* Mobile: Compact Search and Active Filters */}
+      <div className="block md:hidden space-y-4">
+        {/* Search Bar */}
+        <div className="flex gap-2">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <Input
+              placeholder="Search NFTs..."
+              value={localSearch}
+              onChange={(e) => setLocalSearch(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  updateSearchParams({ search: localSearch, page: 1 });
+                }
               }}
-            >
-              Search
+              className="pl-10"
+            />
+          </div>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="icon">
+                <Filter className="w-4 h-4" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-black/20 backdrop-blur-md border-white/20">
+              <SheetHeader>
+                <SheetTitle>Filters & Search</SheetTitle>
+              </SheetHeader>
+              <div className="space-y-6 mt-6 p-4">
+                {/* Search in mobile menu */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Search</label>
+                  <Input
+                    placeholder="Search by name, description, or token ID..."
+                    value={localSearch}
+                    onChange={(e) => setLocalSearch(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        updateSearchParams({ search: localSearch, page: 1 });
+                      }
+                    }}
+                  />
+                  <Button
+                    onClick={() => {
+                      updateSearchParams({ search: localSearch, page: 1 });
+                    }}
+                    className="w-full"
+                  >
+                    Search
+                  </Button>
+                </div>
+
+                {/* Sort */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Sort by</label>
+                  <Select
+                    value={search.sort}
+                    onValueChange={(value) => {
+                      updateSearchParams({ sort: value as CollectionSearch["sort"] });
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="newest">Newest</SelectItem>
+                      <SelectItem value="oldest">Oldest</SelectItem>
+                      <SelectItem value="name">Name</SelectItem>
+                      <SelectItem value="rarity">Rarity</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Filter */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Filter</label>
+                  <Select
+                    value={search.filter}
+                    onValueChange={(value) => {
+                      updateSearchParams({ filter: value as CollectionSearch["filter"] });
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All NFTs</SelectItem>
+                      <SelectItem value="owned">Owned</SelectItem>
+                      <SelectItem value="available">Available</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* View */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">View</label>
+                  <div className="flex border rounded-md">
+                    <Button
+                      variant={search.view === "grid" ? "default" : "ghost"}
+                      size="sm"
+                      className="flex-1"
+                      onClick={() => {
+                        updateSearchParams({ view: "grid" });
+                      }}
+                    >
+                      <Grid className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant={search.view === "list" ? "default" : "ghost"}
+                      size="sm"
+                      className="flex-1"
+                      onClick={() => {
+                        updateSearchParams({ view: "list" });
+                      }}
+                    >
+                      <List className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Clear filters */}
+                {hasActiveFilters && (
+                  <Button variant="outline" onClick={clearAllFilters} className="w-full">
+                    Clear All Filters
+                  </Button>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+
+        {/* Active Filters Display */}
+        {hasActiveFilters && (
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-sm text-muted-foreground">Active filters:</span>
+            {search.search && (
+              <Badge variant="secondary" className="gap-1">
+                Search: "{search.search}"
+                <Button variant="ghost" size="sm" className="h-auto p-0 ml-1" onClick={() => updateSearchParams({ search: "", page: 1 })}>
+                  <X className="w-3 h-3" />
+                </Button>
+              </Badge>
+            )}
+            {search.sort !== "newest" && (
+              <Badge variant="secondary" className="gap-1">
+                Sort: {search.sort}
+                <Button variant="ghost" size="sm" className="h-auto p-0 ml-1" onClick={() => updateSearchParams({ sort: "newest" })}>
+                  <X className="w-3 h-3" />
+                </Button>
+              </Badge>
+            )}
+            {search.filter !== "all" && (
+              <Badge variant="secondary" className="gap-1">
+                Filter: {search.filter}
+                <Button variant="ghost" size="sm" className="h-auto p-0 ml-1" onClick={() => updateSearchParams({ filter: "all" })}>
+                  <X className="w-3 h-3" />
+                </Button>
+              </Badge>
+            )}
+            <Button variant="ghost" size="sm" onClick={clearAllFilters} className="text-xs">
+              Clear all
             </Button>
           </div>
+        )}
+      </div>
 
-          {/* Filter Controls */}
-          <div className="flex gap-4 items-center">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">Sort by:</span>
-              <Select
-                value={search.sort}
-                onValueChange={(value) => {
-                  updateSearchParams({ sort: value as CollectionSearch["sort"] });
+      {/* Desktop: Full Filters and Search */}
+      <div className="hidden md:block">
+        <GlassCard>
+          <CardContent className="space-y-4">
+            {/* Search Bar */}
+            <div className="flex gap-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <Input
+                  placeholder="Search by name, description, or token ID..."
+                  value={localSearch}
+                  onChange={(e) => setLocalSearch(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      updateSearchParams({ search: localSearch, page: 1 });
+                    }
+                  }}
+                  className="pl-10"
+                />
+              </div>
+              <Button
+                onClick={() => {
+                  updateSearchParams({ search: localSearch, page: 1 });
                 }}
               >
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="newest">Newest</SelectItem>
-                  <SelectItem value="oldest">Oldest</SelectItem>
-                  <SelectItem value="name">Name</SelectItem>
-                  <SelectItem value="rarity">Rarity</SelectItem>
-                </SelectContent>
-              </Select>
+                Search
+              </Button>
             </div>
 
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">Filter:</span>
-              <Select
-                value={search.filter}
-                onValueChange={(value) => {
-                  updateSearchParams({ filter: value as CollectionSearch["filter"] });
-                }}
-              >
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All NFTs</SelectItem>
-                  <SelectItem value="owned">Owned</SelectItem>
-                  <SelectItem value="available">Available</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            {/* Filter Controls */}
+            <div className="flex gap-4 items-center">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">Sort by:</span>
+                <Select
+                  value={search.sort}
+                  onValueChange={(value) => {
+                    updateSearchParams({ sort: value as CollectionSearch["sort"] });
+                  }}
+                >
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Newest</SelectItem>
+                    <SelectItem value="oldest">Oldest</SelectItem>
+                    <SelectItem value="name">Name</SelectItem>
+                    <SelectItem value="rarity">Rarity</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <div className="flex items-center gap-2 ml-auto">
-              <span className="text-sm font-medium">View:</span>
-              <div className="flex border rounded-md">
-                <Button
-                  variant={search.view === "grid" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => {
-                    updateSearchParams({ view: "grid" });
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">Filter:</span>
+                <Select
+                  value={search.filter}
+                  onValueChange={(value) => {
+                    updateSearchParams({ filter: value as CollectionSearch["filter"] });
                   }}
                 >
-                  <Grid className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant={search.view === "list" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => {
-                    updateSearchParams({ view: "list" });
-                  }}
-                >
-                  <List className="w-4 h-4" />
-                </Button>
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All NFTs</SelectItem>
+                    <SelectItem value="owned">Owned</SelectItem>
+                    <SelectItem value="available">Available</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center gap-2 ml-auto">
+                <span className="text-sm font-medium">View:</span>
+                <div className="flex border rounded-md">
+                  <Button
+                    variant={search.view === "grid" ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => {
+                      updateSearchParams({ view: "grid" });
+                    }}
+                  >
+                    <Grid className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant={search.view === "list" ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => {
+                      updateSearchParams({ view: "list" });
+                    }}
+                  >
+                    <List className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </GlassCard>
+          </CardContent>
+        </GlassCard>
+      </div>
 
       {/* Results Count */}
       <div className="flex items-center justify-between">
