@@ -1,7 +1,7 @@
 import { WalletItem, groupAndSortWallets, isInstallRequired, truncateAddress, useWallet } from "@aptos-labs/wallet-adapter-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import type { AdapterNotDetectedWallet, AdapterWallet, Network, NetworkInfo, WalletSortingOptions } from "@aptos-labs/wallet-adapter-react";
+import type { AdapterNotDetectedWallet, AdapterWallet, NetworkInfo, WalletSortingOptions } from "@aptos-labs/wallet-adapter-react";
 import type { Dispatch, SetStateAction } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
