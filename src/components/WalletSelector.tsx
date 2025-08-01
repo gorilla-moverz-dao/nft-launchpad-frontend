@@ -1,7 +1,7 @@
 import { WalletItem, groupAndSortWallets, isInstallRequired, truncateAddress, useWallet } from "@aptos-labs/wallet-adapter-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import type { AdapterNotDetectedWallet, AdapterWallet, WalletSortingOptions } from "@aptos-labs/wallet-adapter-react";
+import type { AdapterNotDetectedWallet, AdapterWallet, Network, NetworkInfo, WalletSortingOptions } from "@aptos-labs/wallet-adapter-react";
 import type { Dispatch, SetStateAction } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,7 @@ export function WalletSelector({ isModalOpen, setModalOpen, ...walletSortingOpti
     }
   }, [isModalOpen]);
 
-  const { account, connected, disconnect, wallets = [], network } = useWallet();
+  const { account, connected, disconnect, wallets = [], network, wallet } = useWallet();
 
   const { availableWallets } = groupAndSortWallets(wallets, walletSortingOptions);
   const installableWallets = [] as Array<AdapterWallet>;
@@ -37,6 +37,7 @@ export function WalletSelector({ isModalOpen, setModalOpen, ...walletSortingOpti
 
   const handleWrongNetworkClick = () => {
     toast.error(`Please switch to ${MOVE_NETWORK.name} in your wallet`);
+    wallet?.features["aptos:changeNetwork"]?.changeNetwork({ ...MOVE_NETWORK, name: "custom" } as NetworkInfo);
   };
 
   const closeModal = () => {
