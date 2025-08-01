@@ -24,15 +24,16 @@ export const useCollectionNFTs = (onlyOwned: boolean, collectionIds: Array<strin
 
   return useQuery({
     queryKey: ["nfts", account?.address.toString(), collectionIds, tokenIds, onlyOwned],
-    enabled: !!account && connected,
+    enabled: !onlyOwned || (!!account && connected),
     queryFn: async () => {
       const where: Current_Token_Ownerships_V2_Bool_Exp = {
+        amount: { _gt: 0 },
         current_token_data: { collection_id: { _in: collectionIds } },
       };
       if (tokenIds && tokenIds.length > 0) {
         where.token_data_id = { _in: tokenIds };
       }
-      if (onlyOwned) {
+      if (onlyOwned && connected) {
         where.owner_address = { _eq: account?.address.toString() };
       }
 
