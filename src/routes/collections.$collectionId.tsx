@@ -31,7 +31,7 @@ export const Route = createFileRoute("/collections/$collectionId")({
       view: (search.view as CollectionSearch["view"] | undefined) || "grid",
       page: Number(search.page) || 1,
       filter: (search.filter as CollectionSearch["filter"] | undefined) || "all",
-      traits: search.traits as Record<string, Array<string>>,
+      traits: (search.traits as Record<string, Array<string>> | undefined) || {},
     };
   },
   component: RouteComponent,

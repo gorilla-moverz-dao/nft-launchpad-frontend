@@ -1,7 +1,8 @@
 import React from "react";
+import { GlassCard } from "./GlassCard";
 import { useTraitAggregation } from "@/hooks/useCollectionNFTs";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 
 interface TraitFilterProps {
@@ -17,36 +18,36 @@ export function TraitFilterComponent({ collectionIds, onlyOwned = false, tokenId
 
   if (isLoading) {
     return (
-      <Card>
+      <GlassCard>
         <CardContent className="p-4">
           <div className="text-center">Loading trait filters...</div>
         </CardContent>
-      </Card>
+      </GlassCard>
     );
   }
 
   if (error) {
     return (
-      <Card>
+      <GlassCard>
         <CardContent className="p-4">
           <div className="text-center text-destructive">Error loading trait filters</div>
         </CardContent>
-      </Card>
+      </GlassCard>
     );
   }
 
   if (!traitData?.traits || traitData.traits.length === 0) {
     return (
-      <Card>
+      <GlassCard>
         <CardContent className="p-4">
           <div className="text-center text-muted-foreground">No traits found in this collection</div>
         </CardContent>
-      </Card>
+      </GlassCard>
     );
   }
 
   return (
-    <Card>
+    <GlassCard>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           Trait Filters
@@ -82,7 +83,7 @@ export function TraitFilterComponent({ collectionIds, onlyOwned = false, tokenId
           </div>
         ))}
       </CardContent>
-    </Card>
+    </GlassCard>
   );
 }
 
