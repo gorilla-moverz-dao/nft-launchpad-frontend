@@ -26,7 +26,7 @@ const query = graphql(`
 
 type SortOption = "newest" | "oldest" | "name" | "rarity";
 
-const getOrderBy = (sort: SortOption): Current_Token_Ownerships_V2_Order_By[] => {
+const getOrderBy = (sort: SortOption): Array<Current_Token_Ownerships_V2_Order_By> => {
   switch (sort) {
     case "newest":
       return [{ last_transaction_timestamp: "desc" as Order_By }];
