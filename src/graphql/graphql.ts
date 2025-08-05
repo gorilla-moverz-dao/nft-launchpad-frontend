@@ -11307,6 +11307,7 @@ export type TokenQueryQuery = { __typename?: 'query_root', current_collections_v
 
 export type GetNfTsQueryVariables = Exact<{
   where?: InputMaybe<Current_Token_Ownerships_V2_Bool_Exp>;
+  orderBy?: InputMaybe<Array<Current_Token_Ownerships_V2_Order_By> | Current_Token_Ownerships_V2_Order_By>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
 }>;
@@ -11375,10 +11376,10 @@ export const TokenQueryDocument = new TypedDocumentString(`
 }
     `) as unknown as TypedDocumentString<TokenQueryQuery, TokenQueryQueryVariables>;
 export const GetNfTsDocument = new TypedDocumentString(`
-    query getNFTs($where: current_token_ownerships_v2_bool_exp, $limit: Int, $offset: Int) {
+    query getNFTs($where: current_token_ownerships_v2_bool_exp, $orderBy: [current_token_ownerships_v2_order_by!], $limit: Int, $offset: Int) {
   current_token_ownerships_v2(
     where: $where
-    order_by: [{last_transaction_timestamp: desc}]
+    order_by: $orderBy
     limit: $limit
     offset: $offset
   ) {

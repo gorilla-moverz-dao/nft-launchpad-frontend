@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, useParams, useSearch } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ChevronLeft, ChevronRight, Filter, Grid, List, Search, X } from "lucide-react";
 
 import type { NFTData } from "@/components/AssetDetailDialog";
@@ -49,53 +49,17 @@ function RouteComponent() {
   const { data: collectionData, isLoading: collectionLoading } = useCollectionData(collectionId as `0x${string}`);
 
   // Fetch NFTs in the collection
-  const { data: nftsData, isLoading: nftsLoading } = useCollectionNFTs(search.filter === "owned", [collectionId]);
+  const { data: nftsData, isLoading: nftsLoading } = useCollectionNFTs(
+    search.filter === "owned",
+    [collectionId],
+    search.sort,
+    search.search,
+    search.page,
+    20,
+  );
 
-  // Filter and sort NFTs
-  const filteredAndSortedNFTs = useMemo(() => {
-    if (!nftsData?.current_token_ownerships_v2) return [];
-
-    const filtered = nftsData.current_token_ownerships_v2.filter((nft: any) => {
-      const searchTerm = search.search.toLowerCase();
-      const tokenName = nft.current_token_data?.token_name?.toLowerCase() || "";
-      const description = nft.current_token_data?.description?.toLowerCase() || "";
-      const tokenId = nft.token_data_id.toLowerCase();
-
-      // Apply search filter
-      if (search.search && !tokenName.includes(searchTerm) && !description.includes(searchTerm) && !tokenId.includes(searchTerm)) {
-        return false;
-      }
-
-      // Apply ownership filter
-      if (search.filter === "owned") {
-        // You might want to check if the current user owns this NFT
-        // For now, we'll show all NFTs
-        return true;
-      }
-
-      return true;
-    });
-
-    // Apply sorting
-    filtered.sort((a: any, b: any) => {
-      switch (search.sort) {
-        case "newest":
-          // Since we don't have last_transaction_timestamp, we'll sort by token_data_id
-          return b.token_data_id.localeCompare(a.token_data_id);
-        case "oldest":
-          return a.token_data_id.localeCompare(b.token_data_id);
-        case "name":
-          return (a.current_token_data?.token_name || "").localeCompare(b.current_token_data?.token_name || "");
-        case "rarity":
-          // You could implement rarity calculation here based on token_properties
-          return 0;
-        default:
-          return 0;
-      }
-    });
-
-    return filtered;
-  }, [nftsData, search.search, search.sort, search.filter]);
+  // Get the NFTs directly from the server response
+  const nfts = nftsData?.current_token_ownerships_v2 || [];
 
   const totalPages = collectionData ? Math.ceil((collectionData.collection.current_supply || 0) / 20) : 0;
 
@@ -446,7 +410,7 @@ function RouteComponent() {
       {/* Results Count */}
       <div className="flex items-center justify-between">
         <div className="text-sm text-muted-foreground">
-          Showing {filteredAndSortedNFTs.length} of {collectionData.collection.current_supply} NFTs
+          Showing {nfts.length} of {collectionData.collection.current_supply} NFTs
           {search.search && ` matching "${search.search}"`}
         </div>
       </div>
@@ -456,7 +420,7 @@ function RouteComponent() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-lg">Loading NFTs...</div>
         </div>
-      ) : filteredAndSortedNFTs.length === 0 ? (
+      ) : nfts.length === 0 ? (
         <GlassCard>
           <CardContent className="flex items-center justify-center min-h-[200px]">
             <div className="text-center space-y-2">
@@ -471,13 +435,13 @@ function RouteComponent() {
         <>
           {search.view === "grid" ? (
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-              {filteredAndSortedNFTs.map((nft) => (
+              {nfts.map((nft) => (
                 <NFTThumbnail key={nft.token_data_id} nft={nft} collectionData={collectionData} onClick={() => handleNFTClick(nft)} />
               ))}
             </div>
           ) : (
             <div className="space-y-2">
-              {filteredAndSortedNFTs.map((nft) => (
+              {nfts.map((nft) => (
                 <GlassCard
                   key={nft.token_data_id}
                   className="p-4 cursor-pointer hover:bg-white/10 transition-all duration-200 backdrop-blur-sm bg-white/5 border border-white/20"
