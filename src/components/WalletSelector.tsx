@@ -73,8 +73,8 @@ export function WalletSelector({ isModalOpen, setModalOpen, ...walletSortingOpti
             <>
               <div className="flex flex-col gap-3">
                 {availableWallets.length === 0 && <div className="text-center text-base-content/80">No compatible wallets found</div>}
-                {availableWallets.map((wallet) => (
-                  <WalletRow key={wallet.name} wallet={wallet} onConnect={closeModal} />
+                {availableWallets.map((availableWallet) => (
+                  <WalletRow key={availableWallet.name} wallet={availableWallet} onConnect={closeModal} />
                 ))}
               </div>
 
@@ -84,8 +84,8 @@ export function WalletSelector({ isModalOpen, setModalOpen, ...walletSortingOpti
                   <div className="collapse-title">More Wallets</div>
                   <div className="collapse-content">
                     <div className="flex flex-col gap-3">
-                      {installableWallets.map((wallet) => (
-                        <WalletRow key={wallet.name} wallet={wallet} onConnect={closeModal} />
+                      {installableWallets.map((installableWallet) => (
+                        <WalletRow key={installableWallet.name} wallet={installableWallet} onConnect={closeModal} />
                       ))}
                     </div>
                   </div>

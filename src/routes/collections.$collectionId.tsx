@@ -1,15 +1,13 @@
 import { createFileRoute, useNavigate, useParams, useSearch } from "@tanstack/react-router";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Filter, Grid, List, Search, X } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import type { NFTData } from "@/components/AssetDetailDialog";
 import { AssetDetailDialog } from "@/components/AssetDetailDialog";
+import { CollectionFilters } from "@/components/CollectionFilters";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { GlassCard } from "@/components/GlassCard";
 import { NFTThumbnail } from "@/components/NFTThumbnail";
 import { useCollectionData } from "@/hooks/useCollectionData";
@@ -22,6 +20,7 @@ type CollectionSearch = {
   view: "grid" | "list";
   page: number;
   filter: "all" | "owned" | "available";
+  traits: Record<string, Array<string>>;
 };
 
 export const Route = createFileRoute("/collections/$collectionId")({
@@ -32,6 +31,7 @@ export const Route = createFileRoute("/collections/$collectionId")({
       view: (search.view as CollectionSearch["view"] | undefined) || "grid",
       page: Number(search.page) || 1,
       filter: (search.filter as CollectionSearch["filter"] | undefined) || "all",
+      traits: search.traits as Record<string, Array<string>>,
     };
   },
   component: RouteComponent,
@@ -41,7 +41,6 @@ function RouteComponent() {
   const { collectionId } = useParams({ from: "/collections/$collectionId" });
   const search = useSearch({ from: "/collections/$collectionId" });
   const navigate = useNavigate();
-  const [localSearch, setLocalSearch] = useState(search.search);
   const [selectedNFT, setSelectedNFT] = useState<NFTData | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -75,18 +74,16 @@ function RouteComponent() {
       to: "/collections/$collectionId",
       params: { collectionId },
       search: (prev) => ({
-        search: prev.search || "",
-        sort: prev.sort || "newest",
-        view: prev.view || "grid",
-        page: prev.page || 1,
-        filter: prev.filter || "all",
+        search: prev.search ?? "",
+        sort: prev.sort ?? "newest",
+        view: prev.view ?? "grid",
+        page: prev.page ?? 1,
+        filter: prev.filter ?? "all",
+        traits: prev.traits ?? {},
         ...updates,
       }),
     });
   };
-
-  // Check if there are any active filters (non-default values)
-  const hasActiveFilters = search.search || search.sort !== "newest" || search.filter !== "all";
 
   // Helper function to clear all filters
   const clearAllFilters = () => {
@@ -94,10 +91,25 @@ function RouteComponent() {
       search: "",
       sort: "newest",
       filter: "all",
+      traits: {},
       page: 1,
     });
-    setLocalSearch("");
   };
+
+  // Filter NFTs by selected traits
+  const filteredNFTs = nfts.filter((nft) => {
+    const selectedTraits = search.traits;
+    if (Object.keys(selectedTraits).length === 0) return true;
+
+    const tokenProperties = nft.current_token_data?.token_properties;
+    if (!tokenProperties || typeof tokenProperties !== "object") return false;
+
+    return Object.entries(selectedTraits).every(([traitType, selectedValues]) => {
+      const nftTraitValue = tokenProperties[traitType];
+      if (nftTraitValue === undefined) return false;
+      return selectedValues.includes(String(nftTraitValue));
+    });
+  });
 
   if (collectionLoading) {
     return (
@@ -143,275 +155,15 @@ function RouteComponent() {
         </div>
       </div>
 
-      {/* Mobile: Compact Search and Active Filters */}
-      <div className="block md:hidden space-y-4">
-        {/* Search Bar */}
-        <div className="flex gap-2">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-            <Input
-              placeholder="Search NFTs..."
-              value={localSearch}
-              onChange={(e) => setLocalSearch(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  updateSearchParams({ search: localSearch, page: 1 });
-                }
-              }}
-              className="pl-10"
-            />
-          </div>
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="icon">
-                <Filter className="w-4 h-4" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-black/20 backdrop-blur-md border-white/20">
-              <SheetHeader>
-                <SheetTitle>Filters & Search</SheetTitle>
-              </SheetHeader>
-              <div className="space-y-6 mt-6 p-4">
-                {/* Search in mobile menu */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Search</label>
-                  <Input
-                    placeholder="Search by name, description, or token ID..."
-                    value={localSearch}
-                    onChange={(e) => setLocalSearch(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        updateSearchParams({ search: localSearch, page: 1 });
-                      }
-                    }}
-                  />
-                  <Button
-                    onClick={() => {
-                      updateSearchParams({ search: localSearch, page: 1 });
-                    }}
-                    className="w-full"
-                  >
-                    Search
-                  </Button>
-                </div>
-
-                {/* Sort */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Sort by</label>
-                  <Select
-                    value={search.sort}
-                    onValueChange={(value) => {
-                      updateSearchParams({ sort: value as CollectionSearch["sort"] });
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="newest">Newest</SelectItem>
-                      <SelectItem value="oldest">Oldest</SelectItem>
-                      <SelectItem value="name">Name</SelectItem>
-                      <SelectItem value="rarity">Rarity</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Filter */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Filter</label>
-                  <Select
-                    value={search.filter}
-                    onValueChange={(value) => {
-                      updateSearchParams({ filter: value as CollectionSearch["filter"] });
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All NFTs</SelectItem>
-                      <SelectItem value="owned">Owned</SelectItem>
-                      <SelectItem value="available">Available</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* View */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">View</label>
-                  <div className="flex border rounded-md">
-                    <Button
-                      variant={search.view === "grid" ? "default" : "ghost"}
-                      size="sm"
-                      className="flex-1"
-                      onClick={() => {
-                        updateSearchParams({ view: "grid" });
-                      }}
-                    >
-                      <Grid className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant={search.view === "list" ? "default" : "ghost"}
-                      size="sm"
-                      className="flex-1"
-                      onClick={() => {
-                        updateSearchParams({ view: "list" });
-                      }}
-                    >
-                      <List className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Clear filters */}
-                {hasActiveFilters && (
-                  <Button variant="outline" onClick={clearAllFilters} className="w-full">
-                    Clear All Filters
-                  </Button>
-                )}
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
-
-        {/* Active Filters Display */}
-        {hasActiveFilters && (
-          <div className="flex flex-wrap gap-2 items-center">
-            <span className="text-sm text-muted-foreground">Active filters:</span>
-            {search.search && (
-              <Badge variant="secondary" className="gap-1">
-                Search: "{search.search}"
-                <Button variant="ghost" size="sm" className="h-auto p-0 ml-1" onClick={() => updateSearchParams({ search: "", page: 1 })}>
-                  <X className="w-3 h-3" />
-                </Button>
-              </Badge>
-            )}
-            {search.sort !== "newest" && (
-              <Badge variant="secondary" className="gap-1">
-                Sort: {search.sort}
-                <Button variant="ghost" size="sm" className="h-auto p-0 ml-1" onClick={() => updateSearchParams({ sort: "newest" })}>
-                  <X className="w-3 h-3" />
-                </Button>
-              </Badge>
-            )}
-            {search.filter !== "all" && (
-              <Badge variant="secondary" className="gap-1">
-                Filter: {search.filter}
-                <Button variant="ghost" size="sm" className="h-auto p-0 ml-1" onClick={() => updateSearchParams({ filter: "all" })}>
-                  <X className="w-3 h-3" />
-                </Button>
-              </Badge>
-            )}
-            <Button variant="ghost" size="sm" onClick={clearAllFilters} className="text-xs">
-              Clear all
-            </Button>
-          </div>
-        )}
-      </div>
-
-      {/* Desktop: Full Filters and Search */}
-      <div className="hidden md:block">
-        <GlassCard>
-          <CardContent className="space-y-4">
-            {/* Search Bar */}
-            <div className="flex gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <Input
-                  placeholder="Search by name, description, or token ID..."
-                  value={localSearch}
-                  onChange={(e) => setLocalSearch(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      updateSearchParams({ search: localSearch, page: 1 });
-                    }
-                  }}
-                  className="pl-10"
-                />
-              </div>
-              <Button
-                onClick={() => {
-                  updateSearchParams({ search: localSearch, page: 1 });
-                }}
-              >
-                Search
-              </Button>
-            </div>
-
-            {/* Filter Controls */}
-            <div className="flex gap-4 items-center">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Sort by:</span>
-                <Select
-                  value={search.sort}
-                  onValueChange={(value) => {
-                    updateSearchParams({ sort: value as CollectionSearch["sort"] });
-                  }}
-                >
-                  <SelectTrigger className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="newest">Newest</SelectItem>
-                    <SelectItem value="oldest">Oldest</SelectItem>
-                    <SelectItem value="name">Name</SelectItem>
-                    <SelectItem value="rarity">Rarity</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Filter:</span>
-                <Select
-                  value={search.filter}
-                  onValueChange={(value) => {
-                    updateSearchParams({ filter: value as CollectionSearch["filter"] });
-                  }}
-                >
-                  <SelectTrigger className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All NFTs</SelectItem>
-                    <SelectItem value="owned">Owned</SelectItem>
-                    <SelectItem value="available">Available</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex items-center gap-2 ml-auto">
-                <span className="text-sm font-medium">View:</span>
-                <div className="flex border rounded-md">
-                  <Button
-                    variant={search.view === "grid" ? "default" : "ghost"}
-                    size="sm"
-                    onClick={() => {
-                      updateSearchParams({ view: "grid" });
-                    }}
-                  >
-                    <Grid className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant={search.view === "list" ? "default" : "ghost"}
-                    size="sm"
-                    onClick={() => {
-                      updateSearchParams({ view: "list" });
-                    }}
-                  >
-                    <List className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </GlassCard>
-      </div>
+      {/* Filters */}
+      <CollectionFilters search={search} onUpdateSearch={updateSearchParams} onClearFilters={clearAllFilters} collectionId={collectionId} />
 
       {/* Results Count */}
       <div className="flex items-center justify-between">
         <div className="text-sm text-muted-foreground">
-          Showing {nfts.length} of {collectionData.collection.current_supply} NFTs
+          Showing {filteredNFTs.length} of {nfts.length} NFTs
           {search.search && ` matching "${search.search}"`}
+          {Object.keys(search.traits).length > 0 && ` with trait filters`}
         </div>
       </div>
 
@@ -420,13 +172,17 @@ function RouteComponent() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-lg">Loading NFTs...</div>
         </div>
-      ) : nfts.length === 0 ? (
+      ) : filteredNFTs.length === 0 ? (
         <GlassCard>
           <CardContent className="flex items-center justify-center min-h-[200px]">
             <div className="text-center space-y-2">
               <div className="text-lg font-medium">No NFTs found</div>
               <div className="text-sm text-muted-foreground">
-                {search.search ? `No NFTs match "${search.search}"` : "This collection has no NFTs yet"}
+                {search.search
+                  ? `No NFTs match "${search.search}"`
+                  : Object.keys(search.traits).length > 0
+                    ? "No NFTs match the selected traits"
+                    : "This collection has no NFTs yet"}
               </div>
             </div>
           </CardContent>
@@ -435,13 +191,13 @@ function RouteComponent() {
         <>
           {search.view === "grid" ? (
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-              {nfts.map((nft) => (
+              {filteredNFTs.map((nft) => (
                 <NFTThumbnail key={nft.token_data_id} nft={nft} collectionData={collectionData} onClick={() => handleNFTClick(nft)} />
               ))}
             </div>
           ) : (
             <div className="space-y-2">
-              {nfts.map((nft) => (
+              {filteredNFTs.map((nft) => (
                 <GlassCard
                   key={nft.token_data_id}
                   className="p-4 cursor-pointer hover:bg-white/10 transition-all duration-200 backdrop-blur-sm bg-white/5 border border-white/20"

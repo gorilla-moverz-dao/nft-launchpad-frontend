@@ -24,7 +24,61 @@ const query = graphql(`
   }
 `);
 
+// Separate query for trait aggregation
+const traitAggregationQuery = graphql(`
+  query getTraitAggregation($where: current_token_ownerships_v2_bool_exp) {
+    current_token_ownerships_v2(where: $where) {
+      current_token_data {
+        token_properties
+      }
+    }
+  }
+`);
+
 type SortOption = "newest" | "oldest" | "name" | "rarity";
+
+// Type for trait filter data
+export interface TraitFilter {
+  trait_type: string;
+  values: Array<{
+    value: string;
+    count: number;
+  }>;
+}
+
+// Helper function to extract and aggregate traits from token properties
+const aggregateTraits = (nfts: Array<any>): Array<TraitFilter> => {
+  const traitMap = new Map<string, Map<string, number>>();
+
+  nfts.forEach((nft) => {
+    const tokenProperties = nft.current_token_data?.token_properties;
+    if (!tokenProperties || typeof tokenProperties !== "object") return;
+
+    Object.entries(tokenProperties).forEach(([traitType, traitValue]) => {
+      // Skip non-trait properties (like image, description, etc.)
+      if (traitType === "image" || traitType === "description" || traitType === "name") return;
+
+      const value = String(traitValue);
+
+      if (!traitMap.has(traitType)) {
+        traitMap.set(traitType, new Map());
+      }
+
+      const valueMap = traitMap.get(traitType)!;
+      valueMap.set(value, (valueMap.get(value) || 0) + 1);
+    });
+  });
+
+  // Convert to TraitFilter array
+  return Array.from(traitMap.entries())
+    .map(([traitType, valueMap]) => ({
+      trait_type: traitType,
+      values: Array.from(valueMap.entries())
+        .map(([value, count]) => ({ value, count }))
+        .sort((a, b) => b.count - a.count), // Sort by count descending
+    }))
+    .sort((a, b) => a.trait_type.localeCompare(b.trait_type)); // Sort by trait type alphabetically
+};
 
 const getOrderBy = (sort: SortOption): Array<Current_Token_Ownerships_V2_Order_By> => {
   switch (sort) {
@@ -40,6 +94,38 @@ const getOrderBy = (sort: SortOption): Array<Current_Token_Ownerships_V2_Order_B
     default:
       return [{ last_transaction_timestamp: "desc" as Order_By }];
   }
+};
+
+const getWhere = (
+  onlyOwned: boolean,
+  address: string | undefined,
+  collectionIds: Array<string>,
+  tokenIds?: Array<string>,
+  search?: string,
+) => {
+  const where: Current_Token_Ownerships_V2_Bool_Exp = {
+    amount: { _gt: 0 },
+    current_token_data: { collection_id: { _in: collectionIds } },
+  };
+
+  if (tokenIds && tokenIds.length > 0) {
+    where.token_data_id = { _in: tokenIds };
+  }
+
+  if (onlyOwned) {
+    where.owner_address = { _eq: address };
+  }
+
+  // Add search filter if provided
+  if (search) {
+    where._or = [
+      { current_token_data: { token_name: { _ilike: `%${search}%` } } },
+      { current_token_data: { description: { _ilike: `%${search}%` } } },
+      { token_data_id: { _ilike: `%${search}%` } },
+    ];
+  }
+
+  return where;
 };
 
 export const useCollectionNFTs = (
@@ -59,27 +145,7 @@ export const useCollectionNFTs = (
     queryKey: ["nfts", account?.address.toString(), collectionIds, tokenIds, onlyOwned, sort, search, page, limit, orderBy],
     enabled: !onlyOwned || (!!account && connected),
     queryFn: async () => {
-      const where: Current_Token_Ownerships_V2_Bool_Exp = {
-        amount: { _gt: 0 },
-        current_token_data: { collection_id: { _in: collectionIds } },
-      };
-
-      if (tokenIds && tokenIds.length > 0) {
-        where.token_data_id = { _in: tokenIds };
-      }
-
-      if (onlyOwned && connected) {
-        where.owner_address = { _eq: account?.address.toString() };
-      }
-
-      // Add search filter if provided
-      if (search) {
-        where._or = [
-          { current_token_data: { token_name: { _ilike: `%${search}%` } } },
-          { current_token_data: { description: { _ilike: `%${search}%` } } },
-          { token_data_id: { _ilike: `%${search}%` } },
-        ];
-      }
+      const where = getWhere(onlyOwned, account?.address.toString(), collectionIds, tokenIds, search);
 
       const res = await executeGraphQL(query, {
         where,
@@ -88,6 +154,28 @@ export const useCollectionNFTs = (
         offset: (page - 1) * limit,
       });
       return res;
+    },
+  });
+};
+
+// Separate hook for trait aggregation
+export const useTraitAggregation = (onlyOwned: boolean, collectionIds: Array<string>, tokenIds?: Array<string>) => {
+  const { account, connected } = useWallet();
+
+  return useQuery({
+    queryKey: ["trait-aggregation", account?.address.toString(), collectionIds, tokenIds, onlyOwned],
+    enabled: !onlyOwned || (!!account && connected),
+    queryFn: async () => {
+      const where = getWhere(onlyOwned, account?.address.toString(), collectionIds, tokenIds);
+      const res = await executeGraphQL(traitAggregationQuery, { where });
+
+      // Aggregate traits from the fetched NFTs
+      const traits = aggregateTraits(res.current_token_ownerships_v2);
+
+      return {
+        traits,
+        totalNFTs: res.current_token_ownerships_v2.length,
+      };
     },
   });
 };

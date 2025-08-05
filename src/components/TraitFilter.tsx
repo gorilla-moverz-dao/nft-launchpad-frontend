@@ -1,0 +1,125 @@
+import React from "react";
+import { useTraitAggregation } from "@/hooks/useCollectionNFTs";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+
+interface TraitFilterProps {
+  collectionIds: Array<string>;
+  onlyOwned?: boolean;
+  tokenIds?: Array<string>;
+  selectedTraits?: Record<string, Array<string>>;
+  onTraitChange?: (traitType: string, value: string, checked: boolean) => void;
+}
+
+export function TraitFilterComponent({ collectionIds, onlyOwned = false, tokenIds, selectedTraits = {}, onTraitChange }: TraitFilterProps) {
+  const { data: traitData, isLoading, error } = useTraitAggregation(onlyOwned, collectionIds, tokenIds);
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="p-4">
+          <div className="text-center">Loading trait filters...</div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardContent className="p-4">
+          <div className="text-center text-destructive">Error loading trait filters</div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!traitData?.traits || traitData.traits.length === 0) {
+    return (
+      <Card>
+        <CardContent className="p-4">
+          <div className="text-center text-muted-foreground">No traits found in this collection</div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          Trait Filters
+          <Badge variant="outline">{traitData.traits.length} trait types</Badge>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {traitData.traits.map((trait) => (
+          <div key={trait.trait_type} className="space-y-2">
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-medium capitalize">{trait.trait_type.replace(/_/g, " ")}</h4>
+              <Badge variant="outline">{trait.values.length}</Badge>
+            </div>
+            <div className="space-y-1">
+              {trait.values.map(({ value, count }) => (
+                <div key={value} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`${trait.trait_type}-${value}`}
+                    checked={(selectedTraits[trait.trait_type] as Array<string> | undefined)?.includes(value) ?? false}
+                    onCheckedChange={(checked: boolean) => {
+                      onTraitChange?.(trait.trait_type, value, checked);
+                    }}
+                  />
+                  <label htmlFor={`${trait.trait_type}-${value}`} className="text-sm flex-1 cursor-pointer">
+                    {value}
+                  </label>
+                  <Badge variant="secondary" className="text-xs">
+                    {count}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
+export function TraitFilterExample() {
+  const [selectedTraits, setSelectedTraits] = React.useState<Record<string, Array<string>>>({});
+
+  const handleTraitChange = (traitType: string, value: string, checked: boolean) => {
+    setSelectedTraits((prev) => {
+      const currentValues = prev[traitType];
+      const newValues = checked ? [...currentValues, value] : currentValues.filter((v) => v !== value);
+
+      return {
+        ...prev,
+        [traitType]: newValues,
+      };
+    });
+  };
+
+  // Example collection ID - replace with actual collection ID
+  const collectionIds = ["0x1234567890abcdef..."]; // Replace with actual collection ID
+
+  return (
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">NFT Trait Filters</h2>
+      <TraitFilterComponent collectionIds={collectionIds} selectedTraits={selectedTraits} onTraitChange={handleTraitChange} />
+
+      {Object.keys(selectedTraits).length > 0 && (
+        <div className="mt-4 p-4 bg-muted rounded-lg">
+          <h3 className="font-semibold mb-2">Selected Filters:</h3>
+          {Object.entries(selectedTraits).map(([traitType, values]) => (
+            <div key={traitType} className="mb-2">
+              <span className="font-medium capitalize">{traitType.replace(/_/g, " ")}:</span>
+              <span className="ml-2 text-sm">{values.join(", ")}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

@@ -11315,6 +11315,13 @@ export type GetNfTsQueryVariables = Exact<{
 
 export type GetNfTsQuery = { __typename?: 'query_root', current_token_ownerships_v2: Array<{ __typename?: 'current_token_ownerships_v2', token_data_id: string, current_token_data?: { __typename?: 'current_token_datas_v2', collection_id: string, token_name: string, description: string, token_properties: any, token_uri: string } | null }> };
 
+export type GetTraitAggregationQueryVariables = Exact<{
+  where?: InputMaybe<Current_Token_Ownerships_V2_Bool_Exp>;
+}>;
+
+
+export type GetTraitAggregationQuery = { __typename?: 'query_root', current_token_ownerships_v2: Array<{ __typename?: 'current_token_ownerships_v2', current_token_data?: { __typename?: 'current_token_datas_v2', token_properties: any } | null }> };
+
 export type MintingCollectionsQueryVariables = Exact<{
   collection_ids: Array<Scalars['String']['input']> | Scalars['String']['input'];
 }>;
@@ -11394,6 +11401,15 @@ export const GetNfTsDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<GetNfTsQuery, GetNfTsQueryVariables>;
+export const GetTraitAggregationDocument = new TypedDocumentString(`
+    query getTraitAggregation($where: current_token_ownerships_v2_bool_exp) {
+  current_token_ownerships_v2(where: $where) {
+    current_token_data {
+      token_properties
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<GetTraitAggregationQuery, GetTraitAggregationQueryVariables>;
 export const MintingCollectionsDocument = new TypedDocumentString(`
     query MintingCollections($collection_ids: [String!]!) {
   current_collections_v2(where: {collection_id: {_in: $collection_ids}}) {
