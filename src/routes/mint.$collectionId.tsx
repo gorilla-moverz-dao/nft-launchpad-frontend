@@ -37,10 +37,11 @@ function RouteComponent() {
 
   const isLoading = isLoadingStages || isLoadingCollection || isLoadingMintBalance;
   if (isLoading) return <div>Loading...</div>;
+  if (!collectionData) return <div>Collection not found</div>;
 
-  const minted = collectionData?.collection.current_supply;
-  const total = collectionData?.collection.max_supply;
-  const reserved = collectionData?.premint_amount;
+  const minted = collectionData.collection.current_supply;
+  const total = collectionData.collection.max_supply;
+  const reserved = collectionData.premint_amount;
   const percent = Math.round((minted / total) * 100);
 
   const handleNFTClick = (nft: any) => {
@@ -57,24 +58,24 @@ function RouteComponent() {
             <CardHeader>
               <div className="w-full aspect-square rounded-lg bg-background overflow-hidden border mb-2 flex items-center justify-center group">
                 <img
-                  src={collectionData?.collection.uri}
-                  alt={collectionData?.collection.collection_name}
+                  src={collectionData.collection.uri}
+                  alt={collectionData.collection.collection_name}
                   className="object-cover w-full h-full transition-transform duration-300 ease-in-out group-hover:scale-105"
                 />
               </div>
-              <CardTitle className="truncate text-lg">{collectionData?.collection.collection_name}</CardTitle>
-              <CardDescription className="truncate mb-1">{collectionData?.collection.description}</CardDescription>
+              <CardTitle className="truncate text-lg">{collectionData.collection.collection_name}</CardTitle>
+              <CardDescription className="truncate mb-1">{collectionData.collection.description}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-sm break-all">
                 <p className="font-semibold text-muted-foreground">Collection Address:</p>{" "}
                 <a
-                  href={MOVE_NETWORK.explorerUrl.replace("{0}", `object/${collectionData?.collection.collection_id}`)}
+                  href={MOVE_NETWORK.explorerUrl.replace("{0}", `object/${collectionData.collection.collection_id}`)}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   <div className="flex items-center gap-1">
-                    {toShortAddress(collectionData?.collection.collection_id ?? "")} <ExternalLinkIcon className="w-4 h-4" />
+                    {toShortAddress(collectionData.collection.collection_id)} <ExternalLinkIcon className="w-4 h-4" />
                   </div>
                 </a>
               </div>
@@ -115,7 +116,7 @@ function RouteComponent() {
             <GlassCard className="text-center">
               <CardContent>
                 <div className="text-sm font-semibold text-muted-foreground mb-1">Unique Holders</div>
-                <div className="text-2xl font-bold">{collectionData?.ownerCount.toLocaleString() || 0}</div>
+                <div className="text-2xl font-bold">{collectionData.ownerCount.toLocaleString() || 0}</div>
               </CardContent>
             </GlassCard>
           </div>
@@ -163,14 +164,12 @@ function RouteComponent() {
       />
 
       {/* Asset Detail Dialog */}
-      {collectionData && (
-        <AssetDetailDialog
-          open={showAssetDetailDialog}
-          onOpenChange={setShowAssetDetailDialog}
-          nft={selectedNFT}
-          collectionData={collectionData.collection}
-        />
-      )}
+      <AssetDetailDialog
+        open={showAssetDetailDialog}
+        onOpenChange={setShowAssetDetailDialog}
+        nft={selectedNFT}
+        collectionData={collectionData.collection}
+      />
     </div>
   );
 }

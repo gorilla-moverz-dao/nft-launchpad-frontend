@@ -31,7 +31,7 @@ const AnimatedGradientBackground: React.FC = () => {
       pos.current.x += (target.current.x - pos.current.x) * 0.08;
       pos.current.y += (target.current.y - pos.current.y) * 0.08;
       if (bgRef.current) {
-        bgRef.current.style.background = `radial-gradient(circle at ${pos.current.x}% ${pos.current.y}%,rgb(19, 61, 31) 0%, #0d2b16 80%, #07160b 100%)`;
+        bgRef.current.style.background = `radial-gradient(circle at ${pos.current.x}% ${pos.current.y}%,#07160b 0%, #0d2b16 80%, rgb(19, 61, 31) 100%)`;
       }
       animationFrame.current = requestAnimationFrame(animate);
     };
