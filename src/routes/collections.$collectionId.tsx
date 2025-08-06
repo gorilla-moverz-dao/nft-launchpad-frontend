@@ -55,6 +55,8 @@ function RouteComponent() {
     search.search,
     search.page,
     20,
+    undefined,
+    search.traits,
   );
 
   // Get the NFTs directly from the server response
@@ -95,21 +97,6 @@ function RouteComponent() {
       page: 1,
     });
   };
-
-  // Filter NFTs by selected traits
-  const filteredNFTs = nfts.filter((nft) => {
-    const selectedTraits = search.traits;
-    if (Object.keys(selectedTraits).length === 0) return true;
-
-    const tokenProperties = nft.current_token_data?.token_properties;
-    if (!tokenProperties || typeof tokenProperties !== "object") return false;
-
-    return Object.entries(selectedTraits).every(([traitType, selectedValues]) => {
-      const nftTraitValue = tokenProperties[traitType];
-      if (nftTraitValue === undefined) return false;
-      return selectedValues.includes(String(nftTraitValue));
-    });
-  });
 
   if (collectionLoading) {
     return (
@@ -161,7 +148,7 @@ function RouteComponent() {
       {/* Results Count */}
       <div className="flex items-center justify-between">
         <div className="text-sm text-muted-foreground">
-          Showing {filteredNFTs.length} of {nfts.length} NFTs
+          Showing {nfts.length} of {nfts.length} NFTs
           {search.search && ` matching "${search.search}"`}
           {Object.keys(search.traits).length > 0 && ` with trait filters`}
         </div>
@@ -172,7 +159,7 @@ function RouteComponent() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-lg">Loading NFTs...</div>
         </div>
-      ) : filteredNFTs.length === 0 ? (
+      ) : nfts.length === 0 ? (
         <GlassCard>
           <CardContent className="flex items-center justify-center min-h-[200px]">
             <div className="text-center space-y-2">
@@ -191,13 +178,13 @@ function RouteComponent() {
         <>
           {search.view === "grid" ? (
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-              {filteredNFTs.map((nft) => (
+              {nfts.map((nft) => (
                 <NFTThumbnail key={nft.token_data_id} nft={nft} collectionData={collectionData} onClick={() => handleNFTClick(nft)} />
               ))}
             </div>
           ) : (
             <div className="space-y-2">
-              {filteredNFTs.map((nft) => (
+              {nfts.map((nft) => (
                 <GlassCard
                   key={nft.token_data_id}
                   className="p-4 cursor-pointer hover:bg-white/10 transition-all duration-200 backdrop-blur-sm bg-white/5 border border-white/20"

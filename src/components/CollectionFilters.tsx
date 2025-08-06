@@ -125,7 +125,7 @@ export function CollectionFilters({ search, onUpdateSearch, onClearFilters, coll
               <Filter className="w-4 h-4 mr-2" />
               Trait Filters
               {Object.keys(search.traits).length > 0 && (
-                <Badge variant="secondary" className="ml-2 h-5 w-5 p-0 text-xs">
+                <Badge variant="default" className="ml-2 h-5 w-5 p-0 text-xs">
                   {Object.keys(search.traits).length}
                 </Badge>
               )}
@@ -153,35 +153,47 @@ export function CollectionFilters({ search, onUpdateSearch, onClearFilters, coll
             </div>
           </DialogContent>
         </Dialog>
-
-        {/* Clear Filters Button */}
-        {hasActiveFilters && (
-          <Button variant="ghost" size="sm" onClick={onClearFilters} className="text-muted-foreground">
-            <X className="w-4 h-4 mr-2" />
-            Clear All
-          </Button>
-        )}
       </div>
 
       {/* Active Filters Display */}
       {(search.search || Object.keys(search.traits).length > 0) && (
         <div className="flex flex-wrap gap-2">
           {search.search && (
-            <Badge variant="secondary" className="flex items-center gap-1">
+            <Badge variant="default" className="flex items-center gap-1">
               Search: "{search.search}"
-              <Button variant="ghost" size="sm" className="h-auto p-0 ml-1" onClick={() => onUpdateSearch({ search: "", page: 1 })}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-auto p-1"
+                style={{ paddingInline: "4px" }}
+                onClick={() => onUpdateSearch({ search: "", page: 1 })}
+              >
                 <X className="w-3 h-3" />
               </Button>
             </Badge>
           )}
           {Object.entries(search.traits).map(([traitType, values]) => (
-            <Badge key={traitType} variant="secondary" className="flex items-center gap-1">
+            <Badge key={traitType} variant="default" className="flex items-center gap-1">
               {traitType}: {values.join(", ")}
-              <Button variant="ghost" size="sm" className="h-auto p-0 ml-1" onClick={() => removeTrait(traitType)}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-auto p-1"
+                style={{ paddingInline: "4px" }}
+                onClick={() => removeTrait(traitType)}
+              >
                 <X className="w-3 h-3" />
               </Button>
             </Badge>
           ))}
+
+          {/* Clear Filters Button */}
+          {hasActiveFilters && (
+            <Button variant="ghost" size="sm" onClick={onClearFilters} className="text-muted-foreground">
+              <X className="w-4 h-4 mr-2" />
+              Clear All
+            </Button>
+          )}
         </div>
       )}
     </div>
