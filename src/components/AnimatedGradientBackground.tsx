@@ -84,7 +84,7 @@ const AnimatedGradientBackground: React.FC = () => {
       <img
         src="/images/banana-tree.webp"
         alt="Banana Tree Left"
-        className="fixed left-[-20px] bottom-0 z-0 pointer-events-none select-none wind-animation-slow sm:max-w-[35vw] sm:max-h-[60vh] sm:w-auto sm:h-auto banana-tree-mobile"
+        className="absolute left-[-20px] bottom-0 z-0 pointer-events-none select-none wind-animation-slow sm:max-w-[35vw] sm:max-h-[60vh] sm:w-auto sm:h-auto banana-tree-mobile"
         style={{
           maxHeight: "100vh",
           maxWidth: "100vw",
@@ -102,7 +102,7 @@ const AnimatedGradientBackground: React.FC = () => {
       <img
         src="/images/banana-tree.webp"
         alt="Banana Tree Right"
-        className="hidden sm:block fixed right-0 bottom-0 z-0 pointer-events-none select-none wind-animation"
+        className="hidden sm:block absolute right-0 bottom-0 z-0 pointer-events-none select-none wind-animation"
         style={{
           maxHeight: "90vh",
           maxWidth: "40vw",
