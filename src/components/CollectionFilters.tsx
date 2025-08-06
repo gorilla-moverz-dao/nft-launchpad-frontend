@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { TraitFilterComponent } from "@/components/TraitFilter";
+import { useClients } from "@/hooks/useClients";
 
 interface CollectionFiltersProps {
   search: {
@@ -23,6 +24,7 @@ interface CollectionFiltersProps {
 
 export function CollectionFilters({ search, onUpdateSearch, onClearFilters, collectionId }: CollectionFiltersProps) {
   const [localSearch, setLocalSearch] = useState(search.search);
+  const { address } = useClients();
 
   // Check if there are any active filters (non-default values)
   const hasActiveFilters = search.search || search.sort !== "newest" || search.filter !== "all" || Object.keys(search.traits).length > 0;
@@ -83,16 +85,18 @@ export function CollectionFilters({ search, onUpdateSearch, onClearFilters, coll
         </Select>
 
         {/* Filter Dropdown */}
-        <Select value={search.filter} onValueChange={(value) => onUpdateSearch({ filter: value as any, page: 1 })}>
-          <SelectTrigger className="w-full md:w-48">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All NFTs</SelectItem>
-            <SelectItem value="owned">Owned by Me</SelectItem>
-            <SelectItem value="available">Available</SelectItem>
-          </SelectContent>
-        </Select>
+        {address && (
+          <Select value={search.filter} onValueChange={(value) => onUpdateSearch({ filter: value as any, page: 1 })}>
+            <SelectTrigger className="w-full md:w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All NFTs</SelectItem>
+              <SelectItem value="owned">Owned by Me</SelectItem>
+              <SelectItem value="available">Available</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
 
         {/* View Toggle */}
         <div className="flex border rounded-md">
