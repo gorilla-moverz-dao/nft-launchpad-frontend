@@ -12,6 +12,7 @@ import { GlassCard } from "@/components/GlassCard";
 import { NFTThumbnail } from "@/components/NFTThumbnail";
 import { useCollectionData } from "@/hooks/useCollectionData";
 import { useCollectionNFTs } from "@/hooks/useCollectionNFTs";
+import { toShortAddress } from "@/lib/utils";
 
 // Search params validation
 type CollectionSearch = {
@@ -186,12 +187,13 @@ function RouteComponent() {
             <div className="space-y-2">
               {nfts.map((nft) => (
                 <GlassCard
+                  hoverEffect={true}
                   key={nft.token_data_id}
-                  className="p-4 cursor-pointer hover:bg-white/10 transition-all duration-200 backdrop-blur-sm bg-white/5 border border-white/20"
+                  className="p-2 cursor-pointer hover:bg-white/10 transition-all duration-200 backdrop-blur-sm bg-white/5 border border-white/20 group"
                   onClick={() => handleNFTClick(nft)}
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-lg overflow-hidden border border-white/20">
+                    <div className="w-20 h-20 rounded-lg overflow-hidden border border-white/20 transition-transform duration-300 group-hover:scale-120">
                       <img
                         src={nft.current_token_data?.token_uri}
                         alt={nft.current_token_data?.token_name || "NFT"}
@@ -199,13 +201,17 @@ function RouteComponent() {
                         onError={(e) => (e.currentTarget.src = collectionData.collection.uri || "/favicon.png")}
                       />
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-3">
                       <h4 className="font-medium">{nft.current_token_data?.token_name || `Token ${nft.token_data_id}`}</h4>
                       <p className="text-sm text-muted-foreground">{nft.current_token_data?.description}</p>
-                      <p className="text-xs text-muted-foreground">Token ID: {nft.token_data_id.split("::")[2]}</p>
+                      <p className="text-xs text-muted-foreground">Token ID: {toShortAddress(nft.token_data_id)}</p>
                     </div>
-                    <div className="text-right">
-                      <Badge variant="outline">#{nft.token_data_id.split("::")[2]}</Badge>
+                    <div className="flex-2 text-right">
+                      {Object.entries(nft.current_token_data?.token_properties || {}).map(([traitType, value], idx) => (
+                        <Badge key={idx} variant="outline">
+                          {traitType}: {value as string}
+                        </Badge>
+                      ))}
                     </div>
                   </div>
                 </GlassCard>

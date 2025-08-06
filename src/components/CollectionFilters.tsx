@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Filter, Grid, List, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +25,11 @@ interface CollectionFiltersProps {
 export function CollectionFilters({ search, onUpdateSearch, onClearFilters, collectionId }: CollectionFiltersProps) {
   const [localSearch, setLocalSearch] = useState(search.search);
   const { address } = useClients();
+
+  // Sync local search state with prop changes (e.g., from URL updates)
+  useEffect(() => {
+    setLocalSearch(search.search);
+  }, [search.search]);
 
   // Check if there are any active filters (non-default values)
   const hasActiveFilters = search.search || search.sort !== "newest" || search.filter !== "all" || Object.keys(search.traits).length > 0;
@@ -189,8 +194,14 @@ export function CollectionFilters({ search, onUpdateSearch, onClearFilters, coll
 
           {/* Clear Filters Button */}
           {hasActiveFilters && (
-            <Button variant="ghost" size="sm" onClick={onClearFilters} className="text-muted-foreground">
-              <X className="w-4 h-4 mr-2" />
+            <Button
+              variant="outline"
+              style={{ paddingInline: "4px", paddingRight: "8px" }}
+              size="sm"
+              onClick={onClearFilters}
+              className="text-muted-foreground"
+            >
+              <X className="w-4 h-4 mr-0" />
               Clear All
             </Button>
           )}
