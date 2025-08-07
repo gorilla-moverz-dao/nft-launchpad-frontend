@@ -47,6 +47,7 @@ export interface TraitFilter {
 }
 
 // Helper function to extract and aggregate traits from token properties
+// TODO: This is a temporary solution to aggregate traits. We need to aggregate on the server side.
 const aggregateTraits = (nfts: Array<any>): Array<TraitFilter> => {
   const traitMap = new Map<string, Map<string, number>>();
 
