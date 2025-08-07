@@ -177,15 +177,16 @@ export const useTraitAggregation = (
   onlyOwned: boolean,
   collectionIds: Array<string>,
   tokenIds?: Array<string>,
+  search?: string,
   traits?: Record<string, Array<string>>,
 ) => {
   const { account, connected } = useWallet();
 
   return useQuery({
-    queryKey: ["trait-aggregation", account?.address.toString(), collectionIds, tokenIds, onlyOwned, traits],
+    queryKey: ["trait-aggregation", account?.address.toString(), collectionIds, tokenIds, onlyOwned, search, traits],
     enabled: !onlyOwned || (!!account && connected),
     queryFn: async () => {
-      const where = getWhere(onlyOwned, account?.address.toString(), collectionIds, tokenIds, undefined, traits);
+      const where = getWhere(onlyOwned, account?.address.toString(), collectionIds, tokenIds, search, traits);
       const res = await executeGraphQL(traitAggregationQuery, { where });
 
       // Aggregate traits from the fetched NFTs

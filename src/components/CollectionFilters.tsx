@@ -7,22 +7,45 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Badge } from "@/components/ui/badge";
 import { TraitFilterComponent } from "@/components/TraitFilter";
 import { useClients } from "@/hooks/useClients";
+import { useCollectionSearch } from "@/hooks/useCollectionSearch";
 
-interface CollectionFiltersProps {
-  search: {
-    search: string;
-    sort: "newest" | "oldest" | "name" | "rarity";
-    view: "grid" | "list";
-    filter: "all" | "owned" | "available";
-    traits: Record<string, Array<string>>;
-    page: number;
+export function CollectionFilters() {
+  const {
+    search,
+    updateSearchParams,
+    clearAllFilters,
+    handleSearchChange,
+    handleSortChange,
+    handleViewChange,
+    handleFilterChange,
+    removeTrait,
+  } = useCollectionSearch();
+
+  // Handle trait selection
+  const handleTraitChange = (traitType: string, traitValue: string, checked: boolean) => {
+    const currentTraits = search.traits;
+    const traitValues = currentTraits[traitType] ?? [];
+
+    let newTraitValues: Array<string>;
+    if (checked) {
+      newTraitValues = [...traitValues, traitValue];
+    } else {
+      newTraitValues = traitValues.filter((value) => value !== traitValue);
+    }
+
+    const newTraits: Record<string, Array<string>> = {
+      ...currentTraits,
+    };
+
+    if (newTraitValues.length > 0) {
+      newTraits[traitType] = newTraitValues;
+    } else {
+      delete newTraits[traitType];
+    }
+
+    updateSearchParams({ traits: newTraits, page: 1 });
   };
-  onUpdateSearch: (updates: Partial<CollectionFiltersProps["search"]>) => void;
-  onClearFilters: () => void;
-  collectionId: string;
-}
 
-export function CollectionFilters({ search, onUpdateSearch, onClearFilters, collectionId }: CollectionFiltersProps) {
   const [localSearch, setLocalSearch] = useState(search.search);
   const { address } = useClients();
 
@@ -33,28 +56,6 @@ export function CollectionFilters({ search, onUpdateSearch, onClearFilters, coll
 
   // Check if there are any active filters (non-default values)
   const hasActiveFilters = search.search || search.sort !== "newest" || search.filter !== "all" || Object.keys(search.traits).length > 0;
-
-  const handleTraitChange = (traitType: string, value: string, checked: boolean) => {
-    const currentTraits = search.traits;
-    const currentValues = currentTraits[traitType] ?? [];
-    const newValues = checked ? [...currentValues, value] : currentValues.filter((v) => v !== value);
-
-    const newTraits: Record<string, Array<string>> = { ...currentTraits };
-
-    if (newValues.length > 0) {
-      newTraits[traitType] = newValues;
-    } else {
-      delete newTraits[traitType];
-    }
-
-    onUpdateSearch({ traits: newTraits, page: 1 });
-  };
-
-  const removeTrait = (traitType: string) => {
-    const newTraits = { ...search.traits };
-    delete newTraits[traitType];
-    onUpdateSearch({ traits: newTraits, page: 1 });
-  };
 
   return (
     <div className="space-y-4">
@@ -69,7 +70,7 @@ export function CollectionFilters({ search, onUpdateSearch, onClearFilters, coll
             onChange={(e) => setLocalSearch(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                onUpdateSearch({ search: localSearch, page: 1 });
+                handleSearchChange(localSearch);
               }
             }}
             className="pl-10"
@@ -77,7 +78,7 @@ export function CollectionFilters({ search, onUpdateSearch, onClearFilters, coll
         </div>
 
         {/* Sort Dropdown */}
-        <Select value={search.sort} onValueChange={(value) => onUpdateSearch({ sort: value as any, page: 1 })}>
+        <Select value={search.sort} onValueChange={(value) => handleSortChange(value as any)}>
           <SelectTrigger className="w-full md:w-48">
             <SelectValue />
           </SelectTrigger>
@@ -91,7 +92,7 @@ export function CollectionFilters({ search, onUpdateSearch, onClearFilters, coll
 
         {/* Filter Dropdown */}
         {address && (
-          <Select value={search.filter} onValueChange={(value) => onUpdateSearch({ filter: value as any, page: 1 })}>
+          <Select value={search.filter} onValueChange={(value) => handleFilterChange(value as any)}>
             <SelectTrigger className="w-full md:w-48">
               <SelectValue />
             </SelectTrigger>
@@ -108,7 +109,7 @@ export function CollectionFilters({ search, onUpdateSearch, onClearFilters, coll
           <Button
             variant={search.view === "grid" ? "default" : "ghost"}
             size="sm"
-            onClick={() => onUpdateSearch({ view: "grid" })}
+            onClick={() => handleViewChange("grid")}
             className="rounded-r-none"
           >
             <Grid className="w-4 h-4" />
@@ -116,7 +117,7 @@ export function CollectionFilters({ search, onUpdateSearch, onClearFilters, coll
           <Button
             variant={search.view === "list" ? "default" : "ghost"}
             size="sm"
-            onClick={() => onUpdateSearch({ view: "list" })}
+            onClick={() => handleViewChange("list")}
             className="rounded-l-none"
           >
             <List className="w-4 h-4" />
@@ -149,12 +150,7 @@ export function CollectionFilters({ search, onUpdateSearch, onClearFilters, coll
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              <TraitFilterComponent
-                collectionIds={[collectionId]}
-                onlyOwned={search.filter === "owned"}
-                selectedTraits={search.traits}
-                onTraitChange={handleTraitChange}
-              />
+              <TraitFilterComponent onTraitChange={handleTraitChange} />
             </div>
           </DialogContent>
         </Dialog>
@@ -171,7 +167,7 @@ export function CollectionFilters({ search, onUpdateSearch, onClearFilters, coll
                 size="sm"
                 className="h-auto p-1"
                 style={{ paddingInline: "4px" }}
-                onClick={() => onUpdateSearch({ search: "", page: 1 })}
+                onClick={() => handleSearchChange("")}
               >
                 <X className="w-3 h-3" />
               </Button>
@@ -198,7 +194,7 @@ export function CollectionFilters({ search, onUpdateSearch, onClearFilters, coll
               variant="outline"
               style={{ paddingInline: "4px", paddingRight: "8px" }}
               size="sm"
-              onClick={onClearFilters}
+              onClick={clearAllFilters}
               className="text-muted-foreground"
             >
               <X className="w-4 h-4 mr-0" />

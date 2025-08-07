@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, useParams, useSearch } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -12,6 +12,7 @@ import { GlassCard } from "@/components/GlassCard";
 import { NFTThumbnail } from "@/components/NFTThumbnail";
 import { useCollectionData } from "@/hooks/useCollectionData";
 import { useCollectionNFTs } from "@/hooks/useCollectionNFTs";
+import { useCollectionSearch } from "@/hooks/useCollectionSearch";
 import { toShortAddress } from "@/lib/utils";
 
 // Search params validation
@@ -39,9 +40,7 @@ export const Route = createFileRoute("/collections/$collectionId")({
 });
 
 function RouteComponent() {
-  const { collectionId } = useParams({ from: "/collections/$collectionId" });
-  const search = useSearch({ from: "/collections/$collectionId" });
-  const navigate = useNavigate();
+  const { search, collectionId, updateSearchParams } = useCollectionSearch();
   const [selectedNFT, setSelectedNFT] = useState<NFTData | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -69,34 +68,6 @@ function RouteComponent() {
   const handleNFTClick = (nft: any) => {
     setSelectedNFT(nft);
     setIsDialogOpen(true);
-  };
-
-  // Helper function to update search params
-  const updateSearchParams = (updates: Partial<CollectionSearch>) => {
-    navigate({
-      to: "/collections/$collectionId",
-      params: { collectionId },
-      search: (prev) => ({
-        search: prev.search ?? "",
-        sort: prev.sort ?? "newest",
-        view: prev.view ?? "grid",
-        page: prev.page ?? 1,
-        filter: prev.filter ?? "all",
-        traits: prev.traits ?? {},
-        ...updates,
-      }),
-    });
-  };
-
-  // Helper function to clear all filters
-  const clearAllFilters = () => {
-    updateSearchParams({
-      search: "",
-      sort: "newest",
-      filter: "all",
-      traits: {},
-      page: 1,
-    });
   };
 
   if (collectionLoading) {
@@ -144,7 +115,7 @@ function RouteComponent() {
       </div>
 
       {/* Filters */}
-      <CollectionFilters search={search} onUpdateSearch={updateSearchParams} onClearFilters={clearAllFilters} collectionId={collectionId} />
+      <CollectionFilters />
 
       {/* Results Count */}
       <div className="flex items-center justify-between">

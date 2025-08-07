@@ -4,17 +4,15 @@ import { useTraitAggregation } from "@/hooks/useCollectionNFTs";
 import { Badge } from "@/components/ui/badge";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useCollectionSearch } from "@/hooks/useCollectionSearch";
 
 interface TraitFilterProps {
-  collectionIds: Array<string>;
-  onlyOwned?: boolean;
-  tokenIds?: Array<string>;
-  selectedTraits?: Record<string, Array<string>>;
   onTraitChange?: (traitType: string, value: string, checked: boolean) => void;
 }
 
-export function TraitFilterComponent({ collectionIds, onlyOwned = false, tokenIds, selectedTraits = {}, onTraitChange }: TraitFilterProps) {
-  const { data: traitData, isLoading, error } = useTraitAggregation(onlyOwned, collectionIds, tokenIds);
+export function TraitFilterComponent({ onTraitChange }: TraitFilterProps) {
+  const { search, collectionId } = useCollectionSearch();
+  const { data: traitData, isLoading, error } = useTraitAggregation(search.filter === "owned", [collectionId], [], search.search);
 
   if (isLoading) {
     return (
@@ -66,7 +64,7 @@ export function TraitFilterComponent({ collectionIds, onlyOwned = false, tokenId
                 <div key={value} className="flex items-center space-x-2">
                   <Checkbox
                     id={`${trait.trait_type}-${value}`}
-                    checked={(selectedTraits[trait.trait_type] as Array<string> | undefined)?.includes(value) ?? false}
+                    checked={(search.traits[trait.trait_type] as Array<string> | undefined)?.includes(value) ?? false}
                     onCheckedChange={(checked: boolean) => {
                       onTraitChange?.(trait.trait_type, value, checked);
                     }}
@@ -102,13 +100,10 @@ export function TraitFilterExample() {
     });
   };
 
-  // Example collection ID - replace with actual collection ID
-  const collectionIds = ["0x1234567890abcdef..."]; // Replace with actual collection ID
-
   return (
     <div className="p-4">
       <h2 className="text-2xl font-bold mb-4">NFT Trait Filters</h2>
-      <TraitFilterComponent collectionIds={collectionIds} selectedTraits={selectedTraits} onTraitChange={handleTraitChange} />
+      <TraitFilterComponent onTraitChange={handleTraitChange} />
 
       {Object.keys(selectedTraits).length > 0 && (
         <div className="mt-4 p-4 bg-muted rounded-lg">
