@@ -1,6 +1,6 @@
 import { GlassCard } from "./GlassCard";
 import { useTraitAggregation } from "@/hooks/useCollectionNFTs";
-import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useCollectionSearch } from "@/hooks/useCollectionSearch";
 
