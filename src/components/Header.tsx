@@ -14,31 +14,23 @@ export default function Header() {
   const [navMenuOpen, setNavMenuOpen] = useState(false);
   const location = useLocation();
 
-  const menuItems: Array<{ to: string; icon: React.ElementType; title: string; description: string; accent: string }> = [];
-  if (!SINGLE_COLLECTION_MODE) {
-    menuItems.push(
-      {
-        to: "/",
-        icon: Zap,
-        title: "Mint",
-        description: "Create and mint new NFTs",
-        accent: "from-yellow-500/20 to-orange-500/20",
-      },
-      {
-        to: "/collections",
-        icon: Palette,
-        title: "Collections",
-        description: "Browse and explore NFT collections",
-        accent: "from-purple-500/20 to-pink-500/20",
-      },
-    );
-  } else {
-    menuItems.push({
-      to: "/mint",
+  const menuItems: Array<{ to: string; icon: React.ElementType; title: string; description: string; accent: string }> = [
+    {
+      to: "/",
       icon: Zap,
       title: "Mint",
-      description: "Create and mint new NFTs",
+      description: "Mint NFTs from new collections",
       accent: "from-yellow-500/20 to-orange-500/20",
+    },
+  ];
+
+  if (!SINGLE_COLLECTION_MODE) {
+    menuItems.push({
+      to: "/collections",
+      icon: Palette,
+      title: "Collections",
+      description: "Browse and explore NFT collections.",
+      accent: "from-purple-500/20 to-pink-500/20",
     });
   }
 
