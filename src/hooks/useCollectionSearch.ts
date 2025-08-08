@@ -3,7 +3,7 @@ import { useNavigate, useParams, useSearch } from "@tanstack/react-router";
 // Search params validation
 export type CollectionSearch = {
   search: string;
-  sort: "newest" | "oldest" | "name" | "rarity";
+  sort: "newest" | "oldest" | "name";
   view: "grid" | "list";
   page: number;
   filter: "all" | "owned" | "available";

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import type { NFTData } from "@/components/AssetDetailDialog";
+import type { CollectionSearch } from "@/hooks/useCollectionSearch";
 import { AssetDetailDialog } from "@/components/AssetDetailDialog";
 import { CollectionFilters } from "@/components/CollectionFilters";
 import { Badge } from "@/components/ui/badge";
@@ -14,16 +15,6 @@ import { useCollectionData } from "@/hooks/useCollectionData";
 import { useCollectionNFTs } from "@/hooks/useCollectionNFTs";
 import { useCollectionSearch } from "@/hooks/useCollectionSearch";
 import { toShortAddress } from "@/lib/utils";
-
-// Search params validation
-type CollectionSearch = {
-  search: string;
-  sort: "newest" | "oldest" | "name" | "rarity";
-  view: "grid" | "list";
-  page: number;
-  filter: "all" | "owned" | "available";
-  traits: Record<string, Array<string>>;
-};
 
 export const Route = createFileRoute("/collections/$collectionId")({
   validateSearch: (search: Record<string, unknown>): CollectionSearch => {

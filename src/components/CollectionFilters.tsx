@@ -77,18 +77,41 @@ export function CollectionFilters() {
           />
         </div>
 
-        {/* Sort Dropdown */}
-        <Select value={search.sort} onValueChange={(value) => handleSortChange(value as any)}>
-          <SelectTrigger className="w-full md:w-48">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="newest">Newest First</SelectItem>
-            <SelectItem value="oldest">Oldest First</SelectItem>
-            <SelectItem value="name">Name A-Z</SelectItem>
-            <SelectItem value="rarity">Rarity</SelectItem>
-          </SelectContent>
-        </Select>
+        {/* Sort + View Toggle (mobile: same row) */}
+        <div className="flex items-center gap-2 w-full md:w-auto">
+          <div className="flex-1 md:flex-none md:w-48">
+            <Select value={search.sort} onValueChange={(value) => handleSortChange(value as any)}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">Newest First</SelectItem>
+                <SelectItem value="oldest">Oldest First</SelectItem>
+                <SelectItem value="name">Name A-Z</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* View Toggle */}
+          <div className="flex border rounded-md ml-auto">
+            <Button
+              variant={search.view === "grid" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => handleViewChange("grid")}
+              className="rounded-r-none"
+            >
+              <Grid className="w-4 h-4" />
+            </Button>
+            <Button
+              variant={search.view === "list" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => handleViewChange("list")}
+              className="rounded-l-none"
+            >
+              <List className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
 
         {/* Filter Dropdown */}
         {address && (
@@ -104,26 +127,6 @@ export function CollectionFilters() {
           </Select>
         )}
 
-        {/* View Toggle */}
-        <div className="flex border rounded-md">
-          <Button
-            variant={search.view === "grid" ? "default" : "ghost"}
-            size="sm"
-            onClick={() => handleViewChange("grid")}
-            className="rounded-r-none"
-          >
-            <Grid className="w-4 h-4" />
-          </Button>
-          <Button
-            variant={search.view === "list" ? "default" : "ghost"}
-            size="sm"
-            onClick={() => handleViewChange("list")}
-            className="rounded-l-none"
-          >
-            <List className="w-4 h-4" />
-          </Button>
-        </div>
-
         {/* Trait Filters Dialog */}
         <Dialog>
           <DialogTrigger asChild>
@@ -137,8 +140,8 @@ export function CollectionFilters() {
               )}
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
+          <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-0">
+            <DialogHeader className="p-4 md:p-6 pb-0 md:pb-0 flex-shrink-0">
               <DialogTitle className="flex items-center gap-2">
                 <Filter className="w-5 h-5" />
                 Trait Filters
@@ -149,8 +152,10 @@ export function CollectionFilters() {
                 )}
               </DialogTitle>
             </DialogHeader>
-            <div className="space-y-4">
-              <TraitFilterComponent onTraitChange={handleTraitChange} />
+            <div className="overflow-y-auto p-4 md:p-6 pt-0 md:pt-0">
+              <div className="space-y-4">
+                <TraitFilterComponent onTraitChange={handleTraitChange} />
+              </div>
             </div>
           </DialogContent>
         </Dialog>

@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import type { Current_Token_Ownerships_V2_Bool_Exp, Current_Token_Ownerships_V2_Order_By, Order_By } from "@/graphql/graphql";
+import type { CollectionSearch } from "./useCollectionSearch";
 import { graphql } from "@/graphql/gql";
 import { executeGraphQL } from "@/graphql/executeGraphQL";
 
@@ -34,8 +35,6 @@ const traitAggregationQuery = graphql(`
     }
   }
 `);
-
-type SortOption = "newest" | "oldest" | "name" | "rarity";
 
 // Type for trait filter data
 export interface TraitFilter {
@@ -81,7 +80,7 @@ const aggregateTraits = (nfts: Array<any>): Array<TraitFilter> => {
     .sort((a, b) => a.trait_type.localeCompare(b.trait_type)); // Sort by trait type alphabetically
 };
 
-const getOrderBy = (sort: SortOption): Array<Current_Token_Ownerships_V2_Order_By> => {
+const getOrderBy = (sort: CollectionSearch["sort"]): Array<Current_Token_Ownerships_V2_Order_By> => {
   switch (sort) {
     case "newest":
       return [{ last_transaction_timestamp: "desc" as Order_By }];
@@ -89,9 +88,6 @@ const getOrderBy = (sort: SortOption): Array<Current_Token_Ownerships_V2_Order_B
       return [{ last_transaction_timestamp: "asc" as Order_By }];
     case "name":
       return [{ current_token_data: { token_name: "asc" as Order_By } }];
-    case "rarity":
-      // For rarity, we'll sort by token_data_id as a fallback since rarity calculation is complex
-      return [{ token_data_id: "asc" as Order_By }];
     default:
       return [{ last_transaction_timestamp: "desc" as Order_By }];
   }
@@ -145,7 +141,7 @@ const getWhere = (
 export const useCollectionNFTs = (
   onlyOwned: boolean,
   collectionIds: Array<string>,
-  sort: SortOption = "newest",
+  sort: CollectionSearch["sort"] = "newest",
   search?: string,
   page: number = 1,
   limit: number = 20,

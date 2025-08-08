@@ -26,6 +26,7 @@ const getUserReductionNFTsQuery = graphql(`
 export const useUserReductionNFTs = (ownerAddress: string | undefined) => {
   return useQuery({
     queryKey: ["user-reduction-nfts", ownerAddress],
+    staleTime: 1000 * 60, // 1 minute
     queryFn: async () => {
       if (!ownerAddress) {
         return [];

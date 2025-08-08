@@ -1,7 +1,5 @@
-import React from "react";
 import { GlassCard } from "./GlassCard";
 import { useTraitAggregation } from "@/hooks/useCollectionNFTs";
-import { Badge } from "@/components/ui/badge";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useCollectionSearch } from "@/hooks/useCollectionSearch";
@@ -46,21 +44,14 @@ export function TraitFilterComponent({ onTraitChange }: TraitFilterProps) {
 
   return (
     <GlassCard>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          Trait Filters
-          <Badge variant="outline">{traitData.traits.length} trait types</Badge>
-        </CardTitle>
-      </CardHeader>
       <CardContent className="space-y-4">
         {traitData.traits.map((trait) => (
           <div key={trait.trait_type} className="space-y-2">
             <div className="flex items-center justify-between">
               <h4 className="text-sm font-medium capitalize">{trait.trait_type.replace(/_/g, " ")}</h4>
-              <Badge variant="outline">{trait.values.length}</Badge>
             </div>
             <div className="space-y-1">
-              {trait.values.map(({ value, count }) => (
+              {trait.values.map(({ value }) => (
                 <div key={value} className="flex items-center space-x-2">
                   <Checkbox
                     id={`${trait.trait_type}-${value}`}
@@ -72,9 +63,6 @@ export function TraitFilterComponent({ onTraitChange }: TraitFilterProps) {
                   <label htmlFor={`${trait.trait_type}-${value}`} className="text-sm flex-1 cursor-pointer">
                     {value}
                   </label>
-                  <Badge variant="secondary" className="text-xs">
-                    {count}
-                  </Badge>
                 </div>
               ))}
             </div>
@@ -82,40 +70,5 @@ export function TraitFilterComponent({ onTraitChange }: TraitFilterProps) {
         ))}
       </CardContent>
     </GlassCard>
-  );
-}
-
-export function TraitFilterExample() {
-  const [selectedTraits, setSelectedTraits] = React.useState<Record<string, Array<string>>>({});
-
-  const handleTraitChange = (traitType: string, value: string, checked: boolean) => {
-    setSelectedTraits((prev) => {
-      const currentValues = prev[traitType];
-      const newValues = checked ? [...currentValues, value] : currentValues.filter((v) => v !== value);
-
-      return {
-        ...prev,
-        [traitType]: newValues,
-      };
-    });
-  };
-
-  return (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">NFT Trait Filters</h2>
-      <TraitFilterComponent onTraitChange={handleTraitChange} />
-
-      {Object.keys(selectedTraits).length > 0 && (
-        <div className="mt-4 p-4 bg-muted rounded-lg">
-          <h3 className="font-semibold mb-2">Selected Filters:</h3>
-          {Object.entries(selectedTraits).map(([traitType, values]) => (
-            <div key={traitType} className="mb-2">
-              <span className="font-medium capitalize">{traitType.replace(/_/g, " ")}:</span>
-              <span className="ml-2 text-sm">{values.join(", ")}</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
   );
 }
