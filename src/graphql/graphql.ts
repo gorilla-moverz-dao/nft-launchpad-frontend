@@ -11322,6 +11322,13 @@ export type GetTraitAggregationQueryVariables = Exact<{
 
 export type GetTraitAggregationQuery = { __typename?: 'query_root', current_token_ownerships_v2: Array<{ __typename?: 'current_token_ownerships_v2', current_token_data?: { __typename?: 'current_token_datas_v2', token_properties: any } | null }> };
 
+export type ListedCollectionsQueryVariables = Exact<{
+  collection_ids: Array<Scalars['String']['input']> | Scalars['String']['input'];
+}>;
+
+
+export type ListedCollectionsQuery = { __typename?: 'query_root', current_collections_v2: Array<{ __typename?: 'current_collections_v2', collection_id: string, collection_name: string, current_supply: any, max_supply?: any | null, uri: string, description: string }> };
+
 export type MintingCollectionsQueryVariables = Exact<{
   collection_ids: Array<Scalars['String']['input']> | Scalars['String']['input'];
 }>;
@@ -11410,6 +11417,18 @@ export const GetTraitAggregationDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<GetTraitAggregationQuery, GetTraitAggregationQueryVariables>;
+export const ListedCollectionsDocument = new TypedDocumentString(`
+    query ListedCollections($collection_ids: [String!]!) {
+  current_collections_v2(where: {collection_id: {_in: $collection_ids}}) {
+    collection_id
+    collection_name
+    current_supply
+    max_supply
+    uri
+    description
+  }
+}
+    `) as unknown as TypedDocumentString<ListedCollectionsQuery, ListedCollectionsQueryVariables>;
 export const MintingCollectionsDocument = new TypedDocumentString(`
     query MintingCollections($collection_ids: [String!]!) {
   current_collections_v2(where: {collection_id: {_in: $collection_ids}}) {

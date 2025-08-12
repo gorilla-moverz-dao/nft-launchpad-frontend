@@ -6,10 +6,10 @@ import { GlassCard } from "@/components/GlassCard";
 import { CardContent } from "@/components/ui/card";
 import { NFTThumbnail } from "@/components/NFTThumbnail";
 import { AssetDetailDialog } from "@/components/AssetDetailDialog";
-import { useMintingCollections } from "@/hooks/useMintingCollections";
 import { COLLECTION_ID, SINGLE_COLLECTION_MODE } from "@/constants";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
+import { useListedCollections } from "@/hooks/useListedCollections";
 
 export const Route = createFileRoute("/my-nfts")({
   component: RouteComponent,
@@ -21,7 +21,7 @@ function RouteComponent() {
   const [selectedNFT, setSelectedNFT] = useState<any>(null);
   const [expandedCollections, setExpandedCollections] = useState<Set<string>>(new Set());
 
-  const { data: collections } = useMintingCollections();
+  const { data: collections } = useListedCollections();
   const {
     data: nfts,
     isLoading,

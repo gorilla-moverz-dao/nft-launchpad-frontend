@@ -1,9 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { GlassCard } from "./GlassCard";
 import { useMintingCollections } from "@/hooks/useMintingCollections";
+import { useListedCollections } from "@/hooks/useListedCollections";
 
 export function CollectionBrowser({ path }: { path: "mint" | "collections" }) {
-  const { data, isLoading, error } = useMintingCollections();
+  const { data, isLoading, error } = path === "mint" ? useMintingCollections() : useListedCollections();
 
   if (isLoading) return <div>Loading collections...</div>;
   if (error) return <div>Error loading collections.</div>;
@@ -26,7 +27,7 @@ export function CollectionBrowser({ path }: { path: "mint" | "collections" }) {
               <div className="font-semibold text-lg text-foreground truncate w-full" title={collection.collection_name}>
                 {collection.collection_name}
               </div>
-              <div className="text-sm text-muted-foreground truncate w-full" title={collection.description}>
+              <div className="text-sm text-muted-foreground w-full line-clamp-3" title={collection.description}>
                 {collection.description}
               </div>
             </GlassCard>
