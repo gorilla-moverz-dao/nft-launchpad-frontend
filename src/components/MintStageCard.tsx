@@ -42,7 +42,10 @@ function extractTokenIds(result: any): Array<string> {
 export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess }: MintStageCardProps) {
   const { launchpadClient, connected, address, correctNetwork } = useClients();
   const { refetch: refetchMintBalance } = useMintBalance(collectionId);
-  const { refetch: refetchNFTs } = useCollectionNFTs(true, [collectionId]);
+  const { refetch: refetchNFTs } = useCollectionNFTs({
+    onlyOwned: true,
+    collectionIds: [collectionId],
+  });
   const { data: nativeBalance, isLoading: isLoadingNativeBalance } = useGetAccountNativeBalance();
   const { data: reductionNFTs = [] } = useUserReductionNFTs(address?.toString() || "");
 
@@ -81,13 +84,6 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
       await refetchNFTs();
       const newTokenIds = extractTokenIds(result);
       onMintSuccess(newTokenIds);
-      if (newTokenIds.length > 0) {
-        toast.success(`Successfully minted ${newTokenIds.length} NFT(s)`, {
-          description: `Token IDs: ${newTokenIds.join(", ")}`,
-        });
-      } else {
-        toast.success("Mint transaction submitted", { description: `Tx: ${tx.hash}` });
-      }
     } catch (err: any) {
       toast.error("Mint failed", { description: err?.message || String(err) });
     } finally {

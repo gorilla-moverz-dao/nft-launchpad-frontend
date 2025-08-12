@@ -41,16 +41,15 @@ function RouteComponent() {
   const pageSize = 100;
 
   // Fetch NFTs in the collection
-  const { data: nftsData, isLoading: nftsLoading } = useCollectionNFTs(
-    search.filter === "owned",
-    [collectionId],
-    search.sort,
-    search.search,
-    search.page,
-    pageSize,
-    undefined,
-    search.traits,
-  );
+  const { data: nftsData, isLoading: nftsLoading } = useCollectionNFTs({
+    onlyOwned: search.filter === "owned",
+    collectionIds: [collectionId],
+    sort: search.sort,
+    search: search.search,
+    page: search.page,
+    limit: pageSize,
+    traits: search.traits,
+  });
 
   // Get the NFTs directly from the server response
   const nfts = nftsData?.current_token_ownerships_v2 || [];

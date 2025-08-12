@@ -33,7 +33,10 @@ function RouteComponent() {
   const { data: stages = [], isLoading: isLoadingStages } = useMintStages(address?.toString() as `0x${string}`, collectionIdTyped);
   const { data: mintBalance, isLoading: isLoadingMintBalance } = useMintBalance(collectionIdTyped);
   const { data: collectionData, isLoading: isLoadingCollection } = useCollectionData(collectionIdTyped);
-  const { data: nfts, isLoading: isLoadingNFTs } = useCollectionNFTs(true, [collectionIdTyped]);
+  const { data: nfts, isLoading: isLoadingNFTs } = useCollectionNFTs({
+    onlyOwned: true,
+    collectionIds: [collectionIdTyped],
+  });
 
   const isLoading = isLoadingStages || isLoadingCollection || isLoadingMintBalance;
   if (isLoading) return <div>Loading...</div>;
@@ -156,12 +159,14 @@ function RouteComponent() {
       </div>
 
       {/* Mint Success Dialog */}
-      <MintResultDialog
-        open={showMintDialog}
-        onOpenChange={setShowMintDialog}
-        recentlyMintedTokenIds={recentlyMintedTokenIds}
-        collectionData={collectionData}
-      />
+      {showMintDialog && (
+        <MintResultDialog
+          open={showMintDialog}
+          onOpenChange={setShowMintDialog}
+          recentlyMintedTokenIds={recentlyMintedTokenIds}
+          collectionData={collectionData}
+        />
+      )}
 
       {/* Asset Detail Dialog */}
       <AssetDetailDialog

@@ -11,7 +11,7 @@ export function NFTThumbnail({ nft, collectionData, onClick, className = "" }: N
       className={`border rounded-lg p-4 space-y-2 cursor-pointer hover:border-primary/50 hover:shadow-md hover:bg-muted/30 transition-all duration-200 group ${className}`}
       onClick={onClick}
     >
-      <div className="aspect-square bg-muted rounded-lg overflow-hidden">
+      <div className="rounded-lg overflow-hidden">
         {nft.current_token_data?.token_uri ? (
           <img
             src={nft.current_token_data.token_uri}

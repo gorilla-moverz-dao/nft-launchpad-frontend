@@ -26,7 +26,10 @@ function RouteComponent() {
     data: nfts,
     isLoading,
     error,
-  } = useCollectionNFTs(true, SINGLE_COLLECTION_MODE ? [COLLECTION_ID] : collections?.map((collection) => collection.collection_id) || []);
+  } = useCollectionNFTs({
+    onlyOwned: true,
+    collectionIds: SINGLE_COLLECTION_MODE ? [COLLECTION_ID] : collections?.map((collection) => collection.collection_id) || [],
+  });
 
   useEffect(() => {
     if (collections && collections.length > 0) {

@@ -10,7 +10,16 @@ interface TraitFilterProps {
 
 export function TraitFilterComponent({ onTraitChange }: TraitFilterProps) {
   const { search, collectionId } = useCollectionSearch();
-  const { data: traitData, isLoading, error } = useTraitAggregation(search.filter === "owned", [collectionId], [], search.search);
+  const {
+    data: traitData,
+    isLoading,
+    error,
+  } = useTraitAggregation({
+    onlyOwned: search.filter === "owned",
+    collectionIds: [collectionId],
+    tokenIds: [],
+    search: search.search,
+  });
 
   if (isLoading) {
     return (

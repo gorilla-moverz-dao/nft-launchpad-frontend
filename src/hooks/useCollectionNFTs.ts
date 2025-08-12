@@ -5,6 +5,41 @@ import type { CollectionSearch } from "./useCollectionSearch";
 import { graphql } from "@/graphql/gql";
 import { executeGraphQL } from "@/graphql/executeGraphQL";
 
+// Interface for trait filter data
+export interface TraitFilter {
+  trait_type: string;
+  values: Array<{
+    value: string;
+    count: number;
+  }>;
+}
+
+// Interface for trait filters in query parameters
+export interface TraitFilters {
+  [traitType: string]: Array<string>;
+}
+
+interface NFTQueryFilter {
+  onlyOwned: boolean;
+  collectionIds: Array<string>;
+  tokenIds?: Array<string>;
+  search?: string;
+  traits?: TraitFilters;
+}
+
+// Interface for NFT query parameters
+export interface NFTQueryParams extends NFTQueryFilter {
+  sort?: CollectionSearch["sort"];
+  page?: number;
+  limit?: number;
+}
+
+// Interface for trait aggregation result
+export interface TraitAggregationResult {
+  traits: Array<TraitFilter>;
+  totalNFTs: number;
+}
+
 const query = graphql(`
   query getNFTs(
     $where: current_token_ownerships_v2_bool_exp
@@ -35,15 +70,6 @@ const traitAggregationQuery = graphql(`
     }
   }
 `);
-
-// Type for trait filter data
-export interface TraitFilter {
-  trait_type: string;
-  values: Array<{
-    value: string;
-    count: number;
-  }>;
-}
 
 // Helper function to extract and aggregate traits from token properties
 // TODO: This is a temporary solution to aggregate traits. We need to aggregate on the server side.
@@ -93,14 +119,7 @@ const getOrderBy = (sort: CollectionSearch["sort"]): Array<Current_Token_Ownersh
   }
 };
 
-const getWhere = (
-  onlyOwned: boolean,
-  address: string | undefined,
-  collectionIds: Array<string>,
-  tokenIds?: Array<string>,
-  search?: string,
-  traits?: Record<string, Array<string>>,
-) => {
+const getWhere = ({ onlyOwned, collectionIds, tokenIds, search, traits }: NFTQueryFilter, address: string | undefined) => {
   const where: Current_Token_Ownerships_V2_Bool_Exp = {
     amount: { _gt: 0 },
     current_token_data: { collection_id: { _in: collectionIds } },
@@ -138,31 +157,25 @@ const getWhere = (
   return where;
 };
 
-export const useCollectionNFTs = (
-  onlyOwned: boolean,
-  collectionIds: Array<string>,
-  sort: CollectionSearch["sort"] = "newest",
-  search?: string,
-  page: number = 1,
-  limit: number = 100,
-  tokenIds?: Array<string>,
-  traits?: Record<string, Array<string>>,
-) => {
+export const useCollectionNFTs = (params: NFTQueryParams) => {
   const { account, connected } = useWallet();
 
-  const orderBy = getOrderBy(sort);
+  const orderBy = getOrderBy(params.sort ?? "newest");
+  const limit = params.limit ?? 100;
+  const page = params.page ?? 1;
+  const offset = (page - 1) * limit;
 
   return useQuery({
-    queryKey: ["nfts", account?.address.toString(), collectionIds, tokenIds, onlyOwned, sort, search, page, limit, orderBy, traits],
-    enabled: !onlyOwned || (!!account && connected),
+    queryKey: ["nfts", account?.address.toString(), params],
+    enabled: !params.onlyOwned || (!!account && connected),
     queryFn: async () => {
-      const where = getWhere(onlyOwned, account?.address.toString(), collectionIds, tokenIds, search, traits);
+      const where = getWhere(params, account?.address.toString());
 
       const res = await executeGraphQL(query, {
         where,
         orderBy,
         limit,
-        offset: (page - 1) * limit,
+        offset,
       });
       return res;
     },
@@ -170,20 +183,14 @@ export const useCollectionNFTs = (
 };
 
 // Separate hook for trait aggregation
-export const useTraitAggregation = (
-  onlyOwned: boolean,
-  collectionIds: Array<string>,
-  tokenIds?: Array<string>,
-  search?: string,
-  traits?: Record<string, Array<string>>,
-) => {
+export const useTraitAggregation = (params: NFTQueryFilter) => {
   const { account, connected } = useWallet();
 
   return useQuery({
-    queryKey: ["trait-aggregation", account?.address.toString(), collectionIds, tokenIds, onlyOwned, search, traits],
-    enabled: !onlyOwned || (!!account && connected),
-    queryFn: async () => {
-      const where = getWhere(onlyOwned, account?.address.toString(), collectionIds, tokenIds, search, traits);
+    queryKey: ["trait-aggregation", account?.address.toString(), params],
+    enabled: !params.onlyOwned || (!!account && connected),
+    queryFn: async (): Promise<TraitAggregationResult> => {
+      const where = getWhere(params, account?.address.toString());
       const res = await executeGraphQL(traitAggregationQuery, { where });
 
       // Aggregate traits from the fetched NFTs
