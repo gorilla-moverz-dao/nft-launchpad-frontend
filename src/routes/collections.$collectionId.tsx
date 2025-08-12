@@ -38,6 +38,8 @@ function RouteComponent() {
   // Fetch collection details
   const { data: collectionData, isLoading: collectionLoading } = useCollectionData(collectionId as `0x${string}`);
 
+  const pageSize = 100;
+
   // Fetch NFTs in the collection
   const { data: nftsData, isLoading: nftsLoading } = useCollectionNFTs(
     search.filter === "owned",
@@ -45,7 +47,7 @@ function RouteComponent() {
     search.sort,
     search.search,
     search.page,
-    20,
+    pageSize,
     undefined,
     search.traits,
   );
@@ -53,7 +55,7 @@ function RouteComponent() {
   // Get the NFTs directly from the server response
   const nfts = nftsData?.current_token_ownerships_v2 || [];
 
-  const totalPages = collectionData ? Math.ceil((collectionData.collection.current_supply || 0) / 20) : 0;
+  const totalPages = collectionData ? Math.ceil((collectionData.collection.current_supply || 0) / pageSize) : 0;
 
   // Dialog handlers
   const handleNFTClick = (nft: any) => {

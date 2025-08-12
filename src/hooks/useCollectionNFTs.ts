@@ -144,7 +144,7 @@ export const useCollectionNFTs = (
   sort: CollectionSearch["sort"] = "newest",
   search?: string,
   page: number = 1,
-  limit: number = 20,
+  limit: number = 100,
   tokenIds?: Array<string>,
   traits?: Record<string, Array<string>>,
 ) => {

@@ -37,12 +37,14 @@ function RouteComponent() {
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
-  const collectionNfts = collections?.map((collection) => {
-    return {
-      ...collection,
-      nfts: nfts?.current_token_ownerships_v2.filter((nft) => nft.current_token_data?.collection_id === collection.collection_id),
-    };
-  });
+  const collectionNfts = collections
+    ?.map((collection) => {
+      return {
+        ...collection,
+        nfts: nfts?.current_token_ownerships_v2.filter((nft) => nft.current_token_data?.collection_id === collection.collection_id),
+      };
+    })
+    .filter((collection) => collection.nfts?.length);
 
   const handleNFTClick = (nft: any, collection: any) => {
     setSelectedCollection(collection);
@@ -95,20 +97,16 @@ function RouteComponent() {
                     </Button>
                   </CollapsibleTrigger>
                   <CollapsibleContent className="pt-4">
-                    {nftCount > 0 ? (
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {collection.nfts?.map((nft) => (
-                          <NFTThumbnail
-                            key={nft.token_data_id}
-                            nft={nft}
-                            collectionData={collection}
-                            onClick={() => handleNFTClick(nft, collection)}
-                          />
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-8 text-muted-foreground">No NFTs found in this collection</div>
-                    )}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                      {collection.nfts?.map((nft) => (
+                        <NFTThumbnail
+                          key={nft.token_data_id}
+                          nft={nft}
+                          collectionData={collection}
+                          onClick={() => handleNFTClick(nft, collection)}
+                        />
+                      ))}
+                    </div>
                   </CollapsibleContent>
                 </Collapsible>
               );
