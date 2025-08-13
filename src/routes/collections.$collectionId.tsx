@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import type { NFTData } from "@/components/AssetDetailDialog";
+import type { NFTData } from "@/hooks/useCollectionNFTs";
 import type { CollectionSearch } from "@/hooks/useCollectionSearch";
 import { AssetDetailDialog } from "@/components/AssetDetailDialog";
 import { CollectionFilters } from "@/components/CollectionFilters";
@@ -57,7 +57,7 @@ function RouteComponent() {
   const totalPages = collectionData ? Math.ceil((collectionData.collection.current_supply || 0) / pageSize) : 0;
 
   // Dialog handlers
-  const handleNFTClick = (nft: any) => {
+  const handleNFTClick = (nft: NFTData | null) => {
     setSelectedNFT(nft);
     setIsDialogOpen(true);
   };
@@ -143,7 +143,12 @@ function RouteComponent() {
           {search.view === "grid" ? (
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
               {nfts.map((nft) => (
-                <NFTThumbnail key={nft.token_data_id} nft={nft} collectionData={collectionData} onClick={() => handleNFTClick(nft)} />
+                <NFTThumbnail
+                  key={nft.token_data_id}
+                  nft={nft}
+                  collectionData={collectionData.collection}
+                  onClick={() => handleNFTClick(nft)}
+                />
               ))}
             </div>
           ) : (

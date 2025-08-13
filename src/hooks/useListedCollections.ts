@@ -6,6 +6,7 @@ import { executeGraphQL } from "@/graphql/executeGraphQL";
 const query = graphql(`
   query ListedCollections($collection_ids: [String!]!) {
     current_collections_v2(where: { collection_id: { _in: $collection_ids } }) {
+      creator_address
       collection_id
       collection_name
       current_supply

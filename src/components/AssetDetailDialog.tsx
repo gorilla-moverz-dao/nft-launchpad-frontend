@@ -1,25 +1,10 @@
 import { ExternalLinkIcon } from "lucide-react";
 import { GlassCard } from "./GlassCard";
+import type { NFTData } from "@/hooks/useCollectionNFTs";
+import type { CollectionData } from "@/hooks/useCollectionData";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toShortAddress } from "@/lib/utils";
-
-export interface NFTData {
-  token_data_id: string;
-  current_token_data?: {
-    token_name?: string;
-    description?: string;
-    token_properties?: any;
-    token_uri?: string;
-  };
-}
-
-export interface CollectionData {
-  collection_id: string;
-  collection_name: string;
-  description: string;
-  uri: string;
-}
 
 interface AssetDetailDialogProps {
   open: boolean;

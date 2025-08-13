@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { ExternalLinkIcon } from "lucide-react";
+import type { NFTData } from "@/hooks/useCollectionNFTs";
 import { MOVE_NETWORK } from "@/constants";
 import { useMintStages } from "@/hooks/useMintStages";
 import { useCollectionData } from "@/hooks/useCollectionData";
@@ -24,7 +25,7 @@ function RouteComponent() {
   const [showMintDialog, setShowMintDialog] = useState(false);
   const [recentlyMintedTokenIds, setRecentlyMintedTokenIds] = useState<Array<string>>([]);
   const [showAssetDetailDialog, setShowAssetDetailDialog] = useState(false);
-  const [selectedNFT, setSelectedNFT] = useState<any>(null);
+  const [selectedNFT, setSelectedNFT] = useState<NFTData | null>(null);
   const { connected, address } = useClients();
   const { collectionId } = Route.useParams();
 
@@ -47,7 +48,7 @@ function RouteComponent() {
   const reserved = collectionData.premint_amount;
   const percent = Math.round((minted / total) * 100);
 
-  const handleNFTClick = (nft: any) => {
+  const handleNFTClick = (nft: NFTData) => {
     setSelectedNFT(nft);
     setShowAssetDetailDialog(true);
   };
@@ -149,7 +150,12 @@ function RouteComponent() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {nfts.current_token_ownerships_v2.map((nft) => (
-                    <NFTThumbnail key={nft.token_data_id} nft={nft} collectionData={collectionData} onClick={() => handleNFTClick(nft)} />
+                    <NFTThumbnail
+                      key={nft.token_data_id}
+                      nft={nft}
+                      collectionData={collectionData.collection}
+                      onClick={() => handleNFTClick(nft)}
+                    />
                   ))}
                 </div>
               </CardContent>
@@ -164,7 +170,7 @@ function RouteComponent() {
           open={showMintDialog}
           onOpenChange={setShowMintDialog}
           recentlyMintedTokenIds={recentlyMintedTokenIds}
-          collectionData={collectionData}
+          collectionData={collectionData.collection}
         />
       )}
 

@@ -71,6 +71,8 @@ const traitAggregationQuery = graphql(`
   }
 `);
 
+export type NFTData = NonNullable<ReturnType<typeof useCollectionNFTs>["data"]>["current_token_ownerships_v2"][number];
+
 // Helper function to extract and aggregate traits from token properties
 // TODO: This is a temporary solution to aggregate traits. We need to aggregate on the server side.
 const aggregateTraits = (nfts: Array<any>): Array<TraitFilter> => {

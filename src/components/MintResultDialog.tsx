@@ -1,4 +1,5 @@
 import { NFTThumbnail } from "./NFTThumbnail";
+import type { CollectionData } from "@/hooks/useCollectionData";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useCollectionNFTs } from "@/hooks/useCollectionNFTs";
 
@@ -6,13 +7,13 @@ interface MintResultDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   recentlyMintedTokenIds: Array<string>;
-  collectionData: any;
+  collectionData: CollectionData;
 }
 
 export function MintResultDialog({ open, onOpenChange, recentlyMintedTokenIds, collectionData }: MintResultDialogProps) {
   const { data: nfts, isLoading: isLoadingNFTs } = useCollectionNFTs({
     onlyOwned: false,
-    collectionIds: [collectionData.collection.collection_id],
+    collectionIds: [collectionData.collection_id],
     tokenIds: recentlyMintedTokenIds,
   });
 

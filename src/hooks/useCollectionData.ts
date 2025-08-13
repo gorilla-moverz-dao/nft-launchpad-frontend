@@ -25,6 +25,8 @@ const query = graphql(`
   }
 `);
 
+export type CollectionData = NonNullable<ReturnType<typeof useCollectionData>["data"]>["collection"];
+
 export function useCollectionData(collectionId: `0x${string}`) {
   return useQuery({
     queryKey: ["collections", collectionId],

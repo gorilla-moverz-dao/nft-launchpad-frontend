@@ -11327,7 +11327,7 @@ export type ListedCollectionsQueryVariables = Exact<{
 }>;
 
 
-export type ListedCollectionsQuery = { __typename?: 'query_root', current_collections_v2: Array<{ __typename?: 'current_collections_v2', collection_id: string, collection_name: string, current_supply: any, max_supply?: any | null, uri: string, description: string }> };
+export type ListedCollectionsQuery = { __typename?: 'query_root', current_collections_v2: Array<{ __typename?: 'current_collections_v2', creator_address: string, collection_id: string, collection_name: string, current_supply: any, max_supply?: any | null, uri: string, description: string }> };
 
 export type MintingCollectionsQueryVariables = Exact<{
   collection_ids: Array<Scalars['String']['input']> | Scalars['String']['input'];
@@ -11420,6 +11420,7 @@ export const GetTraitAggregationDocument = new TypedDocumentString(`
 export const ListedCollectionsDocument = new TypedDocumentString(`
     query ListedCollections($collection_ids: [String!]!) {
   current_collections_v2(where: {collection_id: {_in: $collection_ids}}) {
+    creator_address
     collection_id
     collection_name
     current_supply

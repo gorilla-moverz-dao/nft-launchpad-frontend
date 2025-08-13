@@ -1,6 +1,9 @@
+import type { CollectionData } from "@/hooks/useCollectionData";
+import type { NFTData } from "@/hooks/useCollectionNFTs";
+
 interface NFTThumbnailProps {
-  nft: any;
-  collectionData?: any;
+  nft: NFTData;
+  collectionData?: CollectionData;
   onClick?: () => void;
   className?: string;
 }
@@ -18,7 +21,7 @@ export function NFTThumbnail({ nft, collectionData, onClick, className = "" }: N
             alt={nft.current_token_data.token_name || "NFT"}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
             onError={(e) => {
-              e.currentTarget.src = collectionData?.collection.uri || "";
+              e.currentTarget.src = collectionData?.uri || "";
             }}
           />
         ) : (
