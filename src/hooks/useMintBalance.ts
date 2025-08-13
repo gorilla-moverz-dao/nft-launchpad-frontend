@@ -20,7 +20,7 @@ export const useMintBalance = (collectionAddress: `0x${string}`) => {
               functionArguments: [collectionAddress, stage.name, address],
               typeArguments: [],
             })
-            .then((res: any) => ({ stage: stage.name, balance: res[0] })),
+            .then((res) => ({ stage: stage.name, balance: Number(res[0]) })),
         );
         const results = await Promise.all(promises);
         return results;

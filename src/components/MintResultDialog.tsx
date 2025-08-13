@@ -15,21 +15,20 @@ export function MintResultDialog({ open, onOpenChange, recentlyMintedTokenIds, c
     collectionIds: [collectionData.collection.collection_id],
     tokenIds: recentlyMintedTokenIds,
   });
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open && !isLoadingNFTs} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>🎉 Mint Successful!</DialogTitle>
           <DialogDescription>You have successfully minted {recentlyMintedTokenIds.length} NFT(s) from the collection.</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
-          {isLoadingNFTs ? (
-            <div className="text-center py-8">Loading your newly minted NFTs...</div>
-          ) : nfts?.current_token_ownerships_v2 ? (
+          {nfts?.current_token_ownerships_v2 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
               {nfts.current_token_ownerships_v2
-                .filter((nft: any) => recentlyMintedTokenIds.includes(nft.token_data_id))
-                .map((nft: any) => (
+                .filter((nft) => recentlyMintedTokenIds.includes(nft.token_data_id))
+                .map((nft) => (
                   <NFTThumbnail key={nft.token_data_id} nft={nft} collectionData={collectionData} />
                 ))}
             </div>
