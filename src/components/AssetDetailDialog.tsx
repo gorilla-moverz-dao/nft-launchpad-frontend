@@ -1,7 +1,7 @@
 import { ExternalLinkIcon } from "lucide-react";
 import { GlassCard } from "./GlassCard";
-import type { NFTData } from "@/hooks/useCollectionNFTs";
-import type { CollectionData } from "@/hooks/useCollectionData";
+import type { NFT } from "@/fragments/nft";
+import type { Collection } from "@/fragments/collection";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toShortAddress } from "@/lib/utils";
@@ -9,8 +9,8 @@ import { toShortAddress } from "@/lib/utils";
 interface AssetDetailDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  nft: NFTData | null;
-  collectionData: CollectionData;
+  nft: NFT | null;
+  collectionData: Collection;
 }
 
 export function AssetDetailDialog({ open, onOpenChange, nft, collectionData }: AssetDetailDialogProps) {

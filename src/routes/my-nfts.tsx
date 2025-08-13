@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
-import type { CollectionData } from "@/hooks/useCollectionData";
-import type { NFTData } from "@/hooks/useCollectionNFTs";
+import type { Collection } from "@/fragments/collection";
+import type { NFT } from "@/fragments/nft";
 import { useCollectionNFTs } from "@/hooks/useCollectionNFTs";
 import { GlassCard } from "@/components/GlassCard";
 import { CardContent } from "@/components/ui/card";
@@ -19,8 +19,8 @@ export const Route = createFileRoute("/my-nfts")({
 
 function RouteComponent() {
   const [showAssetDetailDialog, setShowAssetDetailDialog] = useState(false);
-  const [selectedCollection, setSelectedCollection] = useState<CollectionData | null>(null);
-  const [selectedNFT, setSelectedNFT] = useState<NFTData | null>(null);
+  const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null);
+  const [selectedNFT, setSelectedNFT] = useState<NFT | null>(null);
   const [expandedCollections, setExpandedCollections] = useState<Set<string>>(new Set());
 
   const { data: collections } = useListedCollections();
@@ -51,7 +51,7 @@ function RouteComponent() {
     })
     .filter((collection) => collection.nfts?.length);
 
-  const handleNFTClick = (nft: NFTData, collection: CollectionData) => {
+  const handleNFTClick = (nft: NFT, collection: Collection) => {
     setSelectedCollection(collection);
     setSelectedNFT(nft);
     setShowAssetDetailDialog(true);

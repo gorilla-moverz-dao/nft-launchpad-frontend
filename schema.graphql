@@ -128,9 +128,7 @@ type account_transactions {
     """filter the rows returned"""
     where: delegated_staking_activities_bool_exp
   ): [delegated_staking_activities!]!
-  """
-  fetch data from the table: "fungible_asset_activities"
-  """
+  """An array relationship"""
   fungible_asset_activities(
     """distinct select on columns"""
     distinct_on: [fungible_asset_activities_select_column!]
@@ -7762,9 +7760,7 @@ type query_root {
   ): [events!]!
   """fetch data from the table: "events" using primary key columns"""
   events_by_pk(event_index: bigint!, transaction_version: bigint!): events
-  """
-  fetch data from the table: "fungible_asset_activities"
-  """
+  """An array relationship"""
   fungible_asset_activities(
     """distinct select on columns"""
     distinct_on: [fungible_asset_activities_select_column!]
@@ -9437,9 +9433,7 @@ type subscription_root {
     """filter the rows returned"""
     where: events_bool_exp
   ): [events!]!
-  """
-  fetch data from the table: "fungible_asset_activities"
-  """
+  """An array relationship"""
   fungible_asset_activities(
     """distinct select on columns"""
     distinct_on: [fungible_asset_activities_select_column!]

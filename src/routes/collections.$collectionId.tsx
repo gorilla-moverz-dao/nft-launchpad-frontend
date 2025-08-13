@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-import type { NFTData } from "@/hooks/useCollectionNFTs";
+import type { NFT } from "@/fragments/nft";
 import type { CollectionSearch } from "@/hooks/useCollectionSearch";
 import { AssetDetailDialog } from "@/components/AssetDetailDialog";
 import { CollectionFilters } from "@/components/CollectionFilters";
@@ -32,7 +32,7 @@ export const Route = createFileRoute("/collections/$collectionId")({
 
 function RouteComponent() {
   const { search, collectionId, updateSearchParams } = useCollectionSearch();
-  const [selectedNFT, setSelectedNFT] = useState<NFTData | null>(null);
+  const [selectedNFT, setSelectedNFT] = useState<NFT | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Fetch collection details
@@ -57,7 +57,7 @@ function RouteComponent() {
   const totalPages = collectionData ? Math.ceil((collectionData.collection.current_supply || 0) / pageSize) : 0;
 
   // Dialog handlers
-  const handleNFTClick = (nft: NFTData | null) => {
+  const handleNFTClick = (nft: NFT | null) => {
     setSelectedNFT(nft);
     setIsDialogOpen(true);
   };

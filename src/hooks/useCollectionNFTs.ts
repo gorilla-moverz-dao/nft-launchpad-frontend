@@ -48,14 +48,7 @@ const query = graphql(`
     $offset: Int
   ) {
     current_token_ownerships_v2(where: $where, order_by: $orderBy, limit: $limit, offset: $offset) {
-      token_data_id
-      current_token_data {
-        collection_id
-        token_name
-        description
-        token_properties
-        token_uri
-      }
+      ...NFTFragment
     }
   }
 `);
@@ -70,8 +63,6 @@ const traitAggregationQuery = graphql(`
     }
   }
 `);
-
-export type NFTData = NonNullable<ReturnType<typeof useCollectionNFTs>["data"]>["current_token_ownerships_v2"][number];
 
 // Helper function to extract and aggregate traits from token properties
 // TODO: This is a temporary solution to aggregate traits. We need to aggregate on the server side.

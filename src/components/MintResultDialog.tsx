@@ -1,5 +1,5 @@
 import { NFTThumbnail } from "./NFTThumbnail";
-import type { CollectionData } from "@/hooks/useCollectionData";
+import type { Collection } from "@/fragments/collection";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useCollectionNFTs } from "@/hooks/useCollectionNFTs";
 
@@ -7,7 +7,7 @@ interface MintResultDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   recentlyMintedTokenIds: Array<string>;
-  collectionData: CollectionData;
+  collectionData: Collection;
 }
 
 export function MintResultDialog({ open, onOpenChange, recentlyMintedTokenIds, collectionData }: MintResultDialogProps) {

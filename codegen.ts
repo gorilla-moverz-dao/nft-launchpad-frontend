@@ -5,12 +5,16 @@ const config: CodegenConfig = {
   schema: MOVE_NETWORK.indexerUrl,
   documents: ["src/**/*.tsx", "src/**/*.ts"],
   ignoreNoDocuments: true,
+
   generates: {
     "./src/graphql/": {
       preset: "client",
       config: {
         documentMode: "string",
         useTypeImports: true,
+      },
+      presetConfig: {
+        fragmentMasking: false,
       },
     },
     "./schema.graphql": {

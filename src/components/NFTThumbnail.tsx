@@ -1,9 +1,9 @@
-import type { CollectionData } from "@/hooks/useCollectionData";
-import type { NFTData } from "@/hooks/useCollectionNFTs";
+import type { NFT } from "@/fragments/nft";
+import type { Collection } from "@/fragments/collection";
 
 interface NFTThumbnailProps {
-  nft: NFTData;
-  collectionData?: CollectionData;
+  nft: NFT;
+  collectionData?: Collection;
   onClick?: () => void;
   className?: string;
 }

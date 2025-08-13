@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { ExternalLinkIcon } from "lucide-react";
-import type { NFTData } from "@/hooks/useCollectionNFTs";
+import type { NFT } from "@/fragments/nft";
 import { MOVE_NETWORK } from "@/constants";
 import { useMintStages } from "@/hooks/useMintStages";
 import { useCollectionData } from "@/hooks/useCollectionData";
@@ -25,7 +25,7 @@ function RouteComponent() {
   const [showMintDialog, setShowMintDialog] = useState(false);
   const [recentlyMintedTokenIds, setRecentlyMintedTokenIds] = useState<Array<string>>([]);
   const [showAssetDetailDialog, setShowAssetDetailDialog] = useState(false);
-  const [selectedNFT, setSelectedNFT] = useState<NFTData | null>(null);
+  const [selectedNFT, setSelectedNFT] = useState<NFT | null>(null);
   const { connected, address } = useClients();
   const { collectionId } = Route.useParams();
 
@@ -48,7 +48,7 @@ function RouteComponent() {
   const reserved = collectionData.premint_amount;
   const percent = Math.round((minted / total) * 100);
 
-  const handleNFTClick = (nft: NFTData) => {
+  const handleNFTClick = (nft: NFT) => {
     setSelectedNFT(nft);
     setShowAssetDetailDialog(true);
   };

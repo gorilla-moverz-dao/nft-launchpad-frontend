@@ -89,7 +89,7 @@ export type Account_Transactions = {
   coin_activities_aggregate: Coin_Activities_Aggregate;
   /** An array relationship */
   delegated_staking_activities: Array<Delegated_Staking_Activities>;
-  /** fetch data from the table: "fungible_asset_activities" */
+  /** An array relationship */
   fungible_asset_activities: Array<Fungible_Asset_Activities>;
   inserted_at: Scalars['timestamp']['output'];
   /** An array relationship */
@@ -6804,7 +6804,7 @@ export type Query_Root = {
   events: Array<Events>;
   /** fetch data from the table: "events" using primary key columns */
   events_by_pk?: Maybe<Events>;
-  /** fetch data from the table: "fungible_asset_activities" */
+  /** An array relationship */
   fungible_asset_activities: Array<Fungible_Asset_Activities>;
   /** fetch data from the table: "fungible_asset_activities" using primary key columns */
   fungible_asset_activities_by_pk?: Maybe<Fungible_Asset_Activities>;
@@ -8108,7 +8108,7 @@ export type Subscription_Root = {
   events_by_pk?: Maybe<Events>;
   /** fetch data from the table in a streaming manner: "events" */
   events_stream: Array<Events>;
-  /** fetch data from the table: "fungible_asset_activities" */
+  /** An array relationship */
   fungible_asset_activities: Array<Fungible_Asset_Activities>;
   /** fetch data from the table: "fungible_asset_activities" using primary key columns */
   fungible_asset_activities_by_pk?: Maybe<Fungible_Asset_Activities>;
@@ -11298,6 +11298,10 @@ export type User_Transactions_Variance_Fields = {
   version?: Maybe<Scalars['Float']['output']>;
 };
 
+export type CollectionFragmentFragment = { __typename?: 'current_collections_v2', creator_address: string, collection_id: string, collection_name: string, current_supply: any, max_supply?: any | null, uri: string, description: string };
+
+export type NftFragmentFragment = { __typename?: 'current_token_ownerships_v2', token_data_id: string, current_token_data?: { __typename?: 'current_token_datas_v2', collection_id: string, token_name: string, description: string, token_properties: any, token_uri: string } | null };
+
 export type TokenQueryQueryVariables = Exact<{
   collection_id?: InputMaybe<Scalars['String']['input']>;
 }>;
@@ -11362,17 +11366,33 @@ export class TypedDocumentString<TResult, TVariables>
     return this.value;
   }
 }
-
+export const CollectionFragmentFragmentDoc = new TypedDocumentString(`
+    fragment CollectionFragment on current_collections_v2 {
+  creator_address
+  collection_id
+  collection_name
+  current_supply
+  max_supply
+  uri
+  description
+}
+    `, {"fragmentName":"CollectionFragment"}) as unknown as TypedDocumentString<CollectionFragmentFragment, unknown>;
+export const NftFragmentFragmentDoc = new TypedDocumentString(`
+    fragment NFTFragment on current_token_ownerships_v2 {
+  token_data_id
+  current_token_data {
+    collection_id
+    token_name
+    description
+    token_properties
+    token_uri
+  }
+}
+    `, {"fragmentName":"NFTFragment"}) as unknown as TypedDocumentString<NftFragmentFragment, unknown>;
 export const TokenQueryDocument = new TypedDocumentString(`
     query TokenQuery($collection_id: String) {
   current_collections_v2(where: {collection_id: {_eq: $collection_id}}, limit: 1) {
-    creator_address
-    collection_id
-    collection_name
-    current_supply
-    max_supply
-    uri
-    description
+    ...CollectionFragment
   }
   current_collection_ownership_v2_view(
     where: {collection_id: {_eq: $collection_id}}
@@ -11388,7 +11408,15 @@ export const TokenQueryDocument = new TypedDocumentString(`
     }
   }
 }
-    `) as unknown as TypedDocumentString<TokenQueryQuery, TokenQueryQueryVariables>;
+    fragment CollectionFragment on current_collections_v2 {
+  creator_address
+  collection_id
+  collection_name
+  current_supply
+  max_supply
+  uri
+  description
+}`) as unknown as TypedDocumentString<TokenQueryQuery, TokenQueryQueryVariables>;
 export const GetNfTsDocument = new TypedDocumentString(`
     query getNFTs($where: current_token_ownerships_v2_bool_exp, $orderBy: [current_token_ownerships_v2_order_by!], $limit: Int, $offset: Int) {
   current_token_ownerships_v2(
@@ -11397,17 +11425,19 @@ export const GetNfTsDocument = new TypedDocumentString(`
     limit: $limit
     offset: $offset
   ) {
-    token_data_id
-    current_token_data {
-      collection_id
-      token_name
-      description
-      token_properties
-      token_uri
-    }
+    ...NFTFragment
   }
 }
-    `) as unknown as TypedDocumentString<GetNfTsQuery, GetNfTsQueryVariables>;
+    fragment NFTFragment on current_token_ownerships_v2 {
+  token_data_id
+  current_token_data {
+    collection_id
+    token_name
+    description
+    token_properties
+    token_uri
+  }
+}`) as unknown as TypedDocumentString<GetNfTsQuery, GetNfTsQueryVariables>;
 export const GetTraitAggregationDocument = new TypedDocumentString(`
     query getTraitAggregation($where: current_token_ownerships_v2_bool_exp) {
   current_token_ownerships_v2(where: $where) {
