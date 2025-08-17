@@ -16,7 +16,7 @@ import * as types from './graphql';
  */
 type Documents = {
     "\n  fragment CollectionFragment on current_collections_v2 {\n    creator_address\n    collection_id\n    collection_name\n    current_supply\n    max_supply\n    uri\n    description\n  }\n": typeof types.CollectionFragmentFragmentDoc,
-    "\n  fragment NFTFragment on current_token_ownerships_v2 {\n    token_data_id\n    current_token_data {\n      collection_id\n      token_name\n      description\n      token_properties\n      token_uri\n    }\n  }\n": typeof types.NftFragmentFragmentDoc,
+    "\n  fragment NFTFragment on current_token_ownerships_v2 {\n    token_data_id\n    property_version_v1\n    current_token_data {\n      collection_id\n      token_name\n      description\n      token_properties\n      token_uri\n    }\n  }\n": typeof types.NftFragmentFragmentDoc,
     "\n  query TokenQuery($collection_id: String) {\n    current_collections_v2(where: { collection_id: { _eq: $collection_id } }, limit: 1) {\n      ...CollectionFragment\n    }\n    current_collection_ownership_v2_view(where: { collection_id: { _eq: $collection_id } }, order_by: { last_transaction_version: desc }) {\n      owner_address\n    }\n    current_collection_ownership_v2_view_aggregate(where: { collection_id: { _eq: $collection_id } }) {\n      aggregate {\n        count(distinct: true, columns: owner_address)\n      }\n    }\n  }\n": typeof types.TokenQueryDocument,
     "\n  query getNFTs(\n    $where: current_token_ownerships_v2_bool_exp\n    $orderBy: [current_token_ownerships_v2_order_by!]\n    $limit: Int\n    $offset: Int\n  ) {\n    current_token_ownerships_v2(where: $where, order_by: $orderBy, limit: $limit, offset: $offset) {\n      ...NFTFragment\n    }\n  }\n": typeof types.GetNfTsDocument,
     "\n  query getTraitAggregation($where: current_token_ownerships_v2_bool_exp) {\n    current_token_ownerships_v2(where: $where) {\n      current_token_data {\n        token_properties\n      }\n    }\n  }\n": typeof types.GetTraitAggregationDocument,
@@ -26,7 +26,7 @@ type Documents = {
 };
 const documents: Documents = {
     "\n  fragment CollectionFragment on current_collections_v2 {\n    creator_address\n    collection_id\n    collection_name\n    current_supply\n    max_supply\n    uri\n    description\n  }\n": types.CollectionFragmentFragmentDoc,
-    "\n  fragment NFTFragment on current_token_ownerships_v2 {\n    token_data_id\n    current_token_data {\n      collection_id\n      token_name\n      description\n      token_properties\n      token_uri\n    }\n  }\n": types.NftFragmentFragmentDoc,
+    "\n  fragment NFTFragment on current_token_ownerships_v2 {\n    token_data_id\n    property_version_v1\n    current_token_data {\n      collection_id\n      token_name\n      description\n      token_properties\n      token_uri\n    }\n  }\n": types.NftFragmentFragmentDoc,
     "\n  query TokenQuery($collection_id: String) {\n    current_collections_v2(where: { collection_id: { _eq: $collection_id } }, limit: 1) {\n      ...CollectionFragment\n    }\n    current_collection_ownership_v2_view(where: { collection_id: { _eq: $collection_id } }, order_by: { last_transaction_version: desc }) {\n      owner_address\n    }\n    current_collection_ownership_v2_view_aggregate(where: { collection_id: { _eq: $collection_id } }) {\n      aggregate {\n        count(distinct: true, columns: owner_address)\n      }\n    }\n  }\n": types.TokenQueryDocument,
     "\n  query getNFTs(\n    $where: current_token_ownerships_v2_bool_exp\n    $orderBy: [current_token_ownerships_v2_order_by!]\n    $limit: Int\n    $offset: Int\n  ) {\n    current_token_ownerships_v2(where: $where, order_by: $orderBy, limit: $limit, offset: $offset) {\n      ...NFTFragment\n    }\n  }\n": types.GetNfTsDocument,
     "\n  query getTraitAggregation($where: current_token_ownerships_v2_bool_exp) {\n    current_token_ownerships_v2(where: $where) {\n      current_token_data {\n        token_properties\n      }\n    }\n  }\n": types.GetTraitAggregationDocument,
@@ -42,7 +42,7 @@ export function graphql(source: "\n  fragment CollectionFragment on current_coll
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment NFTFragment on current_token_ownerships_v2 {\n    token_data_id\n    current_token_data {\n      collection_id\n      token_name\n      description\n      token_properties\n      token_uri\n    }\n  }\n"): typeof import('./graphql').NftFragmentFragmentDoc;
+export function graphql(source: "\n  fragment NFTFragment on current_token_ownerships_v2 {\n    token_data_id\n    property_version_v1\n    current_token_data {\n      collection_id\n      token_name\n      description\n      token_properties\n      token_uri\n    }\n  }\n"): typeof import('./graphql').NftFragmentFragmentDoc;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

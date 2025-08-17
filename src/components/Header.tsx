@@ -1,12 +1,12 @@
-import { Link, useLocation } from "@tanstack/react-router";
+import { SINGLE_COLLECTION_MODE } from "@/constants";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
+import { Link, useLocation } from "@tanstack/react-router";
+import { Crown, Menu, Palette, Sparkles, TrendingUp, Zap } from "lucide-react";
 import { useState } from "react";
-import { Crown, Menu, Palette, Sparkles, Zap } from "lucide-react";
 import { WalletSelector } from "./WalletSelector";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 import { Button } from "./ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "./ui/dropdown-menu";
-import { SINGLE_COLLECTION_MODE } from "@/constants";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 
 export default function Header() {
   const { connected } = useWallet();
@@ -21,6 +21,13 @@ export default function Header() {
       title: "Mint",
       description: "Mint NFTs from new collections",
       accent: "from-yellow-500/20 to-orange-500/20",
+    },
+    {
+      to: "/stake",
+      icon: TrendingUp,
+      title: "Stake",
+      description: "Stake your NFTs to earn rewards",
+      accent: "from-blue-500/20 to-indigo-500/20",
     },
   ];
 
@@ -57,6 +64,9 @@ export default function Header() {
       }
       if (path === "/my-nfts") {
         return location.pathname === "/my-nfts";
+      }
+      if (path === "/stake") {
+        return location.pathname === "/stake";
       }
       return false;
     };

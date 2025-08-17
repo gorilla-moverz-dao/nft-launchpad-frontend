@@ -11300,7 +11300,7 @@ export type User_Transactions_Variance_Fields = {
 
 export type CollectionFragmentFragment = { __typename?: 'current_collections_v2', creator_address: string, collection_id: string, collection_name: string, current_supply: any, max_supply?: any | null, uri: string, description: string };
 
-export type NftFragmentFragment = { __typename?: 'current_token_ownerships_v2', token_data_id: string, current_token_data?: { __typename?: 'current_token_datas_v2', collection_id: string, token_name: string, description: string, token_properties: any, token_uri: string } | null };
+export type NftFragmentFragment = { __typename?: 'current_token_ownerships_v2', token_data_id: string, property_version_v1: any, current_token_data?: { __typename?: 'current_token_datas_v2', collection_id: string, token_name: string, description: string, token_properties: any, token_uri: string } | null };
 
 export type TokenQueryQueryVariables = Exact<{
   collection_id?: InputMaybe<Scalars['String']['input']>;
@@ -11317,7 +11317,7 @@ export type GetNfTsQueryVariables = Exact<{
 }>;
 
 
-export type GetNfTsQuery = { __typename?: 'query_root', current_token_ownerships_v2: Array<{ __typename?: 'current_token_ownerships_v2', token_data_id: string, current_token_data?: { __typename?: 'current_token_datas_v2', collection_id: string, token_name: string, description: string, token_properties: any, token_uri: string } | null }> };
+export type GetNfTsQuery = { __typename?: 'query_root', current_token_ownerships_v2: Array<{ __typename?: 'current_token_ownerships_v2', token_data_id: string, property_version_v1: any, current_token_data?: { __typename?: 'current_token_datas_v2', collection_id: string, token_name: string, description: string, token_properties: any, token_uri: string } | null }> };
 
 export type GetTraitAggregationQueryVariables = Exact<{
   where?: InputMaybe<Current_Token_Ownerships_V2_Bool_Exp>;
@@ -11380,6 +11380,7 @@ export const CollectionFragmentFragmentDoc = new TypedDocumentString(`
 export const NftFragmentFragmentDoc = new TypedDocumentString(`
     fragment NFTFragment on current_token_ownerships_v2 {
   token_data_id
+  property_version_v1
   current_token_data {
     collection_id
     token_name
@@ -11430,6 +11431,7 @@ export const GetNfTsDocument = new TypedDocumentString(`
 }
     fragment NFTFragment on current_token_ownerships_v2 {
   token_data_id
+  property_version_v1
   current_token_data {
     collection_id
     token_name
