@@ -5,7 +5,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { Badge } from "@/components/ui/badge";
 import { GlassCard } from "@/components/GlassCard";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { NumberInput } from "@/components/ui/number-input";
 import { Button } from "@/components/ui/button";
 import { oaptToApt } from "@/lib/utils";
 import { WalletSelector } from "@/components/WalletSelector";
@@ -50,7 +50,7 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
   const { data: reductionNFTs = [] } = useUserReductionNFTs(address?.toString() || "");
 
   const [minting, setMinting] = useState(false);
-  const [mintAmount, setMintAmount] = useState(1);
+  const [mintAmount, setMintAmount] = useState<number | undefined>(1);
 
   const now = new Date();
   const start = new Date(Number(stage.start_time) * 1000);
@@ -60,7 +60,7 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
   const walletBalance = Number(mintBalance?.find((b) => b.stage === stage.name)?.balance || 0);
   const insufficientBalance = !isLoadingNativeBalance && (!nativeBalance || nativeBalance.balance < oaptToApt(stage.mint_fee));
 
-  const handleMintAmountChange = (value: number) => {
+  const handleMintAmountChange = (value: number | undefined) => {
     setMintAmount(value);
   };
 
@@ -69,12 +69,16 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
       toast.error("Connect your wallet to mint");
       return;
     }
+    if (!mintAmount || mintAmount < 1) {
+      toast.error("Please enter a valid mint amount");
+      return;
+    }
+    const amount: number = mintAmount;
     setMinting(true);
     try {
       const reductionTokenIds = reductionNFTs.map((nft) => nft.token_data_id as `0x${string}`);
-      console.log("reductionTokenIds", reductionTokenIds);
       const tx = await launchpadClient.mint_nft({
-        arguments: [collectionId, mintAmount, reductionTokenIds],
+        arguments: [collectionId, amount, reductionTokenIds],
         type_arguments: [],
       });
       const result = await aptos.waitForTransaction({
@@ -100,7 +104,7 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
         {isActive && walletBalance > 0 && (
           <div className="flex flex-col gap-1">
             <span className="block text-right text-base text-foreground mt-1 font-semibold min-w-[120px]">
-              Total: {((oaptToApt(stage.mint_fee_with_reduction) || 0) * mintAmount).toLocaleString()} MOVE
+              Total: {((oaptToApt(stage.mint_fee_with_reduction) || 0) * (mintAmount ?? 0)).toLocaleString()} MOVE
             </span>
             {insufficientBalance && (
               <Badge variant="destructive" className="text-xs">
@@ -145,30 +149,26 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
             </Badge>
           )}
           {walletBalance === 0 && address && (
-            <Badge variant="destructive" className="text-xs">
-              No spots left
+            <Badge variant="secondary" className="text-xs text-muted-foreground bg-muted/20 border-muted/50">
+              No mint spots
             </Badge>
           )}
 
           <div className="flex items-center gap-2">
             {isActive && (
-              <Input
-                type="number"
+              <NumberInput
+                value={mintAmount}
+                onChange={handleMintAmountChange}
                 min={1}
                 max={walletBalance}
-                value={mintAmount}
-                onChange={(e) => {
-                  const value = Math.max(1, Math.min(walletBalance, Number(e.target.value)));
-                  handleMintAmountChange(value);
-                }}
-                className="w-20"
                 disabled={minting || walletBalance === 0}
+                className="w-32"
                 aria-label="Mint amount"
               />
             )}
             {connected && correctNetwork && (
               <Button
-                disabled={!isActive || minting || walletBalance === 0 || insufficientBalance}
+                disabled={!isActive || minting || walletBalance === 0 || insufficientBalance || !mintAmount || mintAmount < 1}
                 className={!isActive ? "opacity-50 cursor-not-allowed" : ""}
                 onClick={handleMint}
               >
@@ -181,12 +181,12 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
       </CardContent>
 
       {/* Reduction NFTs Information */}
-      {reductionNFTs.length > 0 && (
+      {reductionNFTs.length > 0 && walletBalance > 0 && (
         <div className="px-6 pb-4 border-t border-border/50 pt-3">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Badge variant="secondary" className="text-xs">
-                🎫 Reduction Applied
+                🎫 Fee Reduction Applied
               </Badge>
               <span className="text-xs text-muted-foreground">
                 {reductionNFTs.length} NFT{reductionNFTs.length > 1 ? "s" : ""}
