@@ -14,8 +14,9 @@ export interface MintStageInfo {
 export const useMintStages = (senderAddress: `0x${string}` | undefined, collectionAddress: `0x${string}`) => {
   const { data: reductionNFTs = [], isLoading: isLoadingReductionNFTs } = useUserReductionNFTs(senderAddress);
   return useQuery<Array<MintStageInfo>>({
-    queryKey: ["stages", collectionAddress],
+    queryKey: ["stages", senderAddress, collectionAddress],
     enabled: !isLoadingReductionNFTs,
+    staleTime: 1000 * 60,
     queryFn: async () => {
       const [res] = await launchpadClient.view.get_mint_stages_info({
         functionArguments: [senderAddress ?? "0x0", collectionAddress, reductionNFTs.map((nft) => nft.token_data_id as `0x${string}`)],

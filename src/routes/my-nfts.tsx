@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
-import type { Collection } from "@/fragments/collection";
 import type { NFT } from "@/fragments/nft";
+import type { Collection } from "@/fragments/collection";
 import { useCollectionNFTs } from "@/hooks/useCollectionNFTs";
 import { GlassCard } from "@/components/GlassCard";
 import { CardContent } from "@/components/ui/card";
@@ -18,12 +18,10 @@ export const Route = createFileRoute("/my-nfts")({
 });
 
 function RouteComponent() {
-  const [showAssetDetailDialog, setShowAssetDetailDialog] = useState(false);
-  const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null);
   const [selectedNFT, setSelectedNFT] = useState<NFT | null>(null);
   const [expandedCollections, setExpandedCollections] = useState<Set<string>>(new Set());
 
-  const { data: collections } = useListedCollections();
+  const { data: collections, isLoading: collectionsLoading } = useListedCollections();
   const {
     data: nfts,
     isLoading,
@@ -31,6 +29,7 @@ function RouteComponent() {
   } = useCollectionNFTs({
     onlyOwned: true,
     collectionIds: SINGLE_COLLECTION_MODE ? [COLLECTION_ID] : collections?.map((collection) => collection.collection_id) || [],
+    enabled: !SINGLE_COLLECTION_MODE ? !!collections : true,
   });
 
   useEffect(() => {
@@ -39,7 +38,7 @@ function RouteComponent() {
     }
   }, [collections]);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (collectionsLoading || isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
   const collectionNfts = collections
@@ -51,10 +50,8 @@ function RouteComponent() {
     })
     .filter((collection) => collection.nfts?.length);
 
-  const handleNFTClick = (nft: NFT, collection: Collection) => {
-    setSelectedCollection(collection);
+  const handleNFTClick = (nft: NFT) => {
     setSelectedNFT(nft);
-    setShowAssetDetailDialog(true);
   };
 
   const toggleCollection = (collectionId: string) => {
@@ -72,7 +69,7 @@ function RouteComponent() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl pb-0">My NFTs</h1>
       </div>
-      <GlassCard className="w-full">
+      <GlassCard className="w-full py-4">
         <CardContent className="space-y-4">
           {collectionNfts &&
             collectionNfts.length > 0 &&
@@ -87,29 +84,24 @@ function RouteComponent() {
                   onOpenChange={() => toggleCollection(collection.collection_id)}
                 >
                   <CollapsibleTrigger asChild>
-                    <Button variant="ghost" className="w-full justify-between p-4 hover:bg-muted/50">
-                      <div className="flex items-center gap-3">
-                        {isExpanded ? <ChevronDownIcon className="h-4 w-4" /> : <ChevronRightIcon className="h-4 w-4" />}
-                        <div className="text-left">
-                          <h3 className="font-semibold text-lg flex items-center gap-2">
-                            {collection.collection_name}{" "}
-                            <span className="text-sm text-muted-foreground">
-                              ({nftCount} NFT{nftCount !== 1 ? "s" : ""})
-                            </span>
-                          </h3>
-                        </div>
+                    <Button variant="ghost" className="w-full justify-start p-0 hover:bg-muted/50">
+                      <div className="flex items-center gap-3 w-full min-w-0">
+                        {isExpanded ? (
+                          <ChevronDownIcon className="h-4 w-4 flex-shrink-0" />
+                        ) : (
+                          <ChevronRightIcon className="h-4 w-4 flex-shrink-0" />
+                        )}
+                        <span className="font-semibold text-lg truncate">{collection.collection_name}</span>
+                        <span className="text-sm text-muted-foreground flex-shrink-0">
+                          ({nftCount} NFT{nftCount !== 1 ? "s" : ""})
+                        </span>
                       </div>
                     </Button>
                   </CollapsibleTrigger>
                   <CollapsibleContent className="pt-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                       {collection.nfts?.map((nft) => (
-                        <NFTThumbnail
-                          key={nft.token_data_id}
-                          nft={nft}
-                          collectionData={collection}
-                          onClick={() => handleNFTClick(nft, collection)}
-                        />
+                        <NFTThumbnail key={nft.token_data_id} nft={nft} collectionData={collection} onClick={() => handleNFTClick(nft)} />
                       ))}
                     </div>
                   </CollapsibleContent>
@@ -120,12 +112,16 @@ function RouteComponent() {
       </GlassCard>
 
       {/* Asset Detail Dialog */}
-      {selectedCollection && (
+      {selectedNFT && (
         <AssetDetailDialog
-          open={showAssetDetailDialog}
-          onOpenChange={setShowAssetDetailDialog}
+          open={true}
+          onOpenChange={() => {
+            setSelectedNFT(null);
+          }}
           nft={selectedNFT}
-          collectionData={selectedCollection}
+          collectionData={
+            collections?.find((collection) => collection.collection_id === selectedNFT.current_token_data?.collection_id) as Collection
+          }
         />
       )}
     </div>

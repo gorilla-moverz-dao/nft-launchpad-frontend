@@ -32,6 +32,7 @@ export interface NFTQueryParams extends NFTQueryFilter {
   sort?: CollectionSearch["sort"];
   page?: number;
   limit?: number;
+  enabled?: boolean;
 }
 
 // Interface for trait aggregation result
@@ -160,7 +161,8 @@ export const useCollectionNFTs = (params: NFTQueryParams) => {
 
   return useQuery({
     queryKey: ["nfts", account?.address.toString(), params],
-    enabled: !params.onlyOwned || (!!account && connected),
+    enabled: (params.enabled ?? true) && (!params.onlyOwned || (!!account && connected)),
+    staleTime: 1000 * 60,
     queryFn: async () => {
       const where = getWhere(params, account?.address.toString());
 
@@ -182,6 +184,7 @@ export const useTraitAggregation = (params: NFTQueryFilter) => {
   return useQuery({
     queryKey: ["trait-aggregation", account?.address.toString(), params],
     enabled: !params.onlyOwned || (!!account && connected),
+    staleTime: 1000 * 60,
     queryFn: async (): Promise<TraitAggregationResult> => {
       const where = getWhere(params, account?.address.toString());
       const res = await executeGraphQL(traitAggregationQuery, { where });

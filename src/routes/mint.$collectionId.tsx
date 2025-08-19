@@ -31,16 +31,16 @@ function RouteComponent() {
 
   const collectionIdTyped = collectionId as `0x${string}`;
 
-  const { data: stages = [], isLoading: isLoadingStages } = useMintStages(address?.toString() as `0x${string}`, collectionIdTyped);
-  const { data: mintBalance, isLoading: isLoadingMintBalance } = useMintBalance(collectionIdTyped);
-  const { data: collectionData, isLoading: isLoadingCollection } = useCollectionData(collectionIdTyped);
-  const { data: nfts, isLoading: isLoadingNFTs } = useCollectionNFTs({
+  const { data: stages = [], isFetched: isFetchedStages } = useMintStages(address?.toString() as `0x${string}`, collectionIdTyped);
+  const { data: mintBalance, isFetched: isFetchedMintBalance } = useMintBalance(collectionIdTyped);
+  const { data: collectionData, isFetched: isFetchedCollection } = useCollectionData(collectionIdTyped);
+  const { data: nfts, isFetched: isFetchedNFTs } = useCollectionNFTs({
     onlyOwned: true,
     collectionIds: [collectionIdTyped],
   });
 
-  const isLoading = isLoadingStages || isLoadingCollection || isLoadingMintBalance;
-  if (isLoading) return <div>Loading...</div>;
+  const isFetched = isFetchedStages && isFetchedMintBalance && isFetchedCollection;
+  if (!isFetched) return <div>Loading...</div>;
   if (!collectionData) return <div>Collection not found</div>;
 
   const minted = collectionData.collection.current_supply;
@@ -141,7 +141,7 @@ function RouteComponent() {
           </div>
 
           {/* My NFTs Section */}
-          {connected && !isLoadingNFTs && nfts?.current_token_ownerships_v2 && nfts.current_token_ownerships_v2.length > 0 && (
+          {connected && isFetchedNFTs && nfts?.current_token_ownerships_v2 && nfts.current_token_ownerships_v2.length > 0 && (
             <GlassCard className="w-full">
               <CardHeader>
                 <CardTitle>My NFTs</CardTitle>
