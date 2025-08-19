@@ -192,7 +192,7 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
                 {reductionNFTs.length} NFT{reductionNFTs.length > 1 ? "s" : ""}
               </span>
             </div>
-            <div className="text-xs text-green-600 font-medium">
+            <div className="text-xs text-green-600 font-bold">
               Save {(oaptToApt(stage.mint_fee) - oaptToApt(stage.mint_fee_with_reduction) || 0).toFixed(2)} MOVE
             </div>
           </div>
