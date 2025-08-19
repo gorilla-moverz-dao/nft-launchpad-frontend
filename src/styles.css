@@ -64,8 +64,8 @@ code {
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.25 0.08 280);
   --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.705 0.07 133.033);
-  --muted-foreground: oklch(0.8 0.07 140.067);
+  --muted: oklch(0.705 0.07 240);
+  --muted-foreground: oklch(0.8 0.07 250);
   --accent: oklch(0.274 0.006 286.033);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.56 0.25 28.2);
