@@ -106,6 +106,7 @@ const NumberInput = React.forwardRef<HTMLDivElement, NumberInputProps>(
         className={cn(
           'flex items-center rounded-md border border-input bg-secondary/80',
           className,
+          disabled && 'opacity-50'
         )}
       >
         <Button

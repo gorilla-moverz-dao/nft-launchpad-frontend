@@ -68,7 +68,7 @@ function RouteComponent() {
                 />
               </div>
               <CardTitle className="truncate text-lg">{collectionData.collection.collection_name}</CardTitle>
-              <CardDescription className="mb-1 line-clamp-3">{collectionData.collection.description}</CardDescription>
+              <CardDescription className="mb-1">{collectionData.collection.description}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-sm break-all">
