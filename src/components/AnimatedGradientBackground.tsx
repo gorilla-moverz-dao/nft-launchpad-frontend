@@ -31,7 +31,7 @@ const AnimatedGradientBackground: React.FC = () => {
       pos.current.x += (target.current.x - pos.current.x) * 0.08;
       pos.current.y += (target.current.y - pos.current.y) * 0.08;
       if (bgRef.current) {
-        bgRef.current.style.background = `radial-gradient(circle at ${pos.current.x}% ${pos.current.y}%,#07160b 0%, #0d2b16 80%, rgb(19, 61, 31) 100%)`;
+        bgRef.current.style.background = `radial-gradient(circle at ${pos.current.x}% ${pos.current.y}%,#0a0f1a 0%, #1a2332 80%, rgb(30, 45, 70) 100%)`;
       }
       animationFrame.current = requestAnimationFrame(animate);
     };
@@ -82,27 +82,28 @@ const AnimatedGradientBackground: React.FC = () => {
       </style>
       {/* Banana tree left - visible on mobile and desktop */}
       <img
-        src="/images/banana-tree.webp"
+        src="/images/dog1.webp"
         alt="Banana Tree Left"
-        className="absolute left-[-20px] bottom-0 z-0 pointer-events-none select-none wind-animation-slow sm:max-w-[35vw] sm:max-h-[60vh] sm:w-auto sm:h-auto banana-tree-mobile"
+        className="absolute left-[-20px] bottom-0 z-0 pointer-events-none select-none wind-animation-slow sm:max-w-[35vw] sm:max-h-[60vh] sm:w-auto sm:h-auto banana-tree-mobile scale-x-[-1]"
         style={{
           maxHeight: "100vh",
-          maxWidth: "100vw",
-          height: "100vh",
+          maxWidth: "60vw",
+          height: "auto",
           opacity: 0.35,
           filter: "blur(0.5px)",
           objectFit: "cover",
           mixBlendMode: "lighten",
           transition: "opacity 0.3s",
+          transform: "scaleX(-1)",
           maskImage: "linear-gradient(to right, black 80%, transparent 100%)",
           WebkitMaskImage: "linear-gradient(to right, black 80%, transparent 100%)",
         }}
       />
       {/* Banana tree right - only visible on desktop */}
       <img
-        src="/images/banana-tree.webp"
+        src="/images/dog2.webp"
         alt="Banana Tree Right"
-        className="hidden sm:block absolute right-0 bottom-0 z-0 pointer-events-none select-none wind-animation"
+        className="hidden sm:block absolute right-0 bottom-0 z-0 pointer-events-none select-none wind-animation scale-x-[-1]"
         style={{
           maxHeight: "90vh",
           maxWidth: "40vw",
