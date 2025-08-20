@@ -1,8 +1,8 @@
 export const NETWORKS = {
   TESTNET: {
-    name: "Barkdock Testnet",
+    name: "Movement Testnet",
     chainId: 250,
-    rpcUrl: "https://testnet.bardock.movementnetwork.xyz/v1",
+    rpcUrl: "https://full.testnet.movementinfra.xyz/v1",
     indexerUrl: "https://indexer.testnet.movementnetwork.xyz/v1/graphql",
     faucetUrl: "https://faucet.testnet.bardock.movementnetwork.xyz",
     explorerUrl: "https://explorer.movementnetwork.xyz/{0}?network=bardock+testnet",

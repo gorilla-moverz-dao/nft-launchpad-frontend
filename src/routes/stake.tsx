@@ -8,6 +8,7 @@ import type { NFT } from "@/fragments/nft";
 import { useCollectionNFTs } from "@/hooks/useCollectionNFTs";
 import { useListedCollections } from "@/hooks/useListedCollections";
 import { useStakingService } from "@/lib/staking";
+import { resolveObjectForCollection } from "@/lib/tokenObjects";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
@@ -28,36 +29,31 @@ function RouteComponent() {
 
   const stakingService = useStakingService();
   const { data: collections } = useListedCollections();
-  const {
-    data: nfts,
-    isLoading: nftsLoading,
-    error: nftsError,
-  } = useCollectionNFTs({
+  const { data: nfts, isLoading: nftsLoading, error: nftsError } = useCollectionNFTs({
     onlyOwned: true,
     collectionIds: SINGLE_COLLECTION_MODE ? [COLLECTION_ID] : collections?.map((collection) => collection.collection_id) || [],
   });
 
-  // Filter collections that have staking enabled
   const collectionsWithStaking = collections || [];
 
   const handleStakeNFT = async () => {
-    if (!selectedNFT || !selectedCollection || !stakingService) return;
+    if (!selectedNFT || !selectedCollection || !stakingService || !account) return;
     setIsLoading(true);
     try {
       const tokenName = selectedNFT.current_token_data?.token_name || "";
-      const creatorAddress = selectedCollection.creator_address || "";
-      // NOTE: movement_staking requires NFT object address for stake_token.
-      // We don't have it in GraphQL yet, so keep local UX list and skip actual submission for now.
-      // await stakingService.stakeNFT(nftObjectAddress)
-      await Promise.resolve();
-
-      toast.success(`Successfully staked ${selectedCollection.collection_name} #${tokenName}`);
+      const collectionName = selectedCollection.collection_name || "";
+      console.log("Resolving object address", { collectionName, tokenName });
+      const objAddr = await resolveObjectForCollection(tokenName, collectionName);
+      if (!objAddr) throw new Error(`NFT object not found for ${collectionName} / ${tokenName}`);
+      console.log("Staking with object address", objAddr);
+      await stakingService.stakeNFT(objAddr);
+      toast.success(`Successfully staked ${collectionName} #${tokenName}`);
       setStakedNFTs((prev) => [...prev, { nft: selectedNFT, collection: selectedCollection }]);
       setShowNFTSelectionModal(false);
       setSelectedNFT(null);
       setSelectedNFTCollection(null);
-    } catch (error) {
-      toast.error("Failed to stake NFT");
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to stake NFT");
       console.error("Staking error:", error);
     } finally {
       setIsLoading(false);
@@ -128,7 +124,7 @@ function RouteComponent() {
                 <div key={nft.token_data_id} className="flex flex-col gap-2">
                   <NFTThumbnail nft={nft} />
                   <div className="flex gap-2">
-                    <Button variant="secondary" onClick={() => handleUnstakeNFT(nft, collection)} disabled={isLoading}>
+                    <Button variant="secondary" onClick={() => handleUnstakeNFT(nft, collection)} disabled={isLoading || !connected}>
                       Unstake
                     </Button>
                   </div>
