@@ -9,7 +9,7 @@ export const useMintBalance = (collectionAddress: `0x${string}`) => {
 
   return useQuery({
     queryKey: ["mint-balance", collectionAddress, address],
-    enabled: !isLoadingStages && !!address,
+    enabled: !isLoadingStages,
     queryFn: async () => {
       if (!address || !stages) return [];
 

@@ -175,7 +175,7 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
                 {minting ? "Minting..." : "Mint"}
               </Button>
             )}
-            {(!connected && isActive) || (!correctNetwork && <WalletSelector />)}
+            {isActive && (!connected || !correctNetwork) && <WalletSelector />}
           </div>
         </div>
       </CardContent>
