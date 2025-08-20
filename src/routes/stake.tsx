@@ -26,6 +26,7 @@ function RouteComponent() {
   const [selectedCollection, setSelectedNFTCollection] = useState<Collection | null>(null);
   const [stakedNFTs, setStakedNFTs] = useState<Array<{ nft: NFT; collection: Collection }>>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedCollectionForModal, setSelectedCollectionForModal] = useState<Collection | null>(null);
 
   const stakingService = useStakingService();
   const { data: collections } = useListedCollections();
@@ -105,7 +106,10 @@ function RouteComponent() {
     <div className="container mx-auto space-y-6 py-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-semibold">Stake</h1>
-        <Button onClick={() => setShowNFTSelectionModal(true)} disabled={!connected}>
+        <Button onClick={() => {
+          setSelectedCollectionForModal(null); // Show all NFTs
+          setShowNFTSelectionModal(true);
+        }} disabled={!connected}>
           Stake NFT
         </Button>
       </div>
@@ -146,7 +150,15 @@ function RouteComponent() {
               <div key={collection.collection_id} className="rounded-xl border/10 p-6 bg-white/5">
                 <div className="text-lg font-semibold">{collection.collection_name}</div>
                 <div className="text-sm text-muted-foreground mt-1">0 NFTs available for staking</div>
-                <Button className="mt-4" variant="secondary" onClick={() => setShowNFTSelectionModal(true)} disabled={!connected}>
+                <Button 
+                  className="mt-4" 
+                  variant="secondary" 
+                  onClick={() => {
+                    setSelectedCollectionForModal(collection);
+                    setShowNFTSelectionModal(true);
+                  }} 
+                  disabled={!connected}
+                >
                   View NFTs
                 </Button>
               </div>
@@ -175,28 +187,41 @@ function RouteComponent() {
 
       {/* Select NFT modal */}
       <Dialog open={showNFTSelectionModal} onOpenChange={setShowNFTSelectionModal}>
-        <DialogContent className="max-w-4xl">
-          <DialogHeader>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle>Select an NFT to Stake</DialogTitle>
           </DialogHeader>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {(nfts?.current_token_ownerships_v2 ?? []).map((nft: NFT) => (
-              <button
-                key={nft.token_data_id}
-                className={`rounded-lg border p-2 text-left ${selectedNFT?.token_data_id === nft.token_data_id ? "ring-2 ring-primary" : ""}`}
-                onClick={() => {
-                  setSelectedNFT(nft);
-                  // Find the collection object for this NFT, if possible
-                  const col = collections?.find((c) => c.collection_id === nft.current_token_data?.collection_id);
-                  if (col) setSelectedNFTCollection(col);
-                }}
-              >
-                <NFTThumbnail nft={nft} />
-                <div className="mt-2 text-sm font-medium">{nft.current_token_data?.token_name}</div>
-              </button>
-            ))}
+          <div className="flex-1 overflow-y-auto pr-2 min-h-0">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {(nfts?.current_token_ownerships_v2 ?? [])
+                .filter((nft: NFT) => {
+                  // If no specific collection is selected, show all NFTs
+                  if (!selectedCollectionForModal) return true;
+                  // Otherwise, filter by the selected collection
+                  return nft.current_token_data?.collection_id === selectedCollectionForModal.collection_id;
+                })
+                .map((nft: NFT) => (
+                  <button
+                    key={nft.token_data_id}
+                    className={`rounded-lg border p-2 text-left ${selectedNFT?.token_data_id === nft.token_data_id ? "ring-2 ring-primary" : ""}`}
+                    onClick={() => {
+                      setSelectedNFT(nft);
+                      // If we have a specific collection selected, use that; otherwise find the collection for this NFT
+                      if (selectedCollectionForModal) {
+                        setSelectedNFTCollection(selectedCollectionForModal);
+                      } else {
+                        const col = collections?.find((c) => c.collection_id === nft.current_token_data?.collection_id);
+                        if (col) setSelectedNFTCollection(col);
+                      }
+                    }}
+                  >
+                    <NFTThumbnail nft={nft} />
+                    <div className="mt-2 text-sm font-medium">{nft.current_token_data?.token_name}</div>
+                  </button>
+                ))}
+            </div>
           </div>
-          <div className="mt-4 flex justify-end gap-2">
+          <div className="flex-shrink-0 mt-4 flex justify-end gap-2 pt-4 border-t bg-background/95 backdrop-blur-sm rounded-b-lg px-6 pb-6 -mx-6 -mb-6">
             <Button variant="ghost" onClick={() => setShowNFTSelectionModal(false)}>
               Cancel
             </Button>
