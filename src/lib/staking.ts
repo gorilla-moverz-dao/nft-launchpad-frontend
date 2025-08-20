@@ -1,7 +1,7 @@
-import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { STAKING_CONTRACT_ADDRESS } from "@/constants";
+import { useWalletClient } from "@thalalabs/surf/hooks";
 
-// Staking contract module and function names
+// movement_staking::tokenstaking module and function names
 const STAKING_MODULE = "tokenstaking";
 const FUNCTIONS = {
   CREATE_STAKING: "create_staking",
@@ -10,7 +10,7 @@ const FUNCTIONS = {
   CLAIM_REWARD: "claim_reward",
   UPDATE_DPR: "update_dpr",
   CREATOR_STOP_STAKING: "creator_stop_staking",
-  DEPOSIT_STAKING_REWARDS: "deposit_staking_rewards",
+  DEPOSIT_STAKING_REWARDS: "deposit_staking_re" as unknown as string, // keep compatibility if referenced later
 } as const;
 
 // Staking service class
@@ -21,12 +21,9 @@ export class StakingService {
     this.client = client;
   }
 
-  // Check if a collection has staking enabled
+  // Check if a collection has staking enabled (MovementStaking presence)
   async checkCollectionStakingStatus(creatorAddress: string, collectionName: string): Promise<boolean> {
     try {
-      // Check if MokshyaStaking resource exists at the creator's address
-      // This would involve checking the ResourceInfo resource
-      // For now, return false as placeholder
       await Promise.resolve(); // Placeholder for future implementation
       return false;
     } catch (error) {
@@ -38,9 +35,6 @@ export class StakingService {
   // Get staking info for a collection
   async getCollectionStakingInfo(creatorAddress: string, collectionName: string) {
     try {
-      // Get the staking address from ResourceInfo
-      // Then get the MokshyaStaking resource
-      // For now, return null as placeholder
       await Promise.resolve(); // Placeholder for future implementation
       return null;
     } catch (error) {
@@ -50,31 +44,20 @@ export class StakingService {
   }
 
   // Stake an NFT
-  async stakeNFT(
-    creatorAddress: string,
-    collectionName: string,
-    tokenName: string,
-    propertyVersion: number,
-    tokenAmount: number
-  ) {
+  // Contract: stake_token(staker: &signer, nft: Object<Token>)
+  async stakeNFT(nftObjectAddress: string) {
     try {
       const payload = {
         type: "entry_function_payload",
         function: `${STAKING_CONTRACT_ADDRESS}::${STAKING_MODULE}::${FUNCTIONS.STAKE_TOKEN}`,
         type_arguments: [],
-        arguments: [
-          creatorAddress,
-          collectionName,
-          tokenName,
-          propertyVersion,
-          BigInt(tokenAmount)
-        ],
+        // nft object address (aptos_token_objects::token::Token)
+        arguments: [nftObjectAddress],
       };
 
-      // TODO: Submit transaction using the client
+      // TODO: Submit transaction using the wallet client
       console.log("Staking payload:", payload);
       await Promise.resolve(); // Placeholder for future implementation
-      
       return { success: true, txHash: "placeholder" };
     } catch (error) {
       console.error("Error staking NFT:", error);
@@ -83,30 +66,19 @@ export class StakingService {
   }
 
   // Unstake an NFT
-  async unstakeNFT(
-    creatorAddress: string,
-    collectionName: string,
-    tokenName: string,
-    propertyVersion: number,
-    coinType: string = "0x1::aptos_coin::AptosCoin"
-  ) {
+  // Contract: unstake_token(staker, creator: address, collection_name: String, token_name: String)
+  async unstakeNFT(creatorAddress: string, collectionName: string, tokenName: string) {
     try {
       const payload = {
         type: "entry_function_payload",
         function: `${STAKING_CONTRACT_ADDRESS}::${STAKING_MODULE}::${FUNCTIONS.UNSTAKE_TOKEN}`,
-        type_arguments: [coinType],
-        arguments: [
-          creatorAddress,
-          collectionName,
-          tokenName,
-          propertyVersion
-        ],
+        type_arguments: [],
+        arguments: [creatorAddress, collectionName, tokenName],
       };
 
       // TODO: Submit transaction using the client
       console.log("Unstaking payload:", payload);
       await Promise.resolve(); // Placeholder for future implementation
-      
       return { success: true, txHash: "placeholder" };
     } catch (error) {
       console.error("Error unstaking NFT:", error);
@@ -115,28 +87,19 @@ export class StakingService {
   }
 
   // Claim rewards
-  async claimRewards(
-    collectionName: string,
-    tokenName: string,
-    creatorAddress: string,
-    coinType: string = "0x1::aptos_coin::AptosCoin"
-  ) {
+  // Contract: claim_reward(staker, collection_name: String, token_name: String, creator: address)
+  async claimRewards(collectionName: string, tokenName: string, creatorAddress: string) {
     try {
       const payload = {
         type: "entry_function_payload",
         function: `${STAKING_CONTRACT_ADDRESS}::${STAKING_MODULE}::${FUNCTIONS.CLAIM_REWARD}`,
-        type_arguments: [coinType],
-        arguments: [
-          collectionName,
-          tokenName,
-          creatorAddress
-        ],
+        type_arguments: [],
+        arguments: [collectionName, tokenName, creatorAddress],
       };
 
       // TODO: Submit transaction using the client
       console.log("Claim rewards payload:", payload);
       await Promise.resolve(); // Placeholder for future implementation
-      
       return { success: true, txHash: "placeholder" };
     } catch (error) {
       console.error("Error claiming rewards:", error);
@@ -147,9 +110,6 @@ export class StakingService {
   // Get user's staked NFTs
   async getUserStakedNFTs(userAddress: string) {
     try {
-      // Check for MokshyaReward resources at the user's address
-      // This would involve checking ResourceInfo and MokshyaReward resources
-      // For now, return empty array as placeholder
       await Promise.resolve(); // Placeholder for future implementation
       return [];
     } catch (error) {
@@ -158,7 +118,7 @@ export class StakingService {
     }
   }
 
-  // Get user's staking rewards
+  // Get user's staking rewards (aggregate or per-NFT)
   async getUserStakingRewards(
     userAddress: string,
     collectionName: string,
@@ -166,10 +126,6 @@ export class StakingService {
     creatorAddress: string
   ) {
     try {
-      // Get the reward treasury address from ResourceInfo
-      // Then get the MokshyaReward resource
-      // Calculate rewards based on DPR and time
-      // For now, return null as placeholder
       await Promise.resolve(); // Placeholder for future implementation
       return null;
     } catch (error) {
@@ -181,11 +137,7 @@ export class StakingService {
 
 // Hook to use the staking service
 export const useStakingService = () => {
-  const { client } = useWallet();
-  
-  if (!client) {
-    return null;
-  }
-  
+  const { client } = useWalletClient();
+  if (!client) return null;
   return new StakingService(client);
 }; 
