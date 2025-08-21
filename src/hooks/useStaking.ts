@@ -1,96 +1,90 @@
-import { useWallet } from "@aptos-labs/wallet-adapter-react";
+import { STAKING_CONTRACT_ADDRESS } from "@/constants";
+import type { Collection } from "@/fragments/collection";
+import { aptos } from "@/lib/aptos";
 import { useQuery } from "@tanstack/react-query";
 
-// Check if a collection has staking enabled
-export const useCollectionStakingStatus = (collectionId: string) => {
-  const { client } = useWallet();
-  
+export const useCollectionStakingStatus = (creatorAddress: string, collectionName: string) => {
   return useQuery({
-    queryKey: ["staking-status", collectionId],
+    queryKey: ["staking-status", creatorAddress, collectionName],
     queryFn: async () => {
-      if (!client) return false;
-      
       try {
-        // Check if the collection has a MokshyaStaking resource
-        // This would be at the creator's address, not the staking contract address
-        // We need to get the creator address from the collection data
-        // For now, return false as placeholder
-        await Promise.resolve(); // Placeholder for future implementation
-        return false;
+        const payload = {
+          payload: {
+            function: `${STAKING_CONTRACT_ADDRESS}::tokenstaking::is_staking_enabled` as const,
+            typeArguments: [],
+            functionArguments: [creatorAddress, collectionName],
+          }
+        };
+        
+        const result = await aptos.view(payload);
+        return result[0] as boolean;
       } catch (error) {
         console.error("Error checking staking status:", error);
         return false;
       }
     },
-    enabled: !!client && !!collectionId,
+    enabled: !!creatorAddress && !!collectionName,
   });
 };
 
-// Get staking info for a collection
-export const useCollectionStakingInfo = (collectionId: string, creatorAddress: string) => {
-  const { client } = useWallet();
-  
+export const useAllCollectionStakingStatuses = (collections: Collection[]) => {
   return useQuery({
-    queryKey: ["staking-info", collectionId, creatorAddress],
+    queryKey: ["all-staking-statuses", collections.map(c => c.collection_id)],
     queryFn: async () => {
-      if (!client) return null;
+      const statuses: Record<string, boolean> = {};
       
-      try {
-        // TODO: Call the contract to get staking info
-        // This would include DPR, state, amount, etc.
-        await Promise.resolve(); // Placeholder for future implementation
-        return null;
-      } catch (error) {
-        console.error("Error fetching staking info:", error);
-        return null;
+      for (const collection of collections) {
+        if (collection.creator_address && collection.collection_name) {
+          try {
+            const payload = {
+              payload: {
+                function: `${STAKING_CONTRACT_ADDRESS}::tokenstaking::is_staking_enabled` as const,
+                typeArguments: [],
+                functionArguments: [collection.creator_address, collection.collection_name],
+              }
+            };
+            
+            const result = await aptos.view(payload);
+            statuses[collection.collection_id] = result[0] as boolean;
+          } catch (error) {
+            console.error(`Error checking staking status for ${collection.collection_name}:`, error);
+            statuses[collection.collection_id] = false;
+          }
+        }
       }
+      
+      return statuses;
     },
-    enabled: !!client && !!collectionId && !!creatorAddress,
+    enabled: collections.length > 0,
   });
 };
 
-// Get user's staked NFTs
-export const useUserStakedNFTs = () => {
-  const { client, account } = useWallet();
-  
+export const useStakingInfo = (_creatorAddress: string, _collectionName: string) => {
   return useQuery({
-    queryKey: ["user-staked-nfts", account?.address],
+    queryKey: ["staking-info", _creatorAddress, _collectionName],
     queryFn: async () => {
-      if (!client || !account) return [];
-      
-      try {
-        // TODO: Call the contract to get user's staked NFTs
-        // This would involve checking MokshyaReward resources
-        await Promise.resolve(); // Placeholder for future implementation
-        return [];
-      } catch (error) {
-        console.error("Error fetching staked NFTs:", error);
-        return [];
-      }
+      await Promise.resolve();
+      return null;
     },
-    enabled: !!client && !!account,
   });
 };
 
-// Get user's staking rewards
-export const useUserStakingRewards = (collectionId: string, tokenName: string, creatorAddress: string) => {
-  const { client, account } = useWallet();
-  
+export const useUserStakedNFTs = (_userAddress: string) => {
   return useQuery({
-    queryKey: ["staking-rewards", account?.address, collectionId, tokenName, creatorAddress],
+    queryKey: ["user-staked-nfts", _userAddress],
     queryFn: async () => {
-      if (!client || !account) return null;
-      
-      try {
-        // TODO: Call the contract to get user's rewards
-        // This would involve checking MokshyaReward resources
-        await Promise.resolve(); // Placeholder for future implementation
-        return null;
-      } catch (error) {
-        console.error("Error fetching staking rewards:", error);
-        return null;
-      }
+      await Promise.resolve();
+      return [];
     },
-    enabled: !!client && !!account && !!collectionId && !!tokenName && !!creatorAddress,
+  });
+};
+
+export const useUserStakingRewards = (_userAddress: string, _collectionName: string, _tokenName: string, _creatorAddress: string) => {
+  return useQuery({
+    queryKey: ["user-staking-rewards", _userAddress, _collectionName, _tokenName, _creatorAddress],
+    queryFn: async () => {
+      await Promise.resolve();
+      return null;
+    },
   });
 }; 

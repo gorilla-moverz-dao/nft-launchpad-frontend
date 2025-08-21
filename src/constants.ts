@@ -6,7 +6,7 @@ export const SINGLE_COLLECTION_MODE = COLLECTION_ID.length > 0;
 export const MOVE_NETWORK = NETWORKS.TESTNET;
 
 // Staking contract address (movement_staking package address)
-export const STAKING_CONTRACT_ADDRESS = "6f09ba2b5a6d2e2990a92485cc81198d9392e6849494a580360ecd4b2c73307b";
+export const STAKING_CONTRACT_ADDRESS = "0xc2525f0bfcdfa2580d5e306698aab47c4fa952f21427063bc51754b7068a6b80";
 
 // Collection creator addresses
 export const SILVER_BANANA_CREATOR = "0x18b939e4b11d62f91de88a90c5abf254ecc855c6db6ccf3d2c97ec5a93c6de23";

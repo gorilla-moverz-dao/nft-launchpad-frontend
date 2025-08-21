@@ -1,4 +1,5 @@
 import { STAKING_CONTRACT_ADDRESS } from "@/constants";
+import { aptos } from "@/lib/aptos";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { useWalletClient } from "@thalalabs/surf/hooks";
 
@@ -67,10 +68,20 @@ export class StakingService {
   }
 
   // (Placeholders for info APIs)
-  async checkCollectionStakingStatus(_creatorAddress: string, _collectionName: string): Promise<boolean> {
+  async checkCollectionStakingStatus(creatorAddress: string, collectionName: string): Promise<boolean> {
     try {
-      await Promise.resolve();
-      return false;
+      // Call the view function is_staking_enabled
+      const payload = {
+        payload: {
+          function: `${STAKING_CONTRACT_ADDRESS}::tokenstaking::is_staking_enabled` as const,
+          typeArguments: [],
+          functionArguments: [creatorAddress, collectionName],
+        }
+      };
+      
+      // Use the aptos client to call the view function
+      const result = await aptos.view(payload);
+      return result[0] as boolean;
     } catch (error) {
       console.error("Error checking staking status:", error);
       return false;

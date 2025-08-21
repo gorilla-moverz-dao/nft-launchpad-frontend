@@ -2,11 +2,11 @@ import { NFTThumbnail } from "@/components/NFTThumbnail";
 import { Button } from "@/components/ui/button";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { COLLECTION_ID, SINGLE_COLLECTION_MODE } from "@/constants";
 import type { Collection } from "@/fragments/collection";
 import type { NFT } from "@/fragments/nft";
 import { useCollectionNFTs } from "@/hooks/useCollectionNFTs";
 import { useListedCollections } from "@/hooks/useListedCollections";
+import { useAllCollectionStakingStatuses } from "@/hooks/useStaking";
 import { useStakingService } from "@/lib/staking";
 import { resolveObjectForCollection } from "@/lib/tokenObjects";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
@@ -32,10 +32,12 @@ function RouteComponent() {
   const { data: collections } = useListedCollections();
   const { data: nfts, isLoading: nftsLoading, error: nftsError } = useCollectionNFTs({
     onlyOwned: true,
-    collectionIds: SINGLE_COLLECTION_MODE ? [COLLECTION_ID] : collections?.map((collection) => collection.collection_id) || [],
+    collectionIds: selectedCollectionForModal ? [selectedCollectionForModal.collection_id] : collections?.map((collection) => collection.collection_id) || [],
   });
 
   const collectionsWithStaking = collections || [];
+
+  const { data: collectionStakingStatuses = {} } = useAllCollectionStakingStatuses(collectionsWithStaking);
 
   const handleStakeNFT = async () => {
     if (!selectedNFT || !selectedCollection || !stakingService || !account) return;
@@ -146,23 +148,38 @@ function RouteComponent() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {collectionsWithStaking.map((collection) => (
-              <div key={collection.collection_id} className="rounded-xl border/10 p-6 bg-white/5">
-                <div className="text-lg font-semibold">{collection.collection_name}</div>
-                <div className="text-sm text-muted-foreground mt-1">0 NFTs available for staking</div>
-                <Button 
-                  className="mt-4" 
-                  variant="secondary" 
-                  onClick={() => {
-                    setSelectedCollectionForModal(collection);
-                    setShowNFTSelectionModal(true);
-                  }} 
-                  disabled={!connected}
-                >
-                  View NFTs
-                </Button>
-              </div>
-            ))}
+            {collectionsWithStaking.map((collection) => {
+              const isStakingEnabled = collectionStakingStatuses[collection.collection_id] ?? false;
+              
+              let availableNFTs = 0;
+              
+              // Count NFTs available for staking (only if staking is enabled)
+              if (isStakingEnabled) {
+                availableNFTs = (nfts?.current_token_ownerships_v2 ?? []).filter(
+                  (nft: NFT) => nft.current_token_data?.collection_id === collection.collection_id
+                ).length;
+              }
+              
+              return (
+                <div key={collection.collection_id} className="rounded-xl border/10 p-6 bg-white/5">
+                  <div className="text-lg font-semibold">{collection.collection_name}</div>
+                  <div className="text-sm text-muted-foreground mt-1">
+                    {isStakingEnabled ? `${availableNFTs} NFTs available for staking` : "Staking not enabled"}
+                  </div>
+                  <Button 
+                    className="mt-4" 
+                    variant="secondary" 
+                    onClick={() => {
+                      setSelectedCollectionForModal(collection);
+                      setShowNFTSelectionModal(true);
+                    }} 
+                    disabled={!connected || !isStakingEnabled}
+                  >
+                    {isStakingEnabled ? "View NFTs" : "Staking Disabled"}
+                  </Button>
+                </div>
+              );
+            })}
           </div>
         </CardContent>
       </GlassCard>
