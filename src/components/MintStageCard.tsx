@@ -9,12 +9,12 @@ import { NumberInput } from "@/components/ui/number-input";
 import { Button } from "@/components/ui/button";
 import { oaptToApt } from "@/lib/utils";
 import { WalletSelector } from "@/components/WalletSelector";
-import { aptos } from "@/lib/aptos";
 import { useClients } from "@/hooks/useClients";
 import { useMintBalance } from "@/hooks/useMintBalance";
 import { useCollectionNFTs } from "@/hooks/useCollectionNFTs";
 import { useGetAccountNativeBalance } from "@/hooks/useGetAccountNativeBalance";
 import { useUserReductionNFTs } from "@/hooks/useUserReductionNFTs";
+import { useTransaction } from "@/hooks/useTransaction";
 
 interface MintStageCardProps {
   stage: MintStageInfo;
@@ -49,7 +49,7 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
   const { data: nativeBalance, isLoading: isLoadingNativeBalance } = useGetAccountNativeBalance();
   const { data: reductionNFTs = [] } = useUserReductionNFTs(address?.toString() || "");
 
-  const [minting, setMinting] = useState(false);
+  const { transactionInProgress: minting, executeTransaction } = useTransaction();
   const [mintAmount, setMintAmount] = useState<number | undefined>(1);
 
   const now = new Date();
@@ -74,25 +74,17 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
       return;
     }
     const amount: number = mintAmount;
-    setMinting(true);
-    try {
-      const reductionTokenIds = reductionNFTs.map((nft) => nft.token_data_id as `0x${string}`);
-      const tx = await launchpadClient.mint_nft({
+    const reductionTokenIds = reductionNFTs.map((nft) => nft.token_data_id as `0x${string}`);
+    const { result } = await executeTransaction(
+      launchpadClient.mint_nft({
         arguments: [collectionId, amount, reductionTokenIds],
         type_arguments: [],
-      });
-      const result = await aptos.waitForTransaction({
-        transactionHash: tx.hash,
-      });
-      await refetchMintBalance();
-      await refetchNFTs();
-      const newTokenIds = extractTokenIds(result);
-      onMintSuccess(newTokenIds);
-    } catch (err: any) {
-      toast.error("Mint failed", { description: err?.message || String(err) });
-    } finally {
-      setMinting(false);
-    }
+      }),
+    );
+    await refetchMintBalance();
+    await refetchNFTs();
+    const newTokenIds = extractTokenIds(result);
+    onMintSuccess(newTokenIds);
   }
 
   return (

@@ -41,14 +41,15 @@ function RouteComponent() {
   if (collectionsLoading || isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
-  const collectionNfts = collections
-    ?.map((collection) => {
-      return {
-        ...collection,
-        nfts: nfts?.current_token_ownerships_v2.filter((nft) => nft.current_token_data?.collection_id === collection.collection_id),
-      };
-    })
-    .filter((collection) => collection.nfts?.length);
+  const collectionNfts =
+    collections
+      ?.map((collection) => {
+        return {
+          ...collection,
+          nfts: nfts?.current_token_ownerships_v2.filter((nft) => nft.current_token_data?.collection_id === collection.collection_id),
+        };
+      })
+      .filter((collection) => collection.nfts?.length) ?? [];
 
   const handleNFTClick = (nft: NFT) => {
     setSelectedNFT(nft);
@@ -71,43 +72,43 @@ function RouteComponent() {
       </div>
       <GlassCard className="w-full py-4">
         <CardContent className="space-y-4">
-          {collectionNfts &&
-            collectionNfts.length > 0 &&
-            collectionNfts.map((collection) => {
-              const isExpanded = expandedCollections.has(collection.collection_id);
-              const nftCount = collection.nfts?.length || 0;
+          {collectionNfts.length > 0
+            ? collectionNfts.map((collection) => {
+                const isExpanded = expandedCollections.has(collection.collection_id);
+                const nftCount = collection.nfts?.length || 0;
 
-              return (
-                <Collapsible
-                  key={collection.collection_id}
-                  open={isExpanded}
-                  onOpenChange={() => toggleCollection(collection.collection_id)}
-                >
-                  <CollapsibleTrigger asChild>
-                    <Button variant="ghost" className="w-full justify-start p-0 hover:bg-muted/50">
-                      <div className="flex items-center gap-3 w-full min-w-0">
-                        {isExpanded ? (
-                          <ChevronDownIcon className="h-4 w-4 flex-shrink-0" />
-                        ) : (
-                          <ChevronRightIcon className="h-4 w-4 flex-shrink-0" />
-                        )}
-                        <span className="font-semibold text-lg truncate">{collection.collection_name}</span>
-                        <span className="text-sm text-muted-foreground flex-shrink-0">
-                          ({nftCount} NFT{nftCount !== 1 ? "s" : ""})
-                        </span>
+                return (
+                  <Collapsible
+                    key={collection.collection_id}
+                    open={isExpanded}
+                    onOpenChange={() => toggleCollection(collection.collection_id)}
+                  >
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" className="w-full justify-start p-0 hover:bg-muted/50">
+                        <div className="flex items-center gap-3 w-full min-w-0">
+                          {isExpanded ? (
+                            <ChevronDownIcon className="h-4 w-4 flex-shrink-0" />
+                          ) : (
+                            <ChevronRightIcon className="h-4 w-4 flex-shrink-0" />
+                          )}
+                          <span className="font-semibold text-lg truncate">{collection.collection_name}</span>
+                          <span className="text-sm text-muted-foreground flex-shrink-0">
+                            ({nftCount} NFT{nftCount !== 1 ? "s" : ""})
+                          </span>
+                        </div>
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="pt-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {collection.nfts?.map((nft) => (
+                          <NFTThumbnail key={nft.token_data_id} nft={nft} collectionData={collection} onClick={() => handleNFTClick(nft)} />
+                        ))}
                       </div>
-                    </Button>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="pt-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      {collection.nfts?.map((nft) => (
-                        <NFTThumbnail key={nft.token_data_id} nft={nft} collectionData={collection} onClick={() => handleNFTClick(nft)} />
-                      ))}
-                    </div>
-                  </CollapsibleContent>
-                </Collapsible>
-              );
-            })}
+                    </CollapsibleContent>
+                  </Collapsible>
+                );
+              })
+            : "No NFTs minted on this launchpad yet!"}
         </CardContent>
       </GlassCard>
 
