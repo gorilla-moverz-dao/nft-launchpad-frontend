@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StakingRouteImport } from './routes/staking'
 import { Route as MyNftsRouteImport } from './routes/my-nfts'
 import { Route as MintRouteImport } from './routes/mint'
 import { Route as CollectionsRouteImport } from './routes/collections'
@@ -16,6 +17,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as MintCollectionIdRouteImport } from './routes/mint.$collectionId'
 import { Route as CollectionsCollectionIdRouteImport } from './routes/collections.$collectionId'
 
+const StakingRoute = StakingRouteImport.update({
+  id: '/staking',
+  path: '/staking',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MyNftsRoute = MyNftsRouteImport.update({
   id: '/my-nfts',
   path: '/my-nfts',
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/collections': typeof CollectionsRouteWithChildren
   '/mint': typeof MintRouteWithChildren
   '/my-nfts': typeof MyNftsRoute
+  '/staking': typeof StakingRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdRoute
   '/mint/$collectionId': typeof MintCollectionIdRoute
 }
@@ -60,6 +67,7 @@ export interface FileRoutesByTo {
   '/collections': typeof CollectionsRouteWithChildren
   '/mint': typeof MintRouteWithChildren
   '/my-nfts': typeof MyNftsRoute
+  '/staking': typeof StakingRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdRoute
   '/mint/$collectionId': typeof MintCollectionIdRoute
 }
@@ -69,6 +77,7 @@ export interface FileRoutesById {
   '/collections': typeof CollectionsRouteWithChildren
   '/mint': typeof MintRouteWithChildren
   '/my-nfts': typeof MyNftsRoute
+  '/staking': typeof StakingRoute
   '/collections/$collectionId': typeof CollectionsCollectionIdRoute
   '/mint/$collectionId': typeof MintCollectionIdRoute
 }
@@ -79,6 +88,7 @@ export interface FileRouteTypes {
     | '/collections'
     | '/mint'
     | '/my-nfts'
+    | '/staking'
     | '/collections/$collectionId'
     | '/mint/$collectionId'
   fileRoutesByTo: FileRoutesByTo
@@ -87,6 +97,7 @@ export interface FileRouteTypes {
     | '/collections'
     | '/mint'
     | '/my-nfts'
+    | '/staking'
     | '/collections/$collectionId'
     | '/mint/$collectionId'
   id:
@@ -95,6 +106,7 @@ export interface FileRouteTypes {
     | '/collections'
     | '/mint'
     | '/my-nfts'
+    | '/staking'
     | '/collections/$collectionId'
     | '/mint/$collectionId'
   fileRoutesById: FileRoutesById
@@ -104,6 +116,7 @@ export interface RootRouteChildren {
   CollectionsRoute: typeof CollectionsRouteWithChildren
   MintRoute: typeof MintRouteWithChildren
   MyNftsRoute: typeof MyNftsRoute
+  StakingRoute: typeof StakingRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -134,6 +147,13 @@ declare module '@tanstack/react-router' {
       path: '/my-nfts'
       fullPath: '/my-nfts'
       preLoaderRoute: typeof MyNftsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/staking': {
+      id: '/staking'
+      path: '/staking'
+      fullPath: '/staking'
+      preLoaderRoute: typeof StakingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/collections/$collectionId': {
@@ -180,6 +200,7 @@ const rootRouteChildren: RootRouteChildren = {
   CollectionsRoute: CollectionsRouteWithChildren,
   MintRoute: MintRouteWithChildren,
   MyNftsRoute: MyNftsRoute,
+  StakingRoute: StakingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

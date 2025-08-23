@@ -40,7 +40,7 @@ function extractTokenIds(result: any): Array<string> {
 }
 
 export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess }: MintStageCardProps) {
-  const { launchpadClient, connected, address, correctNetwork } = useClients();
+  const { launchpadWalletClient, connected, address, correctNetwork } = useClients();
   const { refetch: refetchMintBalance } = useMintBalance(collectionId);
   const { refetch: refetchNFTs } = useCollectionNFTs({
     onlyOwned: true,
@@ -66,7 +66,7 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
   };
 
   async function handleMint() {
-    if (!address || !launchpadClient) {
+    if (!address || !launchpadWalletClient) {
       toast.error("Connect your wallet to mint");
       return;
     }
@@ -77,7 +77,7 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
     const amount: number = mintAmount;
     const reductionTokenIds = reductionNFTs.map((nft) => nft.token_data_id as `0x${string}`);
     const { result } = await executeTransaction(
-      launchpadClient.mint_nft({
+      launchpadWalletClient.mint_nft({
         arguments: [collectionId, amount, reductionTokenIds],
         type_arguments: [],
       }),
