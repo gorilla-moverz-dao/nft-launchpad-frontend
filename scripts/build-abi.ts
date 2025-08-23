@@ -2,7 +2,7 @@ import { promises as fs } from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 import axios from "axios";
-import { LAUNCHPAD_MODULE_ADDRESS, MOVE_NETWORK } from "../src/constants";
+import { LAUNCHPAD_MODULE_ADDRESS, MOVE_NETWORK, STAKING_MODULE_ADDRESS } from "../src/constants";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,6 +26,7 @@ async function main() {
   await getABI("0x1", "coin");
   await getABI(LAUNCHPAD_MODULE_ADDRESS, "nft_launchpad");
   await getABI(LAUNCHPAD_MODULE_ADDRESS, "nft_reduction_manager");
+  await getABI(STAKING_MODULE_ADDRESS, "nft_staking");
 }
 
 main().catch(console.error);

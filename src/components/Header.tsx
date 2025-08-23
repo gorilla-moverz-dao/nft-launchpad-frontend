@@ -42,6 +42,14 @@ export default function Header() {
       description: "View and manage your NFT collection",
       accent: "from-emerald-500/20 to-teal-500/20",
     });
+
+    menuItems.push({
+      to: "/staking",
+      icon: Zap,
+      title: "Staking",
+      description: "Stake your NFTs to earn rewards",
+      accent: "from-green-500/20 to-teal-500/20",
+    });
   }
 
   const NavigationLinks = () => {
