@@ -94,7 +94,7 @@ function RouteComponent() {
 
           const dpr = 86400;
           const inititialStakingAmount = BigInt(1000000000000000000);
-          const rewardMetadataObjectAddress = "0x17d965eb3affe4792b493cf5faad6c1e768bf94fe8ba846867ec3f05ac587463"; // BANANA A
+          const rewardMetadataObjectAddress = "0x4a57143524de5d20f5c8ce30762ceffea8810b7c833853b7378d860720d64875"; // BANANA A
 
           await executeCreateStaking(
             stakingWalletClient.create_staking({
