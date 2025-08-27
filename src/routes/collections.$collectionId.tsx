@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ExternalLinkIcon } from "lucide-react";
 
 import type { NFT } from "@/fragments/nft";
 import type { CollectionSearch } from "@/hooks/useCollectionSearch";
@@ -13,18 +13,14 @@ import { GlassCard } from "@/components/GlassCard";
 import { NFTThumbnail } from "@/components/NFTThumbnail";
 import { useCollectionData } from "@/hooks/useCollectionData";
 import { useCollectionNFTs } from "@/hooks/useCollectionNFTs";
-import { useCollectionSearch } from "@/hooks/useCollectionSearch";
+import { applyCollectionSearchDefaults, useCollectionSearch } from "@/hooks/useCollectionSearch";
 import { toShortAddress } from "@/lib/utils";
+import { MOVE_NETWORK } from "@/constants";
 
 export const Route = createFileRoute("/collections/$collectionId")({
   validateSearch: (search: Record<string, unknown>): CollectionSearch => {
     return {
-      search: (search.search as string) || "",
-      sort: (search.sort as CollectionSearch["sort"] | undefined) || "newest",
-      view: (search.view as CollectionSearch["view"] | undefined) || "grid",
-      page: Number(search.page) || 1,
-      filter: (search.filter as CollectionSearch["filter"] | undefined) || "all",
-      traits: (search.traits as Record<string, Array<string>> | undefined) || {},
+      ...applyCollectionSearchDefaults(search),
     };
   },
   component: RouteComponent,
@@ -33,7 +29,6 @@ export const Route = createFileRoute("/collections/$collectionId")({
 function RouteComponent() {
   const { search, collectionId, updateSearchParams } = useCollectionSearch();
   const [selectedNFT, setSelectedNFT] = useState<NFT | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Fetch collection details
   const { data: collectionData, isLoading: collectionLoading } = useCollectionData(collectionId as `0x${string}`);
@@ -51,6 +46,8 @@ function RouteComponent() {
     traits: search.traits,
   });
 
+  const startIndex = (search.page - 1) * pageSize;
+
   // Get the NFTs directly from the server response
   const nfts = nftsData?.current_token_ownerships_v2 || [];
 
@@ -59,7 +56,6 @@ function RouteComponent() {
   // Dialog handlers
   const handleNFTClick = (nft: NFT | null) => {
     setSelectedNFT(nft);
-    setIsDialogOpen(true);
   };
 
   if (collectionLoading) {
@@ -80,44 +76,57 @@ function RouteComponent() {
 
   return (
     <div className="space-y-6">
-      {/* Collection Header */}
-      <div className="flex items-start gap-6">
-        <div className="w-32 h-32 rounded-lg overflow-hidden border border-white/20">
-          <img
-            src={collectionData.collection.uri}
-            alt={collectionData.collection.collection_name}
-            className="w-full h-full object-cover"
-            onError={(e) => (e.currentTarget.src = "/favicon.png")}
-          />
-        </div>
-        <div className="flex-1 space-y-4">
-          <div>
-            <h1 className="text-3xl font-bold">{collectionData.collection.collection_name}</h1>
-            <p className="text-muted-foreground mt-2">{collectionData.collection.description}</p>
+      <div className="md:sticky md:top-18 md:z-20 gap-2 flex flex-col">
+        {/* Collection Header */}
+        <GlassCard className="p-3 backdrop-blur-3xl dark:bg-secondary/20">
+          <div className="flex items-start gap-6 sm:flex-row flex-col">
+            <div className="md:w-36 md:h-auto w-full h-auto rounded-lg overflow-hidden border border-white/20">
+              <img
+                src={collectionData.collection.uri}
+                alt={collectionData.collection.collection_name}
+                className="w-full h-full object-cover"
+                onError={(e) => (e.currentTarget.src = "/favicon.png")}
+              />
+            </div>
+            <div className="flex-1 space-y-4">
+              <div>
+                <h1 className="text-2xl font-bold">{collectionData.collection.collection_name}</h1>
+                <p className="text-muted-foreground mt-2">{collectionData.collection.description}</p>
+              </div>
+              <div className="flex gap-2">
+                <Badge variant="secondary">
+                  {collectionData.collection.current_supply} / {collectionData.collection.max_supply || "∞"} minted
+                </Badge>
+                <a
+                  href={MOVE_NETWORK.explorerUrl.replace("{0}", `object/${collectionData.collection.collection_id}`)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Badge variant="outline">
+                    <div className="flex items-center gap-1 p-1">
+                      Collection: {toShortAddress(collectionData.collection.collection_id)} <ExternalLinkIcon className="w-4 h-4" />
+                    </div>
+                  </Badge>
+                </a>
+              </div>
+            </div>
           </div>
-          <div className="flex gap-4">
-            <Badge variant="secondary">
-              {collectionData.collection.current_supply} / {collectionData.collection.max_supply || "∞"} minted
-            </Badge>
-            <Badge variant="outline">
-              Creator: {collectionData.collection.creator_address.slice(0, 8)}...{collectionData.collection.creator_address.slice(-6)}
-            </Badge>
+        </GlassCard>
+
+        <GlassCard className="p-3 flex flex-col gap-2 backdrop-blur-3xl dark:bg-secondary/20">
+          {/* Filters */}
+          <CollectionFilters />
+
+          {/* Results Count */}
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-muted-foreground">
+              Showing {startIndex + 1}-{startIndex + nfts.length} of {collectionData.collection.current_supply} NFTs
+              {search.search && ` matching "${search.search}"`}
+              {Object.keys(search.traits).length > 0 && ` with trait filters`}
+            </div>
           </div>
-        </div>
+        </GlassCard>
       </div>
-
-      {/* Filters */}
-      <CollectionFilters />
-
-      {/* Results Count */}
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground">
-          Showing {nfts.length} of {nfts.length} NFTs
-          {search.search && ` matching "${search.search}"`}
-          {Object.keys(search.traits).length > 0 && ` with trait filters`}
-        </div>
-      </div>
-
       {/* NFTs Grid/List */}
       {nftsLoading ? (
         <div className="flex items-center justify-center min-h-[400px]">
@@ -221,7 +230,12 @@ function RouteComponent() {
       )}
 
       {/* Asset Detail Dialog */}
-      <AssetDetailDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} nft={selectedNFT} collectionData={collectionData.collection} />
+      <AssetDetailDialog
+        open={true}
+        onOpenChange={() => setSelectedNFT(null)}
+        nft={selectedNFT}
+        collectionData={collectionData.collection}
+      />
     </div>
   );
 }

@@ -56,6 +56,7 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
   const start = new Date(Number(stage.start_time) * 1000);
   const end = new Date(Number(stage.end_time) * 1000);
   const isActive = now >= start && now <= end;
+  const isPast = now > end;
 
   const walletBalance = Number(mintBalance?.find((b) => b.stage === stage.name)?.balance || 0);
   const insufficientBalance = !isLoadingNativeBalance && (!nativeBalance || nativeBalance.balance < oaptToApt(stage.mint_fee));
@@ -108,31 +109,37 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
       </CardHeader>
       <CardContent className="flex flex-col md:flex-row md:items-center gap-2 pb-4 px-6">
         <div className="flex-1 text-xs space-y-1">
-          <div>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span>
-                  Start: {start.toLocaleString()} <span className="text-muted-foreground">(Local Time)</span>
-                </span>
-              </TooltipTrigger>
-              <TooltipContent className="drop-shadow-lg">
-                <p>UTC: {start.toUTCString()}</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-          <div>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span>
-                  End: {end.toLocaleString()} <span className="text-muted-foreground">(Local Time)</span>
-                </span>
-              </TooltipTrigger>
-              <TooltipContent className="drop-shadow-lg">
-                <p>UTC: {end.toUTCString()}</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-          <div>Mint Fee: {oaptToApt(stage.mint_fee_with_reduction)} MOVE</div>
+          {!isPast ? (
+            <>
+              <div>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span>
+                      Start: {start.toLocaleString()} <span className="text-muted-foreground">(Local Time)</span>
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent className="drop-shadow-lg">
+                    <p>UTC: {start.toUTCString()}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <div>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span>
+                      End: {end.toLocaleString()} <span className="text-muted-foreground">(Local Time)</span>
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent className="drop-shadow-lg">
+                    <p>UTC: {end.toUTCString()}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <div>Mint Fee: {oaptToApt(stage.mint_fee_with_reduction)} MOVE</div>
+            </>
+          ) : (
+            <div className="text-lg font-bold text-muted-foreground">Minting stage is over</div>
+          )}
         </div>
         <div className="flex flex-col items-end gap-2">
           {walletBalance > 0 && (

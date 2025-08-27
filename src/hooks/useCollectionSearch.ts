@@ -10,6 +10,26 @@ export type CollectionSearch = {
   traits: Record<string, Array<string>>;
 };
 
+const filterDefaults: Omit<CollectionSearch, "view" | "sort"> = {
+  search: "",
+  page: 1,
+  filter: "all",
+  traits: {},
+};
+
+export const searchDefaults: CollectionSearch = {
+  sort: "name",
+  view: "grid",
+  ...filterDefaults,
+};
+
+export function applyCollectionSearchDefaults(updates: Partial<CollectionSearch>) {
+  return {
+    ...searchDefaults,
+    ...updates,
+  };
+}
+
 export function useCollectionSearch() {
   const search = useSearch({ from: "/collections/$collectionId" });
   const navigate = useNavigate();
@@ -21,26 +41,14 @@ export function useCollectionSearch() {
       to: "/collections/$collectionId",
       params: { collectionId },
       search: (prev) => ({
-        search: prev.search ?? "",
-        sort: prev.sort ?? "newest",
-        view: prev.view ?? "grid",
-        page: prev.page ?? 1,
-        filter: prev.filter ?? "all",
-        traits: prev.traits ?? {},
-        ...updates,
+        ...applyCollectionSearchDefaults({ ...prev, ...updates }),
       }),
     });
   };
 
   // Helper function to clear all filters
   const clearAllFilters = () => {
-    updateSearchParams({
-      search: "",
-      sort: "newest",
-      filter: "all",
-      traits: {},
-      page: 1,
-    });
+    updateSearchParams({ ...filterDefaults });
   };
 
   const handleSearchChange = (value: string) => {
@@ -73,6 +81,7 @@ export function useCollectionSearch() {
     search,
     collectionId,
     updateSearchParams,
+    searchDefaults,
     clearAllFilters,
     handleSearchChange,
     handleSortChange,
