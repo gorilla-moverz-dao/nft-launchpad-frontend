@@ -11326,6 +11326,13 @@ export type GetTraitAggregationQueryVariables = Exact<{
 
 export type GetTraitAggregationQuery = { __typename?: 'query_root', current_token_ownerships_v2: Array<{ __typename?: 'current_token_ownerships_v2', current_token_data?: { __typename?: 'current_token_datas_v2', token_properties: any } | null }> };
 
+export type CollectionsQueryVariables = Exact<{
+  collection_ids: Array<Scalars['String']['input']> | Scalars['String']['input'];
+}>;
+
+
+export type CollectionsQuery = { __typename?: 'query_root', current_collections_v2: Array<{ __typename?: 'current_collections_v2', creator_address: string, collection_id: string, collection_name: string, current_supply: any, max_supply?: any | null, uri: string, description: string }> };
+
 export type ListedCollectionsQueryVariables = Exact<{
   collection_ids: Array<Scalars['String']['input']> | Scalars['String']['input'];
 }>;
@@ -11447,6 +11454,19 @@ export const GetTraitAggregationDocument = new TypedDocumentString(`
   }
 }
     `) as unknown as TypedDocumentString<GetTraitAggregationQuery, GetTraitAggregationQueryVariables>;
+export const CollectionsDocument = new TypedDocumentString(`
+    query Collections($collection_ids: [String!]!) {
+  current_collections_v2(where: {collection_id: {_in: $collection_ids}}) {
+    creator_address
+    collection_id
+    collection_name
+    current_supply
+    max_supply
+    uri
+    description
+  }
+}
+    `) as unknown as TypedDocumentString<CollectionsQuery, CollectionsQueryVariables>;
 export const ListedCollectionsDocument = new TypedDocumentString(`
     query ListedCollections($collection_ids: [String!]!) {
   current_collections_v2(where: {collection_id: {_in: $collection_ids}}) {

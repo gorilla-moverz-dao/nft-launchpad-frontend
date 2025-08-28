@@ -43,6 +43,7 @@ export default function Header() {
       accent: "from-emerald-500/20 to-teal-500/20",
     });
 
+    /* TODO: Add staking
     menuItems.push({
       to: "/staking",
       icon: Zap,
@@ -50,6 +51,7 @@ export default function Header() {
       description: "Stake your NFTs to earn rewards",
       accent: "from-green-500/20 to-teal-500/20",
     });
+    */
   }
 
   const NavigationLinks = () => {
@@ -65,6 +67,9 @@ export default function Header() {
       }
       if (path === "/my-nfts") {
         return location.pathname === "/my-nfts";
+      }
+      if (path === "/staking") {
+        return location.pathname === "/staking";
       }
       return false;
     };
