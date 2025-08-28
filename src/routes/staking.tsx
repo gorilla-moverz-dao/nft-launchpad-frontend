@@ -101,6 +101,7 @@ function RouteComponent() {
   const { data: collectionNFTs, refetch: refetchCollectionNFTs } = useCollectionNFTs({
     enabled: !!stakingInfo && stakingInfo.allowedCollections.length > 0,
     onlyOwned: true,
+    sort: "name",
     collectionIds: stakingInfo?.allowedCollections ?? [],
   });
 
@@ -109,6 +110,7 @@ function RouteComponent() {
   const { data: stakedNFTs, refetch: refetchStakedNFTs } = useCollectionNFTs({
     enabled: hasStakedNFTs,
     onlyOwned: false,
+    sort: "name",
     collectionIds: stakingInfo?.allowedCollections ?? [],
     tokenIds: stakingInfo?.stakedNfts.map((item) => item.nft_object_address) ?? [],
   });
@@ -134,7 +136,7 @@ function RouteComponent() {
     <>
       <GlassCard className="flex flex-col gap-2 mt-4 pt-4">
         <CardHeader>
-          <h2 className="text-2xl font-bold">Collections you can stake</h2>
+          <h2 className="text-xl font-semibold">Collections you can stake</h2>
         </CardHeader>
         <CardContent>
           <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
@@ -163,7 +165,7 @@ function RouteComponent() {
 
       <GlassCard className="flex flex-col gap-2 mt-4 pt-4">
         <CardHeader>
-          <h2 className="text-2xl font-bold">Staked NFTs</h2>
+          <h2 className="text-xl font-semibold">Staked NFTs</h2>
         </CardHeader>
         <CardContent className="relative">
           <div className="flex flex-row gap-2">
@@ -243,7 +245,7 @@ function RouteComponent() {
 
       <GlassCard className="flex flex-col gap-2 mt-4 pt-4">
         <CardHeader>
-          <h2 className="text-2xl font-bold">Stake NFTs</h2>
+          <h2 className="text-xl font-semibold">Stake NFTs</h2>
         </CardHeader>
         <CardContent>
           {/* NFTs Grid */}
