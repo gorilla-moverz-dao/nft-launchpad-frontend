@@ -66,7 +66,7 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
   };
 
   async function handleMint() {
-    if (!address || !launchpadWalletClient) {
+    if (!address) {
       toast.error("Connect your wallet to mint");
       return;
     }
@@ -77,7 +77,7 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
     const amount: number = mintAmount;
     const reductionTokenIds = reductionNFTs.map((nft) => nft.token_data_id as `0x${string}`);
     const { result } = await executeTransaction(
-      launchpadWalletClient.mint_nft({
+      launchpadWalletClient?.mint_nft({
         arguments: [collectionId, amount, reductionTokenIds],
         type_arguments: [],
       }),

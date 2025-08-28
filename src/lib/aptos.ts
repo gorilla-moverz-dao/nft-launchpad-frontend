@@ -3,7 +3,8 @@ import { createSurfClient } from "@thalalabs/surf";
 import { MOVE_NETWORK } from "@/constants";
 import { ABI as launchpadABI } from "@/abi/nft_launchpad";
 import { ABI as nftReductionManagerABI } from "@/abi/nft_reduction_manager";
-import { ABI as stakingABI } from "@/abi/nft_staking";
+import { ABI as nftStakingABI } from "@/abi/nft_staking";
+import { ABI as stakingABI } from "@/abi/staking";
 
 // Network configuration
 const config = new AptosConfig({
@@ -17,6 +18,7 @@ const config = new AptosConfig({
 export const aptos = new Aptos(config);
 export const launchpadClient = createSurfClient(aptos).useABI(launchpadABI);
 export const nftReductionManagerClient = createSurfClient(aptos).useABI(nftReductionManagerABI);
+export const nftStakingClient = createSurfClient(aptos).useABI(nftStakingABI);
 export const stakingClient = createSurfClient(aptos).useABI(stakingABI);
 
 // Helper function to get account balance

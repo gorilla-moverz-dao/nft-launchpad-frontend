@@ -7,7 +7,14 @@ export const useTransaction = ({ showError = true }: { showError?: boolean } = {
   const [transactionInProgress, setTransactionInProgress] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const executeTransaction = async <T extends { hash: string }>(transaction: Promise<T>) => {
+  const executeTransaction = async <T extends { hash: string }>(transaction: Promise<T> | undefined) => {
+    if (!transaction) {
+      if (showError) {
+        console.error("Connect your wallet to execute a transaction");
+      }
+      throw new Error("No transaction provided");
+    }
+
     setTransactionInProgress(true);
     setError(null);
     let tx: T;

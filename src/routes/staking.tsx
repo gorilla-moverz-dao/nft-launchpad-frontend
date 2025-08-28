@@ -1,57 +1,68 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { stakingClient } from "@/lib/aptos";
+import { nftStakingClient } from "@/lib/aptos";
 import { useClients } from "@/hooks/useClients";
 import { STAKING_MODULE_ADDRESS } from "@/constants";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTransaction } from "@/hooks/useTransaction";
 import { useCollectionNFTs } from "@/hooks/useCollectionNFTs";
+import { GlassCard } from "@/components/GlassCard";
+import { CardContent, CardHeader } from "@/components/ui/card";
 
 export const Route = createFileRoute("/staking")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { address, stakingWalletClient } = useClients();
+  const { address, nftStakingWalletClient, stakingWalletClient } = useClients();
   const isAdmin = address === STAKING_MODULE_ADDRESS;
   const [collectionId, setCollectionId] = useState<string>("");
-  const { transactionInProgress: addingCollection, executeTransaction } = useTransaction();
-  const { transactionInProgress: creatingStaking, executeTransaction: executeCreateStaking } = useTransaction();
-
-  const colId = "0x83dd3df737a8e86c41a8bdd2aaf9b9bdc4ae8e8b6d08911f0259f23278ff7798";
+  const { transactionInProgress: addingCollection, executeTransaction: executeAddCollection } = useTransaction();
+  const { executeTransaction: executeStakeUnstakeNFT } = useTransaction();
 
   const { data: stakingInfo, refetch: refetchStakingInfo } = useQuery({
     queryKey: ["staking-info"],
     queryFn: async () => {
-      const [res] = await stakingClient.view.get_allowed_collections({
+      const [res] = await nftStakingClient.view.get_allowed_collections({
         functionArguments: [],
         typeArguments: [],
       });
 
-      const [res2] = await stakingClient.view.view_active_staking_pools({
-        functionArguments: [],
+      const [stakedNfts] = await nftStakingClient.view.get_staked_nfts({
+        functionArguments: [address as `0x${string}`],
         typeArguments: [],
       });
-      console.log(res2);
 
-      return res;
+      const [rewards] = await nftStakingClient.view.get_user_accumulated_rewards({
+        functionArguments: [address as `0x${string}`, "0x2d5a4b63d34407ba0270ec3532a675ac13d74e3b0f71356ef25cd6c36e7e088e"],
+        typeArguments: [],
+      });
+
+      return {
+        stakingInfo: res,
+        stakedNfts: stakedNfts as Array<{
+          nft_object_address: `0x${string}`;
+          collection_addr: `0x${string}`;
+          staked_at: string;
+        }>,
+        rewards: Number(rewards),
+      };
     },
   });
 
-  // TODO: Get collection Id from the staking info? But how?
   const { data: collectionNFTs } = useCollectionNFTs({
-    enabled: !!stakingInfo,
+    enabled: !!stakingInfo && stakingInfo.stakingInfo.length > 0,
     onlyOwned: true,
-    collectionIds: [colId],
+    collectionIds: stakingInfo?.stakingInfo ?? [],
   });
 
   return (
     <>
       <div>
         <h2 className="text-2xl font-bold">Allowed collections</h2>
-        <div className="flex flex-col gap-2">{stakingInfo?.map((item) => <div key={item}>{item}</div>)}</div>
+        <div className="flex flex-col gap-2">{stakingInfo?.stakingInfo.map((item) => <div key={item}>{item}</div>)}</div>
       </div>
 
       <div>
@@ -68,11 +79,8 @@ function RouteComponent() {
 
             <Button
               onClick={async () => {
-                if (!stakingWalletClient) {
-                  return;
-                }
-                await executeTransaction(
-                  stakingWalletClient.add_allowed_collection({
+                await executeAddCollection(
+                  nftStakingWalletClient?.add_allowed_collection({
                     arguments: [collectionId as `0x${string}`],
                     type_arguments: [],
                   }),
@@ -86,53 +94,94 @@ function RouteComponent() {
         </div>
       )}
 
-      <Button
-        onClick={async () => {
-          if (!stakingWalletClient) {
-            return;
-          }
+      <GlassCard className="flex flex-col gap-2 mt-4 pt-4">
+        <CardHeader>
+          <h2 className="text-2xl font-bold">Staked NFTs</h2>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-row gap-2">
+            <div>Pending rewards: {stakingInfo?.rewards}</div>
+          </div>
+          <Button
+            onClick={async () => {
+              await executeStakeUnstakeNFT(
+                stakingWalletClient?.claim_rewards({
+                  arguments: [stakingInfo?.stakedNfts.map((item) => item.nft_object_address) ?? []],
+                  type_arguments: [],
+                }),
+              );
+              await refetchStakingInfo();
+            }}
+          >
+            Claim all rewards
+          </Button>
 
-          const dpr = 86400;
-          const inititialStakingAmount = BigInt(1000000000000000000);
-          const rewardMetadataObjectAddress = "0x4a57143524de5d20f5c8ce30762ceffea8810b7c833853b7378d860720d64875"; // BANANA A
+          <div className="flex flex-col gap-2">
+            {stakingInfo?.stakedNfts.map((item) => (
+              <div key={item.nft_object_address} className="flex flex-row gap-2">
+                <div>{item.nft_object_address}</div>
 
-          await executeCreateStaking(
-            stakingWalletClient.create_staking({
-              type_arguments: [],
-              arguments: [dpr, colId, inititialStakingAmount, rewardMetadataObjectAddress, true],
-            }),
-          );
-        }}
-      >
-        {creatingStaking ? "Creating..." : "Create staking"}
-      </Button>
+                <Button
+                  onClick={async () => {
+                    await executeStakeUnstakeNFT(
+                      nftStakingWalletClient?.unstake_token({
+                        arguments: [item.nft_object_address],
+                        type_arguments: [],
+                      }),
+                    );
+                    await refetchStakingInfo();
+                  }}
+                >
+                  Unstake
+                </Button>
 
-      <div>
-        <h2 className="text-2xl font-bold">Stake NFTs</h2>
-        <div className="flex flex-col gap-2">
-          {collectionNFTs?.current_token_ownerships_v2.map((item) => (
-            <div key={item.token_data_id} className="flex flex-row gap-2">
-              <div>{item.token_data_id}</div>
-              <Button
-                key={item.token_data_id}
-                onClick={() => {
-                  if (!stakingWalletClient) {
-                    return;
-                  }
-                  executeTransaction(
-                    stakingWalletClient.stake_token({
-                      arguments: [item.token_data_id as `0x${string}`],
-                      type_arguments: [],
-                    }),
-                  );
-                }}
-              >
-                Stake
-              </Button>
-            </div>
-          ))}
-        </div>
-      </div>
+                <Button
+                  onClick={async () => {
+                    await executeStakeUnstakeNFT(
+                      nftStakingWalletClient?.claim_reward({
+                        arguments: [item.nft_object_address],
+                        type_arguments: [],
+                      }),
+                    );
+                    await refetchStakingInfo();
+                  }}
+                >
+                  Claim
+                </Button>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </GlassCard>
+
+      <GlassCard className="flex flex-col gap-2 mt-4 pt-4">
+        <CardHeader>
+          <h2 className="text-2xl font-bold">Stake NFTs</h2>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-2">
+            {collectionNFTs?.current_token_ownerships_v2.map((item) => (
+              <div key={item.token_data_id} className="flex flex-row gap-2">
+                <div>{item.token_data_id}</div>
+                <Button
+                  key={item.token_data_id}
+                  onClick={async () => {
+                    await executeStakeUnstakeNFT(
+                      nftStakingWalletClient?.stake_token({
+                        arguments: [item.token_data_id as `0x${string}`],
+                        type_arguments: [],
+                      }),
+                    );
+                    await refetchStakingInfo();
+                  }}
+                >
+                  Stake
+                </Button>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </GlassCard>
     </>
   );
 }
