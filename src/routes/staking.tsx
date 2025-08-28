@@ -1,15 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { nftStakingClient } from "@/lib/aptos";
+import { aptos, nftStakingClient } from "@/lib/aptos";
 import { useClients } from "@/hooks/useClients";
-import { STAKING_MODULE_ADDRESS } from "@/constants";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useTransaction } from "@/hooks/useTransaction";
 import { useCollectionNFTs } from "@/hooks/useCollectionNFTs";
 import { GlassCard } from "@/components/GlassCard";
 import { CardContent, CardHeader } from "@/components/ui/card";
+import { toDecimals } from "@/lib/utils";
+import { NFTThumbnail } from "@/components/NFTThumbnail";
 
 export const Route = createFileRoute("/staking")({
   component: RouteComponent,
@@ -17,9 +16,6 @@ export const Route = createFileRoute("/staking")({
 
 function RouteComponent() {
   const { address, nftStakingWalletClient, stakingWalletClient } = useClients();
-  const isAdmin = address === STAKING_MODULE_ADDRESS;
-  const [collectionId, setCollectionId] = useState<string>("");
-  const { transactionInProgress: addingCollection, executeTransaction: executeAddCollection } = useTransaction();
   const { executeTransaction: executeStakeUnstakeNFT } = useTransaction();
 
   const { data: stakingInfo, refetch: refetchStakingInfo } = useQuery({
@@ -35,9 +31,21 @@ function RouteComponent() {
         typeArguments: [],
       });
 
-      const [rewards] = await nftStakingClient.view.get_user_accumulated_rewards({
-        functionArguments: [address as `0x${string}`, "0x2d5a4b63d34407ba0270ec3532a675ac13d74e3b0f71356ef25cd6c36e7e088e"],
-        typeArguments: [],
+      const rewards = await nftStakingClient.view
+        .get_all_user_accumulated_rewards({
+          functionArguments: [address as `0x${string}`],
+          typeArguments: [],
+        })
+        .then((r) => r[0] as Array<{ fa_address: `0x${string}`; rewards: string }>);
+
+      const metadata = await aptos.getFungibleAssetMetadata({
+        options: {
+          where: {
+            asset_type: {
+              _in: rewards.map((r) => r.fa_address),
+            },
+          },
+        },
       });
 
       return {
@@ -47,7 +55,10 @@ function RouteComponent() {
           collection_addr: `0x${string}`;
           staked_at: string;
         }>,
-        rewards: Number(rewards),
+        rewards: rewards.map((i) => ({
+          ...i,
+          metadata: metadata.find((m) => m.asset_type === i.fa_address),
+        })),
       };
     },
   });
@@ -58,6 +69,15 @@ function RouteComponent() {
     collectionIds: stakingInfo?.stakingInfo ?? [],
   });
 
+  const { data: stakedNFTs, isFetched: isStakedNFTsFetched } = useCollectionNFTs({
+    enabled: !!stakingInfo && stakingInfo.stakedNfts.length > 0,
+    onlyOwned: false,
+    collectionIds: stakingInfo?.stakingInfo ?? [],
+    tokenIds: stakingInfo?.stakedNfts.map((item) => item.nft_object_address) ?? [],
+  });
+
+  if (!address) return <div>Connect your wallet to view your staking info</div>;
+
   return (
     <>
       <div>
@@ -65,92 +85,81 @@ function RouteComponent() {
         <div className="flex flex-col gap-2">{stakingInfo?.stakingInfo.map((item) => <div key={item}>{item}</div>)}</div>
       </div>
 
-      <div>
-        <h2 className="text-2xl font-bold">Is admin</h2>
-        <div>{isAdmin ? "Yes" : "No"}</div>
-      </div>
-
-      {isAdmin && (
-        <div className="flex flex-col gap-2">
-          <h2 className="text-2xl font-bold">Add allowed collection</h2>
-
-          <div className="flex flex-row gap-2 ">
-            <Input name="collectionId" value={collectionId} onChange={(e) => setCollectionId(e.target.value)} />
-
-            <Button
-              onClick={async () => {
-                await executeAddCollection(
-                  nftStakingWalletClient?.add_allowed_collection({
-                    arguments: [collectionId as `0x${string}`],
-                    type_arguments: [],
-                  }),
-                );
-                await refetchStakingInfo();
-              }}
-            >
-              {addingCollection ? "Adding..." : "Add allowed collection"}
-            </Button>
-          </div>
-        </div>
-      )}
-
       <GlassCard className="flex flex-col gap-2 mt-4 pt-4">
         <CardHeader>
           <h2 className="text-2xl font-bold">Staked NFTs</h2>
         </CardHeader>
-        <CardContent>
+        <CardContent className="relative">
           <div className="flex flex-row gap-2">
-            <div>Pending rewards: {stakingInfo?.rewards}</div>
-          </div>
-          <Button
-            onClick={async () => {
-              await executeStakeUnstakeNFT(
-                stakingWalletClient?.claim_rewards({
-                  arguments: [stakingInfo?.stakedNfts.map((item) => item.nft_object_address) ?? []],
-                  type_arguments: [],
-                }),
-              );
-              await refetchStakingInfo();
-            }}
-          >
-            Claim all rewards
-          </Button>
+            {/* NFTs Grid */}
+            <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 pr-4">
+              {stakedNFTs?.current_token_ownerships_v2.map((item) => (
+                <div key={item.token_data_id} className="relative group">
+                  <div className="relative overflow-hidden rounded-lg">
+                    <NFTThumbnail nft={item} />
 
-          <div className="flex flex-col gap-2">
-            {stakingInfo?.stakedNfts.map((item) => (
-              <div key={item.nft_object_address} className="flex flex-row gap-2">
-                <div>{item.nft_object_address}</div>
+                    {/* Overlay Unstake Button */}
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                      <Button
+                        onClick={async () => {
+                          await executeStakeUnstakeNFT(
+                            nftStakingWalletClient?.unstake_token({
+                              arguments: [item.token_data_id as `0x${string}`],
+                              type_arguments: [],
+                            }),
+                          );
+                          await refetchStakingInfo();
+                        }}
+                        className="bg-red-600 hover:bg-red-700 text-white transform scale-90 group-hover:scale-100 transition-transform duration-300"
+                      >
+                        Unstake
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
 
-                <Button
-                  onClick={async () => {
-                    await executeStakeUnstakeNFT(
-                      nftStakingWalletClient?.unstake_token({
-                        arguments: [item.nft_object_address],
-                        type_arguments: [],
-                      }),
-                    );
-                    await refetchStakingInfo();
-                  }}
-                >
-                  Unstake
-                </Button>
+            <div className="flex flex-col gap-2 items">
+              <Button
+                onClick={async () => {
+                  await executeStakeUnstakeNFT(
+                    stakingWalletClient?.claim_rewards({
+                      arguments: [stakingInfo?.stakedNfts.map((item) => item.nft_object_address) ?? []],
+                      type_arguments: [],
+                    }),
+                  );
+                  await refetchStakingInfo();
+                }}
+                className="bg-green-600 hover:bg-green-700 text-white"
+              >
+                Claim all rewards
+              </Button>
 
-                <Button
-                  onClick={async () => {
-                    await executeStakeUnstakeNFT(
-                      nftStakingWalletClient?.claim_reward({
-                        arguments: [item.nft_object_address],
-                        type_arguments: [],
-                      }),
-                    );
-                    await refetchStakingInfo();
-                  }}
-                >
-                  Claim
-                </Button>
+              {/* Rewards Table */}
+              <div className="bg-black/20 backdrop-blur-sm rounded-lg p-3 min-w-[260px]">
+                <div className="space-y-1">
+                  {stakingInfo?.rewards.map((item) => (
+                    <div key={item.fa_address} className="flex flex-col justify-between text-sm">
+                      <span className="font-medium">{item.metadata?.name}</span>
+                      <span className="text-primary">
+                        {toDecimals(Number(item.rewards), item.metadata?.decimals ?? 0).toFixed(item.metadata?.decimals ?? 0)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
+            </div>
           </div>
+
+          {/* Empty State */}
+          {isStakedNFTsFetched && stakedNFTs?.current_token_ownerships_v2.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="text-6xl mb-4">🍌</div>
+              <h3 className="text-xl font-semibold mb-2">No Staked NFTs</h3>
+              <p className="text-gray-400">Stake your NFTs to start earning rewards!</p>
+            </div>
+          )}
         </CardContent>
       </GlassCard>
 
@@ -159,27 +168,43 @@ function RouteComponent() {
           <h2 className="text-2xl font-bold">Stake NFTs</h2>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col gap-2">
+          {/* NFTs Grid */}
+          <div className="grid grid-cols-2 xl:grid-cols-5 gap-4">
             {collectionNFTs?.current_token_ownerships_v2.map((item) => (
-              <div key={item.token_data_id} className="flex flex-row gap-2">
-                <div>{item.token_data_id}</div>
-                <Button
-                  key={item.token_data_id}
-                  onClick={async () => {
-                    await executeStakeUnstakeNFT(
-                      nftStakingWalletClient?.stake_token({
-                        arguments: [item.token_data_id as `0x${string}`],
-                        type_arguments: [],
-                      }),
-                    );
-                    await refetchStakingInfo();
-                  }}
-                >
-                  Stake
-                </Button>
+              <div key={item.token_data_id} className="relative group">
+                <div className="relative overflow-hidden rounded-lg">
+                  <NFTThumbnail nft={item} />
+
+                  {/* Overlay Stake Button */}
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <Button
+                      onClick={async () => {
+                        await executeStakeUnstakeNFT(
+                          nftStakingWalletClient?.stake_token({
+                            arguments: [item.token_data_id as `0x${string}`],
+                            type_arguments: [],
+                          }),
+                        );
+                        await refetchStakingInfo();
+                      }}
+                      className="bg-green-600 hover:bg-green-700 text-white transform scale-90 group-hover:scale-100 transition-transform duration-300"
+                    >
+                      Stake
+                    </Button>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
+
+          {/* Empty State */}
+          {(!collectionNFTs?.current_token_ownerships_v2 || collectionNFTs.current_token_ownerships_v2.length === 0) && (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="text-6xl mb-4">🎨</div>
+              <h3 className="text-xl font-semibold mb-2">No NFTs Available</h3>
+              <p className="text-gray-400">You don't have any NFTs from allowed collections to stake.</p>
+            </div>
+          )}
         </CardContent>
       </GlassCard>
     </>

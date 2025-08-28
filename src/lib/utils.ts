@@ -20,6 +20,14 @@ export function oaptToApt(oapt: string | number): number {
   return Number(oapt) / 1e8;
 }
 
+export function toDecimals(number: number, decimals: number): number {
+  return Number(number) / Math.pow(10, decimals);
+}
+
+export function fromDecimals(number: number, decimals: number): number {
+  return Number(number) * Math.pow(10, decimals);
+}
+
 export function toShortAddress(address: string): string {
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 }
