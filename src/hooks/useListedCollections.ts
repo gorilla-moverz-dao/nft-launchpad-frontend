@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { launchpadClient } from "@/lib/aptos";
 import { graphql } from "@/graphql/gql";
 import { executeGraphQL } from "@/graphql/executeGraphQL";
+import { ensureHexPrefix } from "@/lib/utils";
 
 const query = graphql(`
   query ListedCollections($collection_ids: [String!]!) {
@@ -26,7 +27,7 @@ export const useListedCollections = () => {
         typeArguments: [],
       });
 
-      const collectionIds = registry.map((item) => item.inner);
+      const collectionIds = registry.map((item) => item.inner).map(ensureHexPrefix);
       const collections = await executeGraphQL(query, { collection_ids: collectionIds });
       return collections.current_collections_v2;
     },

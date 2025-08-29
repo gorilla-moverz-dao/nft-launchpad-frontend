@@ -1,6 +1,6 @@
 import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
 import { createSurfClient } from "@thalalabs/surf";
-import { MOVE_NETWORK } from "@/constants";
+import { LAUNCHPAD_MODULE_ADDRESS, MOVE_NETWORK, STAKING_MODULE_ADDRESS } from "@/constants";
 import { ABI as launchpadABI } from "@/abi/nft_launchpad";
 import { ABI as nftReductionManagerABI } from "@/abi/nft_reduction_manager";
 import { ABI as nftStakingABI } from "@/abi/nft_staking";
@@ -16,10 +16,10 @@ const config = new AptosConfig({
 
 // Initialize client
 export const aptos = new Aptos(config);
-export const launchpadClient = createSurfClient(aptos).useABI(launchpadABI);
-export const nftReductionManagerClient = createSurfClient(aptos).useABI(nftReductionManagerABI);
-export const nftStakingClient = createSurfClient(aptos).useABI(nftStakingABI);
-export const stakingClient = createSurfClient(aptos).useABI(stakingABI);
+export const launchpadClient = createSurfClient(aptos).useABI(launchpadABI, LAUNCHPAD_MODULE_ADDRESS);
+export const nftReductionManagerClient = createSurfClient(aptos).useABI(nftReductionManagerABI, LAUNCHPAD_MODULE_ADDRESS);
+export const nftStakingClient = createSurfClient(aptos).useABI(nftStakingABI, STAKING_MODULE_ADDRESS);
+export const stakingClient = createSurfClient(aptos).useABI(stakingABI, LAUNCHPAD_MODULE_ADDRESS);
 
 // Helper function to get account balance
 export const getAccountBalance = async (address: string) => {

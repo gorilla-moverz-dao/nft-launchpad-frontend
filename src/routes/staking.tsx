@@ -7,7 +7,7 @@ import { useTransaction } from "@/hooks/useTransaction";
 import { useCollectionNFTs } from "@/hooks/useCollectionNFTs";
 import { GlassCard } from "@/components/GlassCard";
 import { CardContent, CardHeader } from "@/components/ui/card";
-import { toDecimals } from "@/lib/utils";
+import { ensureHexPrefix, toDecimals } from "@/lib/utils";
 import { NFTThumbnail } from "@/components/NFTThumbnail";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCollections } from "@/hooks/useCollections";
@@ -79,7 +79,7 @@ function RouteComponent() {
           : [];
 
       return {
-        allowedCollections,
+        allowedCollections: allowedCollections.map(ensureHexPrefix),
         stakedNfts: stakedNfts as Array<{
           nft_object_address: `0x${string}`;
           collection_addr: `0x${string}`;
