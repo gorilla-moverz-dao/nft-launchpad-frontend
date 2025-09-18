@@ -9,7 +9,7 @@ const getUserReductionNFTsQuery = graphql(`
       where: {
         owner_address: { _eq: $owner_address }
         current_token_data: { collection_id: { _in: $collection_addresses } }
-        amount: { _gt: 1 }
+        amount: { _gt: 0 }
       }
       order_by: [{ last_transaction_timestamp: desc }]
     ) {
