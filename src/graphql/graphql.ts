@@ -11475,7 +11475,7 @@ export const MintingCollectionsDocument = new TypedDocumentString(`
 export const GetUserReductionNfTsDocument = new TypedDocumentString(`
     query getUserReductionNFTs($owner_address: String!, $collection_addresses: [String!]!) {
   current_token_ownerships_v2(
-    where: {owner_address: {_eq: $owner_address}, current_token_data: {collection_id: {_in: $collection_addresses}}}
+    where: {owner_address: {_eq: $owner_address}, current_token_data: {collection_id: {_in: $collection_addresses}}, amount: {_gt: 1}}
     order_by: [{last_transaction_timestamp: desc}]
   ) {
     token_data_id
