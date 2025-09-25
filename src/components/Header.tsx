@@ -126,11 +126,11 @@ export default function Header() {
                   className="flex items-center gap-2 rounded-lg p-2 focus:outline-none cursor-pointer"
                   style={{ textDecoration: "none" }}
                 >
-                  <img src="/favicon.png" alt="NFT Launchpad Logo" className="h-10 w-10" />
-                  <span className="font-bold text-lg text-white tracking-wide">NFT Launchpad</span>
+                  <img src="/images/asspad-logo-1.png" alt="ASSPAD" className="h-12" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" sideOffset={8} className="border-white/10 bg-black/80 backdrop-blur-xl p-0 shadow-2xl">
+                <img src="/images/asspad-logo-1.png" alt="ASSPAD" className="w-100 p-4 pb-0" />
                 <NavigationMenu />
               </DropdownMenuContent>
             </DropdownMenu>

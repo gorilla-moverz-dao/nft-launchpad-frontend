@@ -21,7 +21,7 @@ export function CollectionBrowser({ path }: { path: "mint" | "collections" }) {
                   src={collection.uri}
                   alt={collection.collection_name}
                   className="w-full h-full object-cover border-white/20 bg-white/10 transition-transform duration-300 group-hover:scale-110"
-                  onError={(e) => (e.currentTarget.src = "/favicon.png")}
+                  onError={(e) => (e.currentTarget.src = "/images/favicon-1.png")}
                 />
               </div>
               <div className="font-semibold text-lg text-foreground truncate w-full" title={collection.collection_name}>

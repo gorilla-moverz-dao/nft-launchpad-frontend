@@ -85,7 +85,7 @@ function RouteComponent() {
                 src={collectionData.collection.uri}
                 alt={collectionData.collection.collection_name}
                 className="w-full h-full object-cover"
-                onError={(e) => (e.currentTarget.src = "/favicon.png")}
+                onError={(e) => (e.currentTarget.src = "/images/favicon-1.png")}
               />
             </div>
             <div className="flex-1 space-y-4">
@@ -175,7 +175,7 @@ function RouteComponent() {
                         src={nft.current_token_data?.token_uri}
                         alt={nft.current_token_data?.token_name || "NFT"}
                         className="w-full h-full object-cover"
-                        onError={(e) => (e.currentTarget.src = collectionData.collection.uri || "/favicon.png")}
+                        onError={(e) => (e.currentTarget.src = collectionData.collection.uri || "/images/favicon-1.png")}
                       />
                     </div>
                     <div className="flex-3">
