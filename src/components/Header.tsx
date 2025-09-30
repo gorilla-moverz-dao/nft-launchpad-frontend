@@ -1,7 +1,7 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { useState } from "react";
-import { Crown, Menu, Palette, Sparkles, Zap } from "lucide-react";
+import { Crown, HelpCircle, Menu, Palette, Sparkles, Zap } from "lucide-react";
 import { WalletSelector } from "./WalletSelector";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 import { Button } from "./ui/button";
@@ -14,7 +14,7 @@ export default function Header() {
   const [navMenuOpen, setNavMenuOpen] = useState(false);
   const location = useLocation();
 
-  const menuItems: Array<{ to: string; icon: React.ElementType; title: string; description: string; accent: string }> = [
+  const menuItems: Array<{ to: string; target?: string; icon: React.ElementType; title: string; description: string; accent: string }> = [
     {
       to: "/",
       icon: Zap,
@@ -43,6 +43,15 @@ export default function Header() {
       accent: "from-emerald-500/20 to-teal-500/20",
     });
   }
+
+  menuItems.push({
+    to: "/support",
+    target: "_blank",
+    icon: HelpCircle,
+    title: "Support",
+    description: "Get help and support",
+    accent: "from-blue-500/20 to-indigo-500/20",
+  });
 
   const NavigationLinks = () => {
     const isActivePath = (path: string) => {
