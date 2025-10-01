@@ -59,7 +59,8 @@ export function MintStageCard({ stage, collectionId, mintBalance, onMintSuccess 
   const isPast = now > end;
 
   const walletBalance = Number(mintBalance?.find((b) => b.stage === stage.name)?.balance || 0);
-  const insufficientBalance = !isLoadingNativeBalance && (!nativeBalance || nativeBalance.balance < oaptToApt(stage.mint_fee));
+  const insufficientBalance =
+    !isLoadingNativeBalance && (!nativeBalance || nativeBalance.balance < oaptToApt(stage.mint_fee_with_reduction));
 
   const handleMintAmountChange = (value: number | undefined) => {
     setMintAmount(value);
