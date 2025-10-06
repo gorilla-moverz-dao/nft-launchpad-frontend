@@ -16,16 +16,22 @@ const query = graphql(`
   }
 `);
 
-export const useMintingCollections = () => {
+type UseMintingCollectionsOptions = {
+  enabled?: boolean;
+};
+
+export const useMintingCollections = (options?: UseMintingCollectionsOptions) => {
+  const { enabled = true } = options ?? {};
   return useQuery({
     queryKey: ["minting-collections"],
+    enabled,
     queryFn: async () => {
       const [registry] = await launchpadClient.view.get_registry({
         functionArguments: [],
         typeArguments: [],
       });
 
-      const collectionIds = registry.map((item) => item.inner);
+      const collectionIds = registry.map((item: any) => item.inner);
       const collections = await executeGraphQL(query, { collection_ids: collectionIds });
       return collections.current_collections_v2;
     },

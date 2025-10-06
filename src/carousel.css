@@ -1,0 +1,59 @@
+.carousel-slide {
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+}
+
+.carousel-slide .carousel-item {
+  transition:
+    left 0.58s cubic-bezier(0.22, 1, 0.36, 1) !important,
+    transform 0.58s cubic-bezier(0.22, 1, 0.36, 1) !important,
+    opacity 0.58s cubic-bezier(0.22, 1, 0.36, 1) !important,
+    box-shadow 0.58s cubic-bezier(0.22, 1, 0.36, 1) !important,
+    filter 0.58s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+/* Carousel positioning using nth-child */
+.carousel-slide .carousel-item:nth-child(1) {
+  top: 50%;
+  left: 0;
+  transform: translate(0, -50%) scale(1.15);
+  z-index: 100;
+}
+
+.carousel-slide .carousel-item:nth-child(2) {
+  top: 50%;
+  left: calc(0% + 300px);
+  transform: translate(0, -50%) scale(0.85);
+  z-index: 90;
+}
+
+.carousel-slide .carousel-item:nth-child(3) {
+  top: 50%;
+  left: calc(0% + 520px);
+  transform: translate(0, -50%) scale(0.75);
+  z-index: 80;
+}
+
+.carousel-slide .carousel-item:nth-child(4) {
+  top: 50%;
+  left: calc(0% + 710px);
+  transform: translate(0, -50%) scale(0.65);
+  z-index: 70;
+}
+
+.carousel-slide .carousel-item:nth-child(n + 5) {
+  top: 50%;
+  left: calc(0% + 880px);
+  transform: translate(0, -50%) scale(0.55);
+  opacity: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.carousel-slide[data-backward-phase="init"] .carousel-item {
+  transition: none !important;
+}
+
+.carousel-slide[data-backward-phase="init"] .carousel-item:nth-child(1) {
+  left: -300px;
+}

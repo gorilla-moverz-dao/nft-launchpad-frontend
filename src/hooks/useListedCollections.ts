@@ -17,9 +17,15 @@ const query = graphql(`
   }
 `);
 
-export const useListedCollections = () => {
+type UseListedCollectionsOptions = {
+  enabled?: boolean;
+};
+
+export const useListedCollections = (options?: UseListedCollectionsOptions) => {
+  const { enabled = true } = options ?? {};
   return useQuery({
     queryKey: ["listed-collections"],
+    enabled,
     queryFn: async () => {
       const [registry] = await launchpadClient.view.get_listed_collections({
         functionArguments: [],
