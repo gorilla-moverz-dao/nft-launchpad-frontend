@@ -141,7 +141,6 @@ type account_transactions {
     """filter the rows returned"""
     where: fungible_asset_activities_bool_exp
   ): [fungible_asset_activities!]!
-  inserted_at: timestamp!
   """An array relationship"""
   token_activities(
     """distinct select on columns"""
@@ -241,7 +240,6 @@ input account_transactions_bool_exp {
   coin_activities_aggregate: coin_activities_aggregate_bool_exp
   delegated_staking_activities: delegated_staking_activities_bool_exp
   fungible_asset_activities: fungible_asset_activities_bool_exp
-  inserted_at: timestamp_comparison_exp
   token_activities: token_activities_bool_exp
   token_activities_aggregate: token_activities_aggregate_bool_exp
   token_activities_v2: token_activities_v2_bool_exp
@@ -253,14 +251,12 @@ input account_transactions_bool_exp {
 """aggregate max on columns"""
 type account_transactions_max_fields {
   account_address: String
-  inserted_at: timestamp
   transaction_version: bigint
 }
 
 """aggregate min on columns"""
 type account_transactions_min_fields {
   account_address: String
-  inserted_at: timestamp
   transaction_version: bigint
 }
 
@@ -270,7 +266,6 @@ input account_transactions_order_by {
   coin_activities_aggregate: coin_activities_aggregate_order_by
   delegated_staking_activities_aggregate: delegated_staking_activities_aggregate_order_by
   fungible_asset_activities_aggregate: fungible_asset_activities_aggregate_order_by
-  inserted_at: order_by
   token_activities_aggregate: token_activities_aggregate_order_by
   token_activities_v2_aggregate: token_activities_v2_aggregate_order_by
   transaction_version: order_by
@@ -283,8 +278,6 @@ select columns of table "account_transactions"
 enum account_transactions_select_column {
   """column name"""
   account_address
-  """column name"""
-  inserted_at
   """column name"""
   transaction_version
 }
@@ -317,7 +310,6 @@ input account_transactions_stream_cursor_input {
 """Initial value of the column from where the streaming should start"""
 input account_transactions_stream_cursor_value_input {
   account_address: String
-  inserted_at: timestamp
   transaction_version: bigint
 }
 
@@ -635,7 +627,7 @@ type address_version_from_events_variance_fields {
 }
 
 """
-columns and relationships of "address_version_from_move_resources"
+columns and relationships of "legacy_migration_v1.address_version_from_move_resources"
 """
 type address_version_from_move_resources {
   address: String
@@ -734,7 +726,7 @@ type address_version_from_move_resources {
 }
 
 """
-aggregated selection of "address_version_from_move_resources"
+aggregated selection of "legacy_migration_v1.address_version_from_move_resources"
 """
 type address_version_from_move_resources_aggregate {
   aggregate: address_version_from_move_resources_aggregate_fields
@@ -742,7 +734,7 @@ type address_version_from_move_resources_aggregate {
 }
 
 """
-aggregate fields of "address_version_from_move_resources"
+aggregate fields of "legacy_migration_v1.address_version_from_move_resources"
 """
 type address_version_from_move_resources_aggregate_fields {
   avg: address_version_from_move_resources_avg_fields
@@ -764,7 +756,7 @@ type address_version_from_move_resources_avg_fields {
 }
 
 """
-Boolean expression to filter rows from the table "address_version_from_move_resources". All fields are combined with a logical 'AND'.
+Boolean expression to filter rows from the table "legacy_migration_v1.address_version_from_move_resources". All fields are combined with a logical 'AND'.
 """
 input address_version_from_move_resources_bool_exp {
   _and: [address_version_from_move_resources_bool_exp!]
@@ -794,7 +786,7 @@ type address_version_from_move_resources_min_fields {
 }
 
 """
-Ordering options when selecting data from "address_version_from_move_resources".
+Ordering options when selecting data from "legacy_migration_v1.address_version_from_move_resources".
 """
 input address_version_from_move_resources_order_by {
   address: order_by
@@ -806,7 +798,7 @@ input address_version_from_move_resources_order_by {
 }
 
 """
-select columns of table "address_version_from_move_resources"
+select columns of table "legacy_migration_v1.address_version_from_move_resources"
 """
 enum address_version_from_move_resources_select_column {
   """column name"""
@@ -894,7 +886,6 @@ type block_metadata_transactions {
     path: String
   ): jsonb!
   id: String!
-  inserted_at: timestamp!
   previous_block_votes_bitvec(
     """JSON select path"""
     path: String
@@ -916,7 +907,6 @@ input block_metadata_transactions_bool_exp {
   epoch: bigint_comparison_exp
   failed_proposer_indices: jsonb_comparison_exp
   id: String_comparison_exp
-  inserted_at: timestamp_comparison_exp
   previous_block_votes_bitvec: jsonb_comparison_exp
   proposer: String_comparison_exp
   round: bigint_comparison_exp
@@ -932,7 +922,6 @@ input block_metadata_transactions_order_by {
   epoch: order_by
   failed_proposer_indices: order_by
   id: order_by
-  inserted_at: order_by
   previous_block_votes_bitvec: order_by
   proposer: order_by
   round: order_by
@@ -952,8 +941,6 @@ enum block_metadata_transactions_select_column {
   failed_proposer_indices
   """column name"""
   id
-  """column name"""
-  inserted_at
   """column name"""
   previous_block_votes_bitvec
   """column name"""
@@ -982,7 +969,6 @@ input block_metadata_transactions_stream_cursor_value_input {
   epoch: bigint
   failed_proposer_indices: jsonb
   id: String
-  inserted_at: timestamp
   previous_block_votes_bitvec: jsonb
   proposer: String
   round: bigint
@@ -991,11 +977,11 @@ input block_metadata_transactions_stream_cursor_value_input {
 }
 
 """
-columns and relationships of "coin_activities"
+columns and relationships of "legacy_migration_v1.coin_activities"
 """
 type coin_activities {
-  activity_type: String!
-  amount: numeric!
+  activity_type: String
+  amount: numeric
   """An array relationship"""
   aptos_names(
     """distinct select on columns"""
@@ -1022,26 +1008,25 @@ type coin_activities {
     """filter the rows returned"""
     where: current_aptos_names_bool_exp
   ): current_aptos_names_aggregate!
-  block_height: bigint!
+  block_height: bigint
   """An object relationship"""
   coin_info: coin_infos
-  coin_type: String!
+  coin_type: String
   entry_function_id_str: String
-  event_account_address: String!
-  event_creation_number: bigint!
+  event_account_address: String
+  event_creation_number: Int
   event_index: bigint
-  event_sequence_number: bigint!
-  inserted_at: timestamp!
-  is_gas_fee: Boolean!
-  is_transaction_success: Boolean!
-  owner_address: String!
-  storage_refund_amount: numeric!
-  transaction_timestamp: timestamp!
-  transaction_version: bigint!
+  event_sequence_number: Int
+  is_gas_fee: Boolean
+  is_transaction_success: Boolean
+  owner_address: String
+  storage_refund_amount: numeric
+  transaction_timestamp: timestamp
+  transaction_version: bigint
 }
 
 """
-aggregated selection of "coin_activities"
+aggregated selection of "legacy_migration_v1.coin_activities"
 """
 type coin_activities_aggregate {
   aggregate: coin_activities_aggregate_fields
@@ -1076,7 +1061,7 @@ input coin_activities_aggregate_bool_exp_count {
 }
 
 """
-aggregate fields of "coin_activities"
+aggregate fields of "legacy_migration_v1.coin_activities"
 """
 type coin_activities_aggregate_fields {
   avg: coin_activities_avg_fields
@@ -1093,7 +1078,7 @@ type coin_activities_aggregate_fields {
 }
 
 """
-order by aggregate values of table "coin_activities"
+order by aggregate values of table "legacy_migration_v1.coin_activities"
 """
 input coin_activities_aggregate_order_by {
   avg: coin_activities_avg_order_by
@@ -1121,7 +1106,7 @@ type coin_activities_avg_fields {
 }
 
 """
-order by avg() on columns of table "coin_activities"
+order by avg() on columns of table "legacy_migration_v1.coin_activities"
 """
 input coin_activities_avg_order_by {
   amount: order_by
@@ -1134,7 +1119,7 @@ input coin_activities_avg_order_by {
 }
 
 """
-Boolean expression to filter rows from the table "coin_activities". All fields are combined with a logical 'AND'.
+Boolean expression to filter rows from the table "legacy_migration_v1.coin_activities". All fields are combined with a logical 'AND'.
 """
 input coin_activities_bool_exp {
   _and: [coin_activities_bool_exp!]
@@ -1149,10 +1134,9 @@ input coin_activities_bool_exp {
   coin_type: String_comparison_exp
   entry_function_id_str: String_comparison_exp
   event_account_address: String_comparison_exp
-  event_creation_number: bigint_comparison_exp
+  event_creation_number: Int_comparison_exp
   event_index: bigint_comparison_exp
-  event_sequence_number: bigint_comparison_exp
-  inserted_at: timestamp_comparison_exp
+  event_sequence_number: Int_comparison_exp
   is_gas_fee: Boolean_comparison_exp
   is_transaction_success: Boolean_comparison_exp
   owner_address: String_comparison_exp
@@ -1169,10 +1153,9 @@ type coin_activities_max_fields {
   coin_type: String
   entry_function_id_str: String
   event_account_address: String
-  event_creation_number: bigint
+  event_creation_number: Int
   event_index: bigint
-  event_sequence_number: bigint
-  inserted_at: timestamp
+  event_sequence_number: Int
   owner_address: String
   storage_refund_amount: numeric
   transaction_timestamp: timestamp
@@ -1180,7 +1163,7 @@ type coin_activities_max_fields {
 }
 
 """
-order by max() on columns of table "coin_activities"
+order by max() on columns of table "legacy_migration_v1.coin_activities"
 """
 input coin_activities_max_order_by {
   activity_type: order_by
@@ -1192,7 +1175,6 @@ input coin_activities_max_order_by {
   event_creation_number: order_by
   event_index: order_by
   event_sequence_number: order_by
-  inserted_at: order_by
   owner_address: order_by
   storage_refund_amount: order_by
   transaction_timestamp: order_by
@@ -1207,10 +1189,9 @@ type coin_activities_min_fields {
   coin_type: String
   entry_function_id_str: String
   event_account_address: String
-  event_creation_number: bigint
+  event_creation_number: Int
   event_index: bigint
-  event_sequence_number: bigint
-  inserted_at: timestamp
+  event_sequence_number: Int
   owner_address: String
   storage_refund_amount: numeric
   transaction_timestamp: timestamp
@@ -1218,7 +1199,7 @@ type coin_activities_min_fields {
 }
 
 """
-order by min() on columns of table "coin_activities"
+order by min() on columns of table "legacy_migration_v1.coin_activities"
 """
 input coin_activities_min_order_by {
   activity_type: order_by
@@ -1230,14 +1211,15 @@ input coin_activities_min_order_by {
   event_creation_number: order_by
   event_index: order_by
   event_sequence_number: order_by
-  inserted_at: order_by
   owner_address: order_by
   storage_refund_amount: order_by
   transaction_timestamp: order_by
   transaction_version: order_by
 }
 
-"""Ordering options when selecting data from "coin_activities"."""
+"""
+Ordering options when selecting data from "legacy_migration_v1.coin_activities".
+"""
 input coin_activities_order_by {
   activity_type: order_by
   amount: order_by
@@ -1250,7 +1232,6 @@ input coin_activities_order_by {
   event_creation_number: order_by
   event_index: order_by
   event_sequence_number: order_by
-  inserted_at: order_by
   is_gas_fee: order_by
   is_transaction_success: order_by
   owner_address: order_by
@@ -1260,7 +1241,7 @@ input coin_activities_order_by {
 }
 
 """
-select columns of table "coin_activities"
+select columns of table "legacy_migration_v1.coin_activities"
 """
 enum coin_activities_select_column {
   """column name"""
@@ -1282,8 +1263,6 @@ enum coin_activities_select_column {
   """column name"""
   event_sequence_number
   """column name"""
-  inserted_at
-  """column name"""
   is_gas_fee
   """column name"""
   is_transaction_success
@@ -1298,7 +1277,7 @@ enum coin_activities_select_column {
 }
 
 """
-select "coin_activities_aggregate_bool_exp_bool_and_arguments_columns" columns of table "coin_activities"
+select "coin_activities_aggregate_bool_exp_bool_and_arguments_columns" columns of table "legacy_migration_v1.coin_activities"
 """
 enum coin_activities_select_column_coin_activities_aggregate_bool_exp_bool_and_arguments_columns {
   """column name"""
@@ -1308,7 +1287,7 @@ enum coin_activities_select_column_coin_activities_aggregate_bool_exp_bool_and_a
 }
 
 """
-select "coin_activities_aggregate_bool_exp_bool_or_arguments_columns" columns of table "coin_activities"
+select "coin_activities_aggregate_bool_exp_bool_or_arguments_columns" columns of table "legacy_migration_v1.coin_activities"
 """
 enum coin_activities_select_column_coin_activities_aggregate_bool_exp_bool_or_arguments_columns {
   """column name"""
@@ -1329,7 +1308,7 @@ type coin_activities_stddev_fields {
 }
 
 """
-order by stddev() on columns of table "coin_activities"
+order by stddev() on columns of table "legacy_migration_v1.coin_activities"
 """
 input coin_activities_stddev_order_by {
   amount: order_by
@@ -1353,7 +1332,7 @@ type coin_activities_stddev_pop_fields {
 }
 
 """
-order by stddev_pop() on columns of table "coin_activities"
+order by stddev_pop() on columns of table "legacy_migration_v1.coin_activities"
 """
 input coin_activities_stddev_pop_order_by {
   amount: order_by
@@ -1377,7 +1356,7 @@ type coin_activities_stddev_samp_fields {
 }
 
 """
-order by stddev_samp() on columns of table "coin_activities"
+order by stddev_samp() on columns of table "legacy_migration_v1.coin_activities"
 """
 input coin_activities_stddev_samp_order_by {
   amount: order_by
@@ -1407,10 +1386,9 @@ input coin_activities_stream_cursor_value_input {
   coin_type: String
   entry_function_id_str: String
   event_account_address: String
-  event_creation_number: bigint
+  event_creation_number: Int
   event_index: bigint
-  event_sequence_number: bigint
-  inserted_at: timestamp
+  event_sequence_number: Int
   is_gas_fee: Boolean
   is_transaction_success: Boolean
   owner_address: String
@@ -1423,15 +1401,15 @@ input coin_activities_stream_cursor_value_input {
 type coin_activities_sum_fields {
   amount: numeric
   block_height: bigint
-  event_creation_number: bigint
+  event_creation_number: Int
   event_index: bigint
-  event_sequence_number: bigint
+  event_sequence_number: Int
   storage_refund_amount: numeric
   transaction_version: bigint
 }
 
 """
-order by sum() on columns of table "coin_activities"
+order by sum() on columns of table "legacy_migration_v1.coin_activities"
 """
 input coin_activities_sum_order_by {
   amount: order_by
@@ -1455,7 +1433,7 @@ type coin_activities_var_pop_fields {
 }
 
 """
-order by var_pop() on columns of table "coin_activities"
+order by var_pop() on columns of table "legacy_migration_v1.coin_activities"
 """
 input coin_activities_var_pop_order_by {
   amount: order_by
@@ -1479,7 +1457,7 @@ type coin_activities_var_samp_fields {
 }
 
 """
-order by var_samp() on columns of table "coin_activities"
+order by var_samp() on columns of table "legacy_migration_v1.coin_activities"
 """
 input coin_activities_var_samp_order_by {
   amount: order_by
@@ -1503,7 +1481,7 @@ type coin_activities_variance_fields {
 }
 
 """
-order by variance() on columns of table "coin_activities"
+order by variance() on columns of table "legacy_migration_v1.coin_activities"
 """
 input coin_activities_variance_order_by {
   amount: order_by
@@ -1516,20 +1494,19 @@ input coin_activities_variance_order_by {
 }
 
 """
-columns and relationships of "coin_balances"
+columns and relationships of "legacy_migration_v1.coin_balances"
 """
 type coin_balances {
-  amount: numeric!
-  coin_type: String!
-  coin_type_hash: String!
-  inserted_at: timestamp!
-  owner_address: String!
-  transaction_timestamp: timestamp!
-  transaction_version: bigint!
+  amount: numeric
+  coin_type: String
+  coin_type_hash: String
+  owner_address: String
+  transaction_timestamp: timestamp
+  transaction_version: bigint
 }
 
 """
-Boolean expression to filter rows from the table "coin_balances". All fields are combined with a logical 'AND'.
+Boolean expression to filter rows from the table "legacy_migration_v1.coin_balances". All fields are combined with a logical 'AND'.
 """
 input coin_balances_bool_exp {
   _and: [coin_balances_bool_exp!]
@@ -1538,25 +1515,25 @@ input coin_balances_bool_exp {
   amount: numeric_comparison_exp
   coin_type: String_comparison_exp
   coin_type_hash: String_comparison_exp
-  inserted_at: timestamp_comparison_exp
   owner_address: String_comparison_exp
   transaction_timestamp: timestamp_comparison_exp
   transaction_version: bigint_comparison_exp
 }
 
-"""Ordering options when selecting data from "coin_balances"."""
+"""
+Ordering options when selecting data from "legacy_migration_v1.coin_balances".
+"""
 input coin_balances_order_by {
   amount: order_by
   coin_type: order_by
   coin_type_hash: order_by
-  inserted_at: order_by
   owner_address: order_by
   transaction_timestamp: order_by
   transaction_version: order_by
 }
 
 """
-select columns of table "coin_balances"
+select columns of table "legacy_migration_v1.coin_balances"
 """
 enum coin_balances_select_column {
   """column name"""
@@ -1565,8 +1542,6 @@ enum coin_balances_select_column {
   coin_type
   """column name"""
   coin_type_hash
-  """column name"""
-  inserted_at
   """column name"""
   owner_address
   """column name"""
@@ -1590,31 +1565,29 @@ input coin_balances_stream_cursor_value_input {
   amount: numeric
   coin_type: String
   coin_type_hash: String
-  inserted_at: timestamp
   owner_address: String
   transaction_timestamp: timestamp
   transaction_version: bigint
 }
 
 """
-columns and relationships of "coin_infos"
+columns and relationships of "legacy_migration_v1.coin_infos"
 """
 type coin_infos {
-  coin_type: String!
-  coin_type_hash: String!
-  creator_address: String!
-  decimals: Int!
-  inserted_at: timestamp!
-  name: String!
+  coin_type: String
+  coin_type_hash: String
+  creator_address: String
+  decimals: Int
+  name: String
   supply_aggregator_table_handle: String
   supply_aggregator_table_key: String
-  symbol: String!
-  transaction_created_timestamp: timestamp!
-  transaction_version_created: bigint!
+  symbol: String
+  transaction_created_timestamp: timestamp
+  transaction_version_created: bigint
 }
 
 """
-Boolean expression to filter rows from the table "coin_infos". All fields are combined with a logical 'AND'.
+Boolean expression to filter rows from the table "legacy_migration_v1.coin_infos". All fields are combined with a logical 'AND'.
 """
 input coin_infos_bool_exp {
   _and: [coin_infos_bool_exp!]
@@ -1624,7 +1597,6 @@ input coin_infos_bool_exp {
   coin_type_hash: String_comparison_exp
   creator_address: String_comparison_exp
   decimals: Int_comparison_exp
-  inserted_at: timestamp_comparison_exp
   name: String_comparison_exp
   supply_aggregator_table_handle: String_comparison_exp
   supply_aggregator_table_key: String_comparison_exp
@@ -1633,13 +1605,14 @@ input coin_infos_bool_exp {
   transaction_version_created: bigint_comparison_exp
 }
 
-"""Ordering options when selecting data from "coin_infos"."""
+"""
+Ordering options when selecting data from "legacy_migration_v1.coin_infos".
+"""
 input coin_infos_order_by {
   coin_type: order_by
   coin_type_hash: order_by
   creator_address: order_by
   decimals: order_by
-  inserted_at: order_by
   name: order_by
   supply_aggregator_table_handle: order_by
   supply_aggregator_table_key: order_by
@@ -1649,7 +1622,7 @@ input coin_infos_order_by {
 }
 
 """
-select columns of table "coin_infos"
+select columns of table "legacy_migration_v1.coin_infos"
 """
 enum coin_infos_select_column {
   """column name"""
@@ -1660,8 +1633,6 @@ enum coin_infos_select_column {
   creator_address
   """column name"""
   decimals
-  """column name"""
-  inserted_at
   """column name"""
   name
   """column name"""
@@ -1692,7 +1663,6 @@ input coin_infos_stream_cursor_value_input {
   coin_type_hash: String
   creator_address: String
   decimals: Int
-  inserted_at: timestamp
   name: String
   supply_aggregator_table_handle: String
   supply_aggregator_table_key: String
@@ -1707,7 +1677,6 @@ columns and relationships of "coin_supply"
 type coin_supply {
   coin_type: String!
   coin_type_hash: String!
-  inserted_at: timestamp!
   supply: numeric!
   transaction_epoch: bigint!
   transaction_timestamp: timestamp!
@@ -1723,7 +1692,6 @@ input coin_supply_bool_exp {
   _or: [coin_supply_bool_exp!]
   coin_type: String_comparison_exp
   coin_type_hash: String_comparison_exp
-  inserted_at: timestamp_comparison_exp
   supply: numeric_comparison_exp
   transaction_epoch: bigint_comparison_exp
   transaction_timestamp: timestamp_comparison_exp
@@ -1734,7 +1702,6 @@ input coin_supply_bool_exp {
 input coin_supply_order_by {
   coin_type: order_by
   coin_type_hash: order_by
-  inserted_at: order_by
   supply: order_by
   transaction_epoch: order_by
   transaction_timestamp: order_by
@@ -1749,8 +1716,6 @@ enum coin_supply_select_column {
   coin_type
   """column name"""
   coin_type_hash
-  """column name"""
-  inserted_at
   """column name"""
   supply
   """column name"""
@@ -1775,7 +1740,6 @@ input coin_supply_stream_cursor_input {
 input coin_supply_stream_cursor_value_input {
   coin_type: String
   coin_type_hash: String
-  inserted_at: timestamp
   supply: numeric
   transaction_epoch: bigint
   transaction_timestamp: timestamp
@@ -1783,27 +1747,26 @@ input coin_supply_stream_cursor_value_input {
 }
 
 """
-columns and relationships of "collection_datas"
+columns and relationships of "legacy_migration_v1.collection_datas"
 """
 type collection_datas {
-  collection_data_id_hash: String!
-  collection_name: String!
-  creator_address: String!
-  description: String!
-  description_mutable: Boolean!
-  inserted_at: timestamp!
-  maximum: numeric!
-  maximum_mutable: Boolean!
-  metadata_uri: String!
-  supply: numeric!
-  table_handle: String!
-  transaction_timestamp: timestamp!
-  transaction_version: bigint!
-  uri_mutable: Boolean!
+  collection_data_id_hash: String
+  collection_name: String
+  creator_address: String
+  description: String
+  description_mutable: Boolean
+  maximum: numeric
+  maximum_mutable: Boolean
+  metadata_uri: String
+  supply: numeric
+  table_handle: String
+  transaction_timestamp: timestamp
+  transaction_version: bigint
+  uri_mutable: Boolean
 }
 
 """
-Boolean expression to filter rows from the table "collection_datas". All fields are combined with a logical 'AND'.
+Boolean expression to filter rows from the table "legacy_migration_v1.collection_datas". All fields are combined with a logical 'AND'.
 """
 input collection_datas_bool_exp {
   _and: [collection_datas_bool_exp!]
@@ -1814,7 +1777,6 @@ input collection_datas_bool_exp {
   creator_address: String_comparison_exp
   description: String_comparison_exp
   description_mutable: Boolean_comparison_exp
-  inserted_at: timestamp_comparison_exp
   maximum: numeric_comparison_exp
   maximum_mutable: Boolean_comparison_exp
   metadata_uri: String_comparison_exp
@@ -1825,14 +1787,15 @@ input collection_datas_bool_exp {
   uri_mutable: Boolean_comparison_exp
 }
 
-"""Ordering options when selecting data from "collection_datas"."""
+"""
+Ordering options when selecting data from "legacy_migration_v1.collection_datas".
+"""
 input collection_datas_order_by {
   collection_data_id_hash: order_by
   collection_name: order_by
   creator_address: order_by
   description: order_by
   description_mutable: order_by
-  inserted_at: order_by
   maximum: order_by
   maximum_mutable: order_by
   metadata_uri: order_by
@@ -1844,7 +1807,7 @@ input collection_datas_order_by {
 }
 
 """
-select columns of table "collection_datas"
+select columns of table "legacy_migration_v1.collection_datas"
 """
 enum collection_datas_select_column {
   """column name"""
@@ -1857,8 +1820,6 @@ enum collection_datas_select_column {
   description
   """column name"""
   description_mutable
-  """column name"""
-  inserted_at
   """column name"""
   maximum
   """column name"""
@@ -1894,7 +1855,6 @@ input collection_datas_stream_cursor_value_input {
   creator_address: String
   description: String
   description_mutable: Boolean
-  inserted_at: timestamp
   maximum: numeric
   maximum_mutable: Boolean
   metadata_uri: String
@@ -1906,7 +1866,7 @@ input collection_datas_stream_cursor_value_input {
 }
 
 """
-columns and relationships of "current_ans_lookup"
+columns and relationships of "legacy_migration_v1.current_ans_lookup"
 """
 type current_ans_lookup {
   """An array relationship"""
@@ -1935,18 +1895,17 @@ type current_ans_lookup {
     """filter the rows returned"""
     where: current_token_ownerships_bool_exp
   ): current_token_ownerships_aggregate!
-  domain: String!
-  expiration_timestamp: timestamp!
-  inserted_at: timestamp!
-  is_deleted: Boolean!
-  last_transaction_version: bigint!
+  domain: String
+  expiration_timestamp: timestamp
+  is_deleted: Boolean
+  last_transaction_version: bigint
   registered_address: String
-  subdomain: String!
-  token_name: String!
+  subdomain: String
+  token_name: String
 }
 
 """
-Boolean expression to filter rows from the table "current_ans_lookup". All fields are combined with a logical 'AND'.
+Boolean expression to filter rows from the table "legacy_migration_v1.current_ans_lookup". All fields are combined with a logical 'AND'.
 """
 input current_ans_lookup_bool_exp {
   _and: [current_ans_lookup_bool_exp!]
@@ -1956,7 +1915,6 @@ input current_ans_lookup_bool_exp {
   all_token_ownerships_aggregate: current_token_ownerships_aggregate_bool_exp
   domain: String_comparison_exp
   expiration_timestamp: timestamp_comparison_exp
-  inserted_at: timestamp_comparison_exp
   is_deleted: Boolean_comparison_exp
   last_transaction_version: bigint_comparison_exp
   registered_address: String_comparison_exp
@@ -1964,12 +1922,13 @@ input current_ans_lookup_bool_exp {
   token_name: String_comparison_exp
 }
 
-"""Ordering options when selecting data from "current_ans_lookup"."""
+"""
+Ordering options when selecting data from "legacy_migration_v1.current_ans_lookup".
+"""
 input current_ans_lookup_order_by {
   all_token_ownerships_aggregate: current_token_ownerships_aggregate_order_by
   domain: order_by
   expiration_timestamp: order_by
-  inserted_at: order_by
   is_deleted: order_by
   last_transaction_version: order_by
   registered_address: order_by
@@ -1978,15 +1937,13 @@ input current_ans_lookup_order_by {
 }
 
 """
-select columns of table "current_ans_lookup"
+select columns of table "legacy_migration_v1.current_ans_lookup"
 """
 enum current_ans_lookup_select_column {
   """column name"""
   domain
   """column name"""
   expiration_timestamp
-  """column name"""
-  inserted_at
   """column name"""
   is_deleted
   """column name"""
@@ -2013,7 +1970,6 @@ input current_ans_lookup_stream_cursor_input {
 input current_ans_lookup_stream_cursor_value_input {
   domain: String
   expiration_timestamp: timestamp
-  inserted_at: timestamp
   is_deleted: Boolean
   last_transaction_version: bigint
   registered_address: String
@@ -2027,7 +1983,6 @@ columns and relationships of "current_ans_lookup_v2"
 type current_ans_lookup_v2 {
   domain: String!
   expiration_timestamp: timestamp!
-  inserted_at: timestamp!
   is_deleted: Boolean!
   last_transaction_version: bigint!
   registered_address: String
@@ -2045,7 +2000,6 @@ input current_ans_lookup_v2_bool_exp {
   _or: [current_ans_lookup_v2_bool_exp!]
   domain: String_comparison_exp
   expiration_timestamp: timestamp_comparison_exp
-  inserted_at: timestamp_comparison_exp
   is_deleted: Boolean_comparison_exp
   last_transaction_version: bigint_comparison_exp
   registered_address: String_comparison_exp
@@ -2058,7 +2012,6 @@ input current_ans_lookup_v2_bool_exp {
 input current_ans_lookup_v2_order_by {
   domain: order_by
   expiration_timestamp: order_by
-  inserted_at: order_by
   is_deleted: order_by
   last_transaction_version: order_by
   registered_address: order_by
@@ -2075,8 +2028,6 @@ enum current_ans_lookup_v2_select_column {
   domain
   """column name"""
   expiration_timestamp
-  """column name"""
-  inserted_at
   """column name"""
   is_deleted
   """column name"""
@@ -2105,96 +2056,6 @@ input current_ans_lookup_v2_stream_cursor_input {
 input current_ans_lookup_v2_stream_cursor_value_input {
   domain: String
   expiration_timestamp: timestamp
-  inserted_at: timestamp
-  is_deleted: Boolean
-  last_transaction_version: bigint
-  registered_address: String
-  subdomain: String
-  token_name: String
-  token_standard: String
-}
-
-"""
-columns and relationships of "current_ans_primary_name_v2"
-"""
-type current_ans_primary_name_v2 {
-  domain: String
-  inserted_at: timestamp!
-  is_deleted: Boolean!
-  last_transaction_version: bigint!
-  registered_address: String!
-  subdomain: String
-  token_name: String
-  token_standard: String!
-}
-
-"""
-Boolean expression to filter rows from the table "current_ans_primary_name_v2". All fields are combined with a logical 'AND'.
-"""
-input current_ans_primary_name_v2_bool_exp {
-  _and: [current_ans_primary_name_v2_bool_exp!]
-  _not: current_ans_primary_name_v2_bool_exp
-  _or: [current_ans_primary_name_v2_bool_exp!]
-  domain: String_comparison_exp
-  inserted_at: timestamp_comparison_exp
-  is_deleted: Boolean_comparison_exp
-  last_transaction_version: bigint_comparison_exp
-  registered_address: String_comparison_exp
-  subdomain: String_comparison_exp
-  token_name: String_comparison_exp
-  token_standard: String_comparison_exp
-}
-
-"""
-Ordering options when selecting data from "current_ans_primary_name_v2".
-"""
-input current_ans_primary_name_v2_order_by {
-  domain: order_by
-  inserted_at: order_by
-  is_deleted: order_by
-  last_transaction_version: order_by
-  registered_address: order_by
-  subdomain: order_by
-  token_name: order_by
-  token_standard: order_by
-}
-
-"""
-select columns of table "current_ans_primary_name_v2"
-"""
-enum current_ans_primary_name_v2_select_column {
-  """column name"""
-  domain
-  """column name"""
-  inserted_at
-  """column name"""
-  is_deleted
-  """column name"""
-  last_transaction_version
-  """column name"""
-  registered_address
-  """column name"""
-  subdomain
-  """column name"""
-  token_name
-  """column name"""
-  token_standard
-}
-
-"""
-Streaming cursor of the table "current_ans_primary_name_v2"
-"""
-input current_ans_primary_name_v2_stream_cursor_input {
-  """Stream column input with initial value"""
-  initial_value: current_ans_primary_name_v2_stream_cursor_value_input!
-  """cursor ordering"""
-  ordering: cursor_ordering
-}
-
-"""Initial value of the column from where the streaming should start"""
-input current_ans_primary_name_v2_stream_cursor_value_input {
-  domain: String
-  inserted_at: timestamp
   is_deleted: Boolean
   last_transaction_version: bigint
   registered_address: String
@@ -2208,6 +2069,7 @@ columns and relationships of "current_aptos_names"
 """
 type current_aptos_names {
   domain: String
+  domain_expiration_timestamp: timestamp
   domain_with_suffix: String
   expiration_timestamp: timestamp
   is_active: Boolean
@@ -2215,8 +2077,10 @@ type current_aptos_names {
   is_domain_owner: current_aptos_names
   is_primary: Boolean
   last_transaction_version: bigint
+  owner_address: String
   registered_address: String
   subdomain: String
+  subdomain_expiration_policy: bigint
   token_name: String
   token_standard: String
 }
@@ -2293,6 +2157,7 @@ input current_aptos_names_aggregate_order_by {
 """aggregate avg on columns"""
 type current_aptos_names_avg_fields {
   last_transaction_version: Float
+  subdomain_expiration_policy: Float
 }
 
 """
@@ -2300,6 +2165,7 @@ order by avg() on columns of table "current_aptos_names"
 """
 input current_aptos_names_avg_order_by {
   last_transaction_version: order_by
+  subdomain_expiration_policy: order_by
 }
 
 """
@@ -2310,14 +2176,17 @@ input current_aptos_names_bool_exp {
   _not: current_aptos_names_bool_exp
   _or: [current_aptos_names_bool_exp!]
   domain: String_comparison_exp
+  domain_expiration_timestamp: timestamp_comparison_exp
   domain_with_suffix: String_comparison_exp
   expiration_timestamp: timestamp_comparison_exp
   is_active: Boolean_comparison_exp
   is_domain_owner: current_aptos_names_bool_exp
   is_primary: Boolean_comparison_exp
   last_transaction_version: bigint_comparison_exp
+  owner_address: String_comparison_exp
   registered_address: String_comparison_exp
   subdomain: String_comparison_exp
+  subdomain_expiration_policy: bigint_comparison_exp
   token_name: String_comparison_exp
   token_standard: String_comparison_exp
 }
@@ -2325,11 +2194,14 @@ input current_aptos_names_bool_exp {
 """aggregate max on columns"""
 type current_aptos_names_max_fields {
   domain: String
+  domain_expiration_timestamp: timestamp
   domain_with_suffix: String
   expiration_timestamp: timestamp
   last_transaction_version: bigint
+  owner_address: String
   registered_address: String
   subdomain: String
+  subdomain_expiration_policy: bigint
   token_name: String
   token_standard: String
 }
@@ -2339,11 +2211,14 @@ order by max() on columns of table "current_aptos_names"
 """
 input current_aptos_names_max_order_by {
   domain: order_by
+  domain_expiration_timestamp: order_by
   domain_with_suffix: order_by
   expiration_timestamp: order_by
   last_transaction_version: order_by
+  owner_address: order_by
   registered_address: order_by
   subdomain: order_by
+  subdomain_expiration_policy: order_by
   token_name: order_by
   token_standard: order_by
 }
@@ -2351,11 +2226,14 @@ input current_aptos_names_max_order_by {
 """aggregate min on columns"""
 type current_aptos_names_min_fields {
   domain: String
+  domain_expiration_timestamp: timestamp
   domain_with_suffix: String
   expiration_timestamp: timestamp
   last_transaction_version: bigint
+  owner_address: String
   registered_address: String
   subdomain: String
+  subdomain_expiration_policy: bigint
   token_name: String
   token_standard: String
 }
@@ -2365,11 +2243,14 @@ order by min() on columns of table "current_aptos_names"
 """
 input current_aptos_names_min_order_by {
   domain: order_by
+  domain_expiration_timestamp: order_by
   domain_with_suffix: order_by
   expiration_timestamp: order_by
   last_transaction_version: order_by
+  owner_address: order_by
   registered_address: order_by
   subdomain: order_by
+  subdomain_expiration_policy: order_by
   token_name: order_by
   token_standard: order_by
 }
@@ -2377,14 +2258,17 @@ input current_aptos_names_min_order_by {
 """Ordering options when selecting data from "current_aptos_names"."""
 input current_aptos_names_order_by {
   domain: order_by
+  domain_expiration_timestamp: order_by
   domain_with_suffix: order_by
   expiration_timestamp: order_by
   is_active: order_by
   is_domain_owner: current_aptos_names_order_by
   is_primary: order_by
   last_transaction_version: order_by
+  owner_address: order_by
   registered_address: order_by
   subdomain: order_by
+  subdomain_expiration_policy: order_by
   token_name: order_by
   token_standard: order_by
 }
@@ -2396,6 +2280,8 @@ enum current_aptos_names_select_column {
   """column name"""
   domain
   """column name"""
+  domain_expiration_timestamp
+  """column name"""
   domain_with_suffix
   """column name"""
   expiration_timestamp
@@ -2406,9 +2292,13 @@ enum current_aptos_names_select_column {
   """column name"""
   last_transaction_version
   """column name"""
+  owner_address
+  """column name"""
   registered_address
   """column name"""
   subdomain
+  """column name"""
+  subdomain_expiration_policy
   """column name"""
   token_name
   """column name"""
@@ -2438,6 +2328,7 @@ enum current_aptos_names_select_column_current_aptos_names_aggregate_bool_exp_bo
 """aggregate stddev on columns"""
 type current_aptos_names_stddev_fields {
   last_transaction_version: Float
+  subdomain_expiration_policy: Float
 }
 
 """
@@ -2445,11 +2336,13 @@ order by stddev() on columns of table "current_aptos_names"
 """
 input current_aptos_names_stddev_order_by {
   last_transaction_version: order_by
+  subdomain_expiration_policy: order_by
 }
 
 """aggregate stddev_pop on columns"""
 type current_aptos_names_stddev_pop_fields {
   last_transaction_version: Float
+  subdomain_expiration_policy: Float
 }
 
 """
@@ -2457,11 +2350,13 @@ order by stddev_pop() on columns of table "current_aptos_names"
 """
 input current_aptos_names_stddev_pop_order_by {
   last_transaction_version: order_by
+  subdomain_expiration_policy: order_by
 }
 
 """aggregate stddev_samp on columns"""
 type current_aptos_names_stddev_samp_fields {
   last_transaction_version: Float
+  subdomain_expiration_policy: Float
 }
 
 """
@@ -2469,6 +2364,7 @@ order by stddev_samp() on columns of table "current_aptos_names"
 """
 input current_aptos_names_stddev_samp_order_by {
   last_transaction_version: order_by
+  subdomain_expiration_policy: order_by
 }
 
 """
@@ -2484,13 +2380,16 @@ input current_aptos_names_stream_cursor_input {
 """Initial value of the column from where the streaming should start"""
 input current_aptos_names_stream_cursor_value_input {
   domain: String
+  domain_expiration_timestamp: timestamp
   domain_with_suffix: String
   expiration_timestamp: timestamp
   is_active: Boolean
   is_primary: Boolean
   last_transaction_version: bigint
+  owner_address: String
   registered_address: String
   subdomain: String
+  subdomain_expiration_policy: bigint
   token_name: String
   token_standard: String
 }
@@ -2498,6 +2397,7 @@ input current_aptos_names_stream_cursor_value_input {
 """aggregate sum on columns"""
 type current_aptos_names_sum_fields {
   last_transaction_version: bigint
+  subdomain_expiration_policy: bigint
 }
 
 """
@@ -2505,11 +2405,13 @@ order by sum() on columns of table "current_aptos_names"
 """
 input current_aptos_names_sum_order_by {
   last_transaction_version: order_by
+  subdomain_expiration_policy: order_by
 }
 
 """aggregate var_pop on columns"""
 type current_aptos_names_var_pop_fields {
   last_transaction_version: Float
+  subdomain_expiration_policy: Float
 }
 
 """
@@ -2517,11 +2419,13 @@ order by var_pop() on columns of table "current_aptos_names"
 """
 input current_aptos_names_var_pop_order_by {
   last_transaction_version: order_by
+  subdomain_expiration_policy: order_by
 }
 
 """aggregate var_samp on columns"""
 type current_aptos_names_var_samp_fields {
   last_transaction_version: Float
+  subdomain_expiration_policy: Float
 }
 
 """
@@ -2529,11 +2433,13 @@ order by var_samp() on columns of table "current_aptos_names"
 """
 input current_aptos_names_var_samp_order_by {
   last_transaction_version: order_by
+  subdomain_expiration_policy: order_by
 }
 
 """aggregate variance on columns"""
 type current_aptos_names_variance_fields {
   last_transaction_version: Float
+  subdomain_expiration_policy: Float
 }
 
 """
@@ -2541,25 +2447,25 @@ order by variance() on columns of table "current_aptos_names"
 """
 input current_aptos_names_variance_order_by {
   last_transaction_version: order_by
+  subdomain_expiration_policy: order_by
 }
 
 """
-columns and relationships of "current_coin_balances"
+columns and relationships of "legacy_migration_v1.current_coin_balances"
 """
 type current_coin_balances {
-  amount: numeric!
+  amount: numeric
   """An object relationship"""
   coin_info: coin_infos
-  coin_type: String!
-  coin_type_hash: String!
-  inserted_at: timestamp!
-  last_transaction_timestamp: timestamp!
-  last_transaction_version: bigint!
-  owner_address: String!
+  coin_type: String
+  coin_type_hash: String
+  last_transaction_timestamp: timestamp
+  last_transaction_version: bigint
+  owner_address: String
 }
 
 """
-Boolean expression to filter rows from the table "current_coin_balances". All fields are combined with a logical 'AND'.
+Boolean expression to filter rows from the table "legacy_migration_v1.current_coin_balances". All fields are combined with a logical 'AND'.
 """
 input current_coin_balances_bool_exp {
   _and: [current_coin_balances_bool_exp!]
@@ -2569,26 +2475,26 @@ input current_coin_balances_bool_exp {
   coin_info: coin_infos_bool_exp
   coin_type: String_comparison_exp
   coin_type_hash: String_comparison_exp
-  inserted_at: timestamp_comparison_exp
   last_transaction_timestamp: timestamp_comparison_exp
   last_transaction_version: bigint_comparison_exp
   owner_address: String_comparison_exp
 }
 
-"""Ordering options when selecting data from "current_coin_balances"."""
+"""
+Ordering options when selecting data from "legacy_migration_v1.current_coin_balances".
+"""
 input current_coin_balances_order_by {
   amount: order_by
   coin_info: coin_infos_order_by
   coin_type: order_by
   coin_type_hash: order_by
-  inserted_at: order_by
   last_transaction_timestamp: order_by
   last_transaction_version: order_by
   owner_address: order_by
 }
 
 """
-select columns of table "current_coin_balances"
+select columns of table "legacy_migration_v1.current_coin_balances"
 """
 enum current_coin_balances_select_column {
   """column name"""
@@ -2597,8 +2503,6 @@ enum current_coin_balances_select_column {
   coin_type
   """column name"""
   coin_type_hash
-  """column name"""
-  inserted_at
   """column name"""
   last_transaction_timestamp
   """column name"""
@@ -2622,34 +2526,32 @@ input current_coin_balances_stream_cursor_value_input {
   amount: numeric
   coin_type: String
   coin_type_hash: String
-  inserted_at: timestamp
   last_transaction_timestamp: timestamp
   last_transaction_version: bigint
   owner_address: String
 }
 
 """
-columns and relationships of "current_collection_datas"
+columns and relationships of "legacy_migration_v1.current_collection_datas"
 """
 type current_collection_datas {
-  collection_data_id_hash: String!
-  collection_name: String!
-  creator_address: String!
-  description: String!
-  description_mutable: Boolean!
-  inserted_at: timestamp!
-  last_transaction_timestamp: timestamp!
-  last_transaction_version: bigint!
-  maximum: numeric!
-  maximum_mutable: Boolean!
-  metadata_uri: String!
-  supply: numeric!
-  table_handle: String!
-  uri_mutable: Boolean!
+  collection_data_id_hash: String
+  collection_name: String
+  creator_address: String
+  description: String
+  description_mutable: Boolean
+  last_transaction_timestamp: timestamp
+  last_transaction_version: bigint
+  maximum: numeric
+  maximum_mutable: Boolean
+  metadata_uri: String
+  supply: numeric
+  table_handle: String
+  uri_mutable: Boolean
 }
 
 """
-Boolean expression to filter rows from the table "current_collection_datas". All fields are combined with a logical 'AND'.
+Boolean expression to filter rows from the table "legacy_migration_v1.current_collection_datas". All fields are combined with a logical 'AND'.
 """
 input current_collection_datas_bool_exp {
   _and: [current_collection_datas_bool_exp!]
@@ -2660,7 +2562,6 @@ input current_collection_datas_bool_exp {
   creator_address: String_comparison_exp
   description: String_comparison_exp
   description_mutable: Boolean_comparison_exp
-  inserted_at: timestamp_comparison_exp
   last_transaction_timestamp: timestamp_comparison_exp
   last_transaction_version: bigint_comparison_exp
   maximum: numeric_comparison_exp
@@ -2671,14 +2572,15 @@ input current_collection_datas_bool_exp {
   uri_mutable: Boolean_comparison_exp
 }
 
-"""Ordering options when selecting data from "current_collection_datas"."""
+"""
+Ordering options when selecting data from "legacy_migration_v1.current_collection_datas".
+"""
 input current_collection_datas_order_by {
   collection_data_id_hash: order_by
   collection_name: order_by
   creator_address: order_by
   description: order_by
   description_mutable: order_by
-  inserted_at: order_by
   last_transaction_timestamp: order_by
   last_transaction_version: order_by
   maximum: order_by
@@ -2690,7 +2592,7 @@ input current_collection_datas_order_by {
 }
 
 """
-select columns of table "current_collection_datas"
+select columns of table "legacy_migration_v1.current_collection_datas"
 """
 enum current_collection_datas_select_column {
   """column name"""
@@ -2703,8 +2605,6 @@ enum current_collection_datas_select_column {
   description
   """column name"""
   description_mutable
-  """column name"""
-  inserted_at
   """column name"""
   last_transaction_timestamp
   """column name"""
@@ -2740,7 +2640,6 @@ input current_collection_datas_stream_cursor_value_input {
   creator_address: String
   description: String
   description_mutable: Boolean
-  inserted_at: timestamp
   last_transaction_timestamp: timestamp
   last_transaction_version: bigint
   maximum: numeric
@@ -2949,10 +2848,13 @@ type current_collections_v2 {
   cdn_asset_uris: nft_metadata_crawler_parsed_asset_uris
   collection_id: String!
   collection_name: String!
+  collection_properties(
+    """JSON select path"""
+    path: String
+  ): jsonb
   creator_address: String!
   current_supply: numeric!
   description: String!
-  inserted_at: timestamp!
   last_transaction_timestamp: timestamp!
   last_transaction_version: bigint!
   max_supply: numeric
@@ -2974,10 +2876,10 @@ input current_collections_v2_bool_exp {
   cdn_asset_uris: nft_metadata_crawler_parsed_asset_uris_bool_exp
   collection_id: String_comparison_exp
   collection_name: String_comparison_exp
+  collection_properties: jsonb_comparison_exp
   creator_address: String_comparison_exp
   current_supply: numeric_comparison_exp
   description: String_comparison_exp
-  inserted_at: timestamp_comparison_exp
   last_transaction_timestamp: timestamp_comparison_exp
   last_transaction_version: bigint_comparison_exp
   max_supply: numeric_comparison_exp
@@ -2994,10 +2896,10 @@ input current_collections_v2_order_by {
   cdn_asset_uris: nft_metadata_crawler_parsed_asset_uris_order_by
   collection_id: order_by
   collection_name: order_by
+  collection_properties: order_by
   creator_address: order_by
   current_supply: order_by
   description: order_by
-  inserted_at: order_by
   last_transaction_timestamp: order_by
   last_transaction_version: order_by
   max_supply: order_by
@@ -3018,13 +2920,13 @@ enum current_collections_v2_select_column {
   """column name"""
   collection_name
   """column name"""
+  collection_properties
+  """column name"""
   creator_address
   """column name"""
   current_supply
   """column name"""
   description
-  """column name"""
-  inserted_at
   """column name"""
   last_transaction_timestamp
   """column name"""
@@ -3059,10 +2961,10 @@ input current_collections_v2_stream_cursor_input {
 input current_collections_v2_stream_cursor_value_input {
   collection_id: String
   collection_name: String
+  collection_properties: jsonb
   creator_address: String
   current_supply: numeric
   description: String
-  inserted_at: timestamp
   last_transaction_timestamp: timestamp
   last_transaction_version: bigint
   max_supply: numeric
@@ -3080,7 +2982,6 @@ columns and relationships of "current_delegated_staking_pool_balances"
 type current_delegated_staking_pool_balances {
   active_table_handle: String!
   inactive_table_handle: String!
-  inserted_at: timestamp!
   last_transaction_version: bigint!
   operator_commission_percentage: numeric!
   staking_pool_address: String!
@@ -3097,7 +2998,6 @@ input current_delegated_staking_pool_balances_bool_exp {
   _or: [current_delegated_staking_pool_balances_bool_exp!]
   active_table_handle: String_comparison_exp
   inactive_table_handle: String_comparison_exp
-  inserted_at: timestamp_comparison_exp
   last_transaction_version: bigint_comparison_exp
   operator_commission_percentage: numeric_comparison_exp
   staking_pool_address: String_comparison_exp
@@ -3111,7 +3011,6 @@ Ordering options when selecting data from "current_delegated_staking_pool_balanc
 input current_delegated_staking_pool_balances_order_by {
   active_table_handle: order_by
   inactive_table_handle: order_by
-  inserted_at: order_by
   last_transaction_version: order_by
   operator_commission_percentage: order_by
   staking_pool_address: order_by
@@ -3127,8 +3026,6 @@ enum current_delegated_staking_pool_balances_select_column {
   active_table_handle
   """column name"""
   inactive_table_handle
-  """column name"""
-  inserted_at
   """column name"""
   last_transaction_version
   """column name"""
@@ -3155,7 +3052,6 @@ input current_delegated_staking_pool_balances_stream_cursor_input {
 input current_delegated_staking_pool_balances_stream_cursor_value_input {
   active_table_handle: String
   inactive_table_handle: String
-  inserted_at: timestamp
   last_transaction_version: bigint
   operator_commission_percentage: numeric
   staking_pool_address: String
@@ -3169,7 +3065,6 @@ columns and relationships of "current_delegated_voter"
 type current_delegated_voter {
   delegation_pool_address: String!
   delegator_address: String!
-  inserted_at: timestamp!
   last_transaction_timestamp: timestamp!
   last_transaction_version: bigint!
   pending_voter: String
@@ -3186,7 +3081,6 @@ input current_delegated_voter_bool_exp {
   _or: [current_delegated_voter_bool_exp!]
   delegation_pool_address: String_comparison_exp
   delegator_address: String_comparison_exp
-  inserted_at: timestamp_comparison_exp
   last_transaction_timestamp: timestamp_comparison_exp
   last_transaction_version: bigint_comparison_exp
   pending_voter: String_comparison_exp
@@ -3198,7 +3092,6 @@ input current_delegated_voter_bool_exp {
 input current_delegated_voter_order_by {
   delegation_pool_address: order_by
   delegator_address: order_by
-  inserted_at: order_by
   last_transaction_timestamp: order_by
   last_transaction_version: order_by
   pending_voter: order_by
@@ -3214,8 +3107,6 @@ enum current_delegated_voter_select_column {
   delegation_pool_address
   """column name"""
   delegator_address
-  """column name"""
-  inserted_at
   """column name"""
   last_transaction_timestamp
   """column name"""
@@ -3242,7 +3133,6 @@ input current_delegated_voter_stream_cursor_input {
 input current_delegated_voter_stream_cursor_value_input {
   delegation_pool_address: String
   delegator_address: String
-  inserted_at: timestamp
   last_transaction_timestamp: timestamp
   last_transaction_version: bigint
   pending_voter: String
@@ -3257,7 +3147,6 @@ type current_delegator_balances {
   """An object relationship"""
   current_pool_balance: current_delegated_staking_pool_balances
   delegator_address: String!
-  inserted_at: timestamp!
   last_transaction_version: bigint!
   parent_table_handle: String!
   pool_address: String!
@@ -3277,7 +3166,6 @@ input current_delegator_balances_bool_exp {
   _or: [current_delegator_balances_bool_exp!]
   current_pool_balance: current_delegated_staking_pool_balances_bool_exp
   delegator_address: String_comparison_exp
-  inserted_at: timestamp_comparison_exp
   last_transaction_version: bigint_comparison_exp
   parent_table_handle: String_comparison_exp
   pool_address: String_comparison_exp
@@ -3293,7 +3181,6 @@ Ordering options when selecting data from "current_delegator_balances".
 input current_delegator_balances_order_by {
   current_pool_balance: current_delegated_staking_pool_balances_order_by
   delegator_address: order_by
-  inserted_at: order_by
   last_transaction_version: order_by
   parent_table_handle: order_by
   pool_address: order_by
@@ -3309,8 +3196,6 @@ select columns of table "current_delegator_balances"
 enum current_delegator_balances_select_column {
   """column name"""
   delegator_address
-  """column name"""
-  inserted_at
   """column name"""
   last_transaction_version
   """column name"""
@@ -3338,7 +3223,6 @@ input current_delegator_balances_stream_cursor_input {
 """Initial value of the column from where the streaming should start"""
 input current_delegator_balances_stream_cursor_value_input {
   delegator_address: String
-  inserted_at: timestamp
   last_transaction_version: bigint
   parent_table_handle: String
   pool_address: String
@@ -3352,12 +3236,19 @@ columns and relationships of "current_fungible_asset_balances"
 """
 type current_fungible_asset_balances {
   amount: numeric!
+  amount_v1: numeric
+  amount_v2: numeric
   asset_type: String!
-  inserted_at: timestamp!
+  asset_type_v1: String
+  asset_type_v2: String
   is_frozen: Boolean!
   is_primary: Boolean!
-  last_transaction_timestamp: timestamp!
-  last_transaction_version: bigint!
+  last_transaction_timestamp: timestamp
+  last_transaction_timestamp_v1: timestamp
+  last_transaction_timestamp_v2: timestamp
+  last_transaction_version: bigint
+  last_transaction_version_v1: bigint
+  last_transaction_version_v2: bigint
   """An object relationship"""
   metadata: fungible_asset_metadata
   owner_address: String!
@@ -3393,7 +3284,11 @@ type current_fungible_asset_balances_aggregate_fields {
 """aggregate avg on columns"""
 type current_fungible_asset_balances_avg_fields {
   amount: Float
+  amount_v1: Float
+  amount_v2: Float
   last_transaction_version: Float
+  last_transaction_version_v1: Float
+  last_transaction_version_v2: Float
 }
 
 """
@@ -3404,12 +3299,19 @@ input current_fungible_asset_balances_bool_exp {
   _not: current_fungible_asset_balances_bool_exp
   _or: [current_fungible_asset_balances_bool_exp!]
   amount: numeric_comparison_exp
+  amount_v1: numeric_comparison_exp
+  amount_v2: numeric_comparison_exp
   asset_type: String_comparison_exp
-  inserted_at: timestamp_comparison_exp
+  asset_type_v1: String_comparison_exp
+  asset_type_v2: String_comparison_exp
   is_frozen: Boolean_comparison_exp
   is_primary: Boolean_comparison_exp
   last_transaction_timestamp: timestamp_comparison_exp
+  last_transaction_timestamp_v1: timestamp_comparison_exp
+  last_transaction_timestamp_v2: timestamp_comparison_exp
   last_transaction_version: bigint_comparison_exp
+  last_transaction_version_v1: bigint_comparison_exp
+  last_transaction_version_v2: bigint_comparison_exp
   metadata: fungible_asset_metadata_bool_exp
   owner_address: String_comparison_exp
   storage_id: String_comparison_exp
@@ -3419,10 +3321,17 @@ input current_fungible_asset_balances_bool_exp {
 """aggregate max on columns"""
 type current_fungible_asset_balances_max_fields {
   amount: numeric
+  amount_v1: numeric
+  amount_v2: numeric
   asset_type: String
-  inserted_at: timestamp
+  asset_type_v1: String
+  asset_type_v2: String
   last_transaction_timestamp: timestamp
+  last_transaction_timestamp_v1: timestamp
+  last_transaction_timestamp_v2: timestamp
   last_transaction_version: bigint
+  last_transaction_version_v1: bigint
+  last_transaction_version_v2: bigint
   owner_address: String
   storage_id: String
   token_standard: String
@@ -3431,10 +3340,17 @@ type current_fungible_asset_balances_max_fields {
 """aggregate min on columns"""
 type current_fungible_asset_balances_min_fields {
   amount: numeric
+  amount_v1: numeric
+  amount_v2: numeric
   asset_type: String
-  inserted_at: timestamp
+  asset_type_v1: String
+  asset_type_v2: String
   last_transaction_timestamp: timestamp
+  last_transaction_timestamp_v1: timestamp
+  last_transaction_timestamp_v2: timestamp
   last_transaction_version: bigint
+  last_transaction_version_v1: bigint
+  last_transaction_version_v2: bigint
   owner_address: String
   storage_id: String
   token_standard: String
@@ -3445,12 +3361,19 @@ Ordering options when selecting data from "current_fungible_asset_balances".
 """
 input current_fungible_asset_balances_order_by {
   amount: order_by
+  amount_v1: order_by
+  amount_v2: order_by
   asset_type: order_by
-  inserted_at: order_by
+  asset_type_v1: order_by
+  asset_type_v2: order_by
   is_frozen: order_by
   is_primary: order_by
   last_transaction_timestamp: order_by
+  last_transaction_timestamp_v1: order_by
+  last_transaction_timestamp_v2: order_by
   last_transaction_version: order_by
+  last_transaction_version_v1: order_by
+  last_transaction_version_v2: order_by
   metadata: fungible_asset_metadata_order_by
   owner_address: order_by
   storage_id: order_by
@@ -3464,9 +3387,15 @@ enum current_fungible_asset_balances_select_column {
   """column name"""
   amount
   """column name"""
+  amount_v1
+  """column name"""
+  amount_v2
+  """column name"""
   asset_type
   """column name"""
-  inserted_at
+  asset_type_v1
+  """column name"""
+  asset_type_v2
   """column name"""
   is_frozen
   """column name"""
@@ -3474,7 +3403,15 @@ enum current_fungible_asset_balances_select_column {
   """column name"""
   last_transaction_timestamp
   """column name"""
+  last_transaction_timestamp_v1
+  """column name"""
+  last_transaction_timestamp_v2
+  """column name"""
   last_transaction_version
+  """column name"""
+  last_transaction_version_v1
+  """column name"""
+  last_transaction_version_v2
   """column name"""
   owner_address
   """column name"""
@@ -3486,19 +3423,31 @@ enum current_fungible_asset_balances_select_column {
 """aggregate stddev on columns"""
 type current_fungible_asset_balances_stddev_fields {
   amount: Float
+  amount_v1: Float
+  amount_v2: Float
   last_transaction_version: Float
+  last_transaction_version_v1: Float
+  last_transaction_version_v2: Float
 }
 
 """aggregate stddev_pop on columns"""
 type current_fungible_asset_balances_stddev_pop_fields {
   amount: Float
+  amount_v1: Float
+  amount_v2: Float
   last_transaction_version: Float
+  last_transaction_version_v1: Float
+  last_transaction_version_v2: Float
 }
 
 """aggregate stddev_samp on columns"""
 type current_fungible_asset_balances_stddev_samp_fields {
   amount: Float
+  amount_v1: Float
+  amount_v2: Float
   last_transaction_version: Float
+  last_transaction_version_v1: Float
+  last_transaction_version_v2: Float
 }
 
 """
@@ -3514,12 +3463,19 @@ input current_fungible_asset_balances_stream_cursor_input {
 """Initial value of the column from where the streaming should start"""
 input current_fungible_asset_balances_stream_cursor_value_input {
   amount: numeric
+  amount_v1: numeric
+  amount_v2: numeric
   asset_type: String
-  inserted_at: timestamp
+  asset_type_v1: String
+  asset_type_v2: String
   is_frozen: Boolean
   is_primary: Boolean
   last_transaction_timestamp: timestamp
+  last_transaction_timestamp_v1: timestamp
+  last_transaction_timestamp_v2: timestamp
   last_transaction_version: bigint
+  last_transaction_version_v1: bigint
+  last_transaction_version_v2: bigint
   owner_address: String
   storage_id: String
   token_standard: String
@@ -3528,25 +3484,41 @@ input current_fungible_asset_balances_stream_cursor_value_input {
 """aggregate sum on columns"""
 type current_fungible_asset_balances_sum_fields {
   amount: numeric
+  amount_v1: numeric
+  amount_v2: numeric
   last_transaction_version: bigint
+  last_transaction_version_v1: bigint
+  last_transaction_version_v2: bigint
 }
 
 """aggregate var_pop on columns"""
 type current_fungible_asset_balances_var_pop_fields {
   amount: Float
+  amount_v1: Float
+  amount_v2: Float
   last_transaction_version: Float
+  last_transaction_version_v1: Float
+  last_transaction_version_v2: Float
 }
 
 """aggregate var_samp on columns"""
 type current_fungible_asset_balances_var_samp_fields {
   amount: Float
+  amount_v1: Float
+  amount_v2: Float
   last_transaction_version: Float
+  last_transaction_version_v1: Float
+  last_transaction_version_v2: Float
 }
 
 """aggregate variance on columns"""
 type current_fungible_asset_balances_variance_fields {
   amount: Float
+  amount_v1: Float
+  amount_v2: Float
   last_transaction_version: Float
+  last_transaction_version_v1: Float
+  last_transaction_version_v2: Float
 }
 
 """
@@ -3554,7 +3526,6 @@ columns and relationships of "current_objects"
 """
 type current_objects {
   allow_ungated_transfer: Boolean!
-  inserted_at: timestamp!
   is_deleted: Boolean!
   last_guid_creation_num: numeric!
   last_transaction_version: bigint!
@@ -3571,7 +3542,6 @@ input current_objects_bool_exp {
   _not: current_objects_bool_exp
   _or: [current_objects_bool_exp!]
   allow_ungated_transfer: Boolean_comparison_exp
-  inserted_at: timestamp_comparison_exp
   is_deleted: Boolean_comparison_exp
   last_guid_creation_num: numeric_comparison_exp
   last_transaction_version: bigint_comparison_exp
@@ -3583,7 +3553,6 @@ input current_objects_bool_exp {
 """Ordering options when selecting data from "current_objects"."""
 input current_objects_order_by {
   allow_ungated_transfer: order_by
-  inserted_at: order_by
   is_deleted: order_by
   last_guid_creation_num: order_by
   last_transaction_version: order_by
@@ -3598,8 +3567,6 @@ select columns of table "current_objects"
 enum current_objects_select_column {
   """column name"""
   allow_ungated_transfer
-  """column name"""
-  inserted_at
   """column name"""
   is_deleted
   """column name"""
@@ -3627,7 +3594,6 @@ input current_objects_stream_cursor_input {
 """Initial value of the column from where the streaming should start"""
 input current_objects_stream_cursor_value_input {
   allow_ungated_transfer: Boolean
-  inserted_at: timestamp
   is_deleted: Boolean
   last_guid_creation_num: numeric
   last_transaction_version: bigint
@@ -3640,7 +3606,6 @@ input current_objects_stream_cursor_value_input {
 columns and relationships of "current_staking_pool_voter"
 """
 type current_staking_pool_voter {
-  inserted_at: timestamp!
   last_transaction_version: bigint!
   operator_address: String!
   """An array relationship"""
@@ -3680,7 +3645,6 @@ input current_staking_pool_voter_bool_exp {
   _and: [current_staking_pool_voter_bool_exp!]
   _not: current_staking_pool_voter_bool_exp
   _or: [current_staking_pool_voter_bool_exp!]
-  inserted_at: timestamp_comparison_exp
   last_transaction_version: bigint_comparison_exp
   operator_address: String_comparison_exp
   operator_aptos_name: current_aptos_names_bool_exp
@@ -3693,7 +3657,6 @@ input current_staking_pool_voter_bool_exp {
 Ordering options when selecting data from "current_staking_pool_voter".
 """
 input current_staking_pool_voter_order_by {
-  inserted_at: order_by
   last_transaction_version: order_by
   operator_address: order_by
   operator_aptos_name_aggregate: current_aptos_names_aggregate_order_by
@@ -3705,8 +3668,6 @@ input current_staking_pool_voter_order_by {
 select columns of table "current_staking_pool_voter"
 """
 enum current_staking_pool_voter_select_column {
-  """column name"""
-  inserted_at
   """column name"""
   last_transaction_version
   """column name"""
@@ -3729,7 +3690,6 @@ input current_staking_pool_voter_stream_cursor_input {
 
 """Initial value of the column from where the streaming should start"""
 input current_staking_pool_voter_stream_cursor_value_input {
-  inserted_at: timestamp
   last_transaction_version: bigint
   operator_address: String
   staking_pool_address: String
@@ -3748,7 +3708,6 @@ type current_table_items {
     """JSON select path"""
     path: String
   ): jsonb
-  inserted_at: timestamp!
   is_deleted: Boolean!
   key: String!
   key_hash: String!
@@ -3765,7 +3724,6 @@ input current_table_items_bool_exp {
   _or: [current_table_items_bool_exp!]
   decoded_key: jsonb_comparison_exp
   decoded_value: jsonb_comparison_exp
-  inserted_at: timestamp_comparison_exp
   is_deleted: Boolean_comparison_exp
   key: String_comparison_exp
   key_hash: String_comparison_exp
@@ -3777,7 +3735,6 @@ input current_table_items_bool_exp {
 input current_table_items_order_by {
   decoded_key: order_by
   decoded_value: order_by
-  inserted_at: order_by
   is_deleted: order_by
   key: order_by
   key_hash: order_by
@@ -3793,8 +3750,6 @@ enum current_table_items_select_column {
   decoded_key
   """column name"""
   decoded_value
-  """column name"""
-  inserted_at
   """column name"""
   is_deleted
   """column name"""
@@ -3821,7 +3776,6 @@ input current_table_items_stream_cursor_input {
 input current_table_items_stream_cursor_value_input {
   decoded_key: jsonb
   decoded_value: jsonb
-  inserted_at: timestamp
   is_deleted: Boolean
   key: String
   key_hash: String
@@ -3830,40 +3784,39 @@ input current_table_items_stream_cursor_value_input {
 }
 
 """
-columns and relationships of "current_token_datas"
+columns and relationships of "legacy_migration_v1.current_token_datas"
 """
 type current_token_datas {
-  collection_data_id_hash: String!
-  collection_name: String!
-  creator_address: String!
+  collection_data_id_hash: String
+  collection_name: String
+  creator_address: String
   """An object relationship"""
   current_collection_data: current_collection_datas
   default_properties(
     """JSON select path"""
     path: String
-  ): jsonb!
-  description: String!
-  description_mutable: Boolean!
-  inserted_at: timestamp!
-  largest_property_version: numeric!
-  last_transaction_timestamp: timestamp!
-  last_transaction_version: bigint!
-  maximum: numeric!
-  maximum_mutable: Boolean!
-  metadata_uri: String!
-  name: String!
-  payee_address: String!
-  properties_mutable: Boolean!
-  royalty_mutable: Boolean!
-  royalty_points_denominator: numeric!
-  royalty_points_numerator: numeric!
-  supply: numeric!
-  token_data_id_hash: String!
-  uri_mutable: Boolean!
+  ): jsonb
+  description: String
+  description_mutable: Boolean
+  largest_property_version: numeric
+  last_transaction_timestamp: timestamp
+  last_transaction_version: bigint
+  maximum: numeric
+  maximum_mutable: Boolean
+  metadata_uri: String
+  name: String
+  payee_address: String
+  properties_mutable: Boolean
+  royalty_mutable: Boolean
+  royalty_points_denominator: numeric
+  royalty_points_numerator: numeric
+  supply: numeric
+  token_data_id_hash: String
+  uri_mutable: Boolean
 }
 
 """
-Boolean expression to filter rows from the table "current_token_datas". All fields are combined with a logical 'AND'.
+Boolean expression to filter rows from the table "legacy_migration_v1.current_token_datas". All fields are combined with a logical 'AND'.
 """
 input current_token_datas_bool_exp {
   _and: [current_token_datas_bool_exp!]
@@ -3876,7 +3829,6 @@ input current_token_datas_bool_exp {
   default_properties: jsonb_comparison_exp
   description: String_comparison_exp
   description_mutable: Boolean_comparison_exp
-  inserted_at: timestamp_comparison_exp
   largest_property_version: numeric_comparison_exp
   last_transaction_timestamp: timestamp_comparison_exp
   last_transaction_version: bigint_comparison_exp
@@ -3894,7 +3846,9 @@ input current_token_datas_bool_exp {
   uri_mutable: Boolean_comparison_exp
 }
 
-"""Ordering options when selecting data from "current_token_datas"."""
+"""
+Ordering options when selecting data from "legacy_migration_v1.current_token_datas".
+"""
 input current_token_datas_order_by {
   collection_data_id_hash: order_by
   collection_name: order_by
@@ -3903,7 +3857,6 @@ input current_token_datas_order_by {
   default_properties: order_by
   description: order_by
   description_mutable: order_by
-  inserted_at: order_by
   largest_property_version: order_by
   last_transaction_timestamp: order_by
   last_transaction_version: order_by
@@ -3922,7 +3875,7 @@ input current_token_datas_order_by {
 }
 
 """
-select columns of table "current_token_datas"
+select columns of table "legacy_migration_v1.current_token_datas"
 """
 enum current_token_datas_select_column {
   """column name"""
@@ -3937,8 +3890,6 @@ enum current_token_datas_select_column {
   description
   """column name"""
   description_mutable
-  """column name"""
-  inserted_at
   """column name"""
   largest_property_version
   """column name"""
@@ -3989,7 +3940,6 @@ input current_token_datas_stream_cursor_value_input {
   default_properties: jsonb
   description: String
   description_mutable: Boolean
-  inserted_at: timestamp
   largest_property_version: numeric
   last_transaction_timestamp: timestamp
   last_transaction_version: bigint
@@ -4018,6 +3968,8 @@ type current_token_datas_v2 {
   collection_id: String!
   """An object relationship"""
   current_collection: current_collections_v2
+  """An object relationship"""
+  current_royalty_v1: current_token_royalty_v1
   """An array relationship"""
   current_token_ownerships(
     """distinct select on columns"""
@@ -4046,7 +3998,6 @@ type current_token_datas_v2 {
   ): current_token_ownerships_v2_aggregate!
   decimals: bigint
   description: String!
-  inserted_at: timestamp!
   is_deleted_v2: Boolean
   is_fungible_v2: Boolean
   largest_property_version_v1: numeric
@@ -4075,11 +4026,11 @@ input current_token_datas_v2_bool_exp {
   cdn_asset_uris: nft_metadata_crawler_parsed_asset_uris_bool_exp
   collection_id: String_comparison_exp
   current_collection: current_collections_v2_bool_exp
+  current_royalty_v1: current_token_royalty_v1_bool_exp
   current_token_ownerships: current_token_ownerships_v2_bool_exp
   current_token_ownerships_aggregate: current_token_ownerships_v2_aggregate_bool_exp
   decimals: bigint_comparison_exp
   description: String_comparison_exp
-  inserted_at: timestamp_comparison_exp
   is_deleted_v2: Boolean_comparison_exp
   is_fungible_v2: Boolean_comparison_exp
   largest_property_version_v1: numeric_comparison_exp
@@ -4100,10 +4051,10 @@ input current_token_datas_v2_order_by {
   cdn_asset_uris: nft_metadata_crawler_parsed_asset_uris_order_by
   collection_id: order_by
   current_collection: current_collections_v2_order_by
+  current_royalty_v1: current_token_royalty_v1_order_by
   current_token_ownerships_aggregate: current_token_ownerships_v2_aggregate_order_by
   decimals: order_by
   description: order_by
-  inserted_at: order_by
   is_deleted_v2: order_by
   is_fungible_v2: order_by
   largest_property_version_v1: order_by
@@ -4128,8 +4079,6 @@ enum current_token_datas_v2_select_column {
   decimals
   """column name"""
   description
-  """column name"""
-  inserted_at
   """column name"""
   is_deleted_v2
   """column name"""
@@ -4171,7 +4120,6 @@ input current_token_datas_v2_stream_cursor_value_input {
   collection_id: String
   decimals: bigint
   description: String
-  inserted_at: timestamp
   is_deleted_v2: Boolean
   is_fungible_v2: Boolean
   largest_property_version_v1: numeric
@@ -4187,35 +4135,34 @@ input current_token_datas_v2_stream_cursor_value_input {
 }
 
 """
-columns and relationships of "current_token_ownerships"
+columns and relationships of "legacy_migration_v1.current_token_ownerships"
 """
 type current_token_ownerships {
-  amount: numeric!
+  amount: numeric
   """An object relationship"""
   aptos_name: current_aptos_names
-  collection_data_id_hash: String!
-  collection_name: String!
-  creator_address: String!
+  collection_data_id_hash: String
+  collection_name: String
+  creator_address: String
   """An object relationship"""
   current_collection_data: current_collection_datas
   """An object relationship"""
   current_token_data: current_token_datas
-  inserted_at: timestamp!
-  last_transaction_timestamp: timestamp!
-  last_transaction_version: bigint!
-  name: String!
-  owner_address: String!
-  property_version: numeric!
-  table_type: String!
-  token_data_id_hash: String!
+  last_transaction_timestamp: timestamp
+  last_transaction_version: bigint
+  name: String
+  owner_address: String
+  property_version: numeric
+  table_type: String
+  token_data_id_hash: String
   token_properties(
     """JSON select path"""
     path: String
-  ): jsonb!
+  ): jsonb
 }
 
 """
-aggregated selection of "current_token_ownerships"
+aggregated selection of "legacy_migration_v1.current_token_ownerships"
 """
 type current_token_ownerships_aggregate {
   aggregate: current_token_ownerships_aggregate_fields
@@ -4234,7 +4181,7 @@ input current_token_ownerships_aggregate_bool_exp_count {
 }
 
 """
-aggregate fields of "current_token_ownerships"
+aggregate fields of "legacy_migration_v1.current_token_ownerships"
 """
 type current_token_ownerships_aggregate_fields {
   avg: current_token_ownerships_avg_fields
@@ -4251,7 +4198,7 @@ type current_token_ownerships_aggregate_fields {
 }
 
 """
-order by aggregate values of table "current_token_ownerships"
+order by aggregate values of table "legacy_migration_v1.current_token_ownerships"
 """
 input current_token_ownerships_aggregate_order_by {
   avg: current_token_ownerships_avg_order_by
@@ -4275,7 +4222,7 @@ type current_token_ownerships_avg_fields {
 }
 
 """
-order by avg() on columns of table "current_token_ownerships"
+order by avg() on columns of table "legacy_migration_v1.current_token_ownerships"
 """
 input current_token_ownerships_avg_order_by {
   amount: order_by
@@ -4284,7 +4231,7 @@ input current_token_ownerships_avg_order_by {
 }
 
 """
-Boolean expression to filter rows from the table "current_token_ownerships". All fields are combined with a logical 'AND'.
+Boolean expression to filter rows from the table "legacy_migration_v1.current_token_ownerships". All fields are combined with a logical 'AND'.
 """
 input current_token_ownerships_bool_exp {
   _and: [current_token_ownerships_bool_exp!]
@@ -4297,7 +4244,6 @@ input current_token_ownerships_bool_exp {
   creator_address: String_comparison_exp
   current_collection_data: current_collection_datas_bool_exp
   current_token_data: current_token_datas_bool_exp
-  inserted_at: timestamp_comparison_exp
   last_transaction_timestamp: timestamp_comparison_exp
   last_transaction_version: bigint_comparison_exp
   name: String_comparison_exp
@@ -4314,7 +4260,6 @@ type current_token_ownerships_max_fields {
   collection_data_id_hash: String
   collection_name: String
   creator_address: String
-  inserted_at: timestamp
   last_transaction_timestamp: timestamp
   last_transaction_version: bigint
   name: String
@@ -4325,14 +4270,13 @@ type current_token_ownerships_max_fields {
 }
 
 """
-order by max() on columns of table "current_token_ownerships"
+order by max() on columns of table "legacy_migration_v1.current_token_ownerships"
 """
 input current_token_ownerships_max_order_by {
   amount: order_by
   collection_data_id_hash: order_by
   collection_name: order_by
   creator_address: order_by
-  inserted_at: order_by
   last_transaction_timestamp: order_by
   last_transaction_version: order_by
   name: order_by
@@ -4348,7 +4292,6 @@ type current_token_ownerships_min_fields {
   collection_data_id_hash: String
   collection_name: String
   creator_address: String
-  inserted_at: timestamp
   last_transaction_timestamp: timestamp
   last_transaction_version: bigint
   name: String
@@ -4359,14 +4302,13 @@ type current_token_ownerships_min_fields {
 }
 
 """
-order by min() on columns of table "current_token_ownerships"
+order by min() on columns of table "legacy_migration_v1.current_token_ownerships"
 """
 input current_token_ownerships_min_order_by {
   amount: order_by
   collection_data_id_hash: order_by
   collection_name: order_by
   creator_address: order_by
-  inserted_at: order_by
   last_transaction_timestamp: order_by
   last_transaction_version: order_by
   name: order_by
@@ -4376,7 +4318,9 @@ input current_token_ownerships_min_order_by {
   token_data_id_hash: order_by
 }
 
-"""Ordering options when selecting data from "current_token_ownerships"."""
+"""
+Ordering options when selecting data from "legacy_migration_v1.current_token_ownerships".
+"""
 input current_token_ownerships_order_by {
   amount: order_by
   aptos_name: current_aptos_names_order_by
@@ -4385,7 +4329,6 @@ input current_token_ownerships_order_by {
   creator_address: order_by
   current_collection_data: current_collection_datas_order_by
   current_token_data: current_token_datas_order_by
-  inserted_at: order_by
   last_transaction_timestamp: order_by
   last_transaction_version: order_by
   name: order_by
@@ -4397,7 +4340,7 @@ input current_token_ownerships_order_by {
 }
 
 """
-select columns of table "current_token_ownerships"
+select columns of table "legacy_migration_v1.current_token_ownerships"
 """
 enum current_token_ownerships_select_column {
   """column name"""
@@ -4408,8 +4351,6 @@ enum current_token_ownerships_select_column {
   collection_name
   """column name"""
   creator_address
-  """column name"""
-  inserted_at
   """column name"""
   last_transaction_timestamp
   """column name"""
@@ -4436,7 +4377,7 @@ type current_token_ownerships_stddev_fields {
 }
 
 """
-order by stddev() on columns of table "current_token_ownerships"
+order by stddev() on columns of table "legacy_migration_v1.current_token_ownerships"
 """
 input current_token_ownerships_stddev_order_by {
   amount: order_by
@@ -4452,7 +4393,7 @@ type current_token_ownerships_stddev_pop_fields {
 }
 
 """
-order by stddev_pop() on columns of table "current_token_ownerships"
+order by stddev_pop() on columns of table "legacy_migration_v1.current_token_ownerships"
 """
 input current_token_ownerships_stddev_pop_order_by {
   amount: order_by
@@ -4468,7 +4409,7 @@ type current_token_ownerships_stddev_samp_fields {
 }
 
 """
-order by stddev_samp() on columns of table "current_token_ownerships"
+order by stddev_samp() on columns of table "legacy_migration_v1.current_token_ownerships"
 """
 input current_token_ownerships_stddev_samp_order_by {
   amount: order_by
@@ -4492,7 +4433,6 @@ input current_token_ownerships_stream_cursor_value_input {
   collection_data_id_hash: String
   collection_name: String
   creator_address: String
-  inserted_at: timestamp
   last_transaction_timestamp: timestamp
   last_transaction_version: bigint
   name: String
@@ -4511,7 +4451,7 @@ type current_token_ownerships_sum_fields {
 }
 
 """
-order by sum() on columns of table "current_token_ownerships"
+order by sum() on columns of table "legacy_migration_v1.current_token_ownerships"
 """
 input current_token_ownerships_sum_order_by {
   amount: order_by
@@ -4552,7 +4492,6 @@ type current_token_ownerships_v2 {
   ): current_token_ownerships_v2_aggregate!
   """An object relationship"""
   current_token_data: current_token_datas_v2
-  inserted_at: timestamp!
   is_fungible_v2: Boolean
   is_soulbound_v2: Boolean
   last_transaction_timestamp: timestamp!
@@ -4666,7 +4605,6 @@ input current_token_ownerships_v2_bool_exp {
   composed_nfts: current_token_ownerships_v2_bool_exp
   composed_nfts_aggregate: current_token_ownerships_v2_aggregate_bool_exp
   current_token_data: current_token_datas_v2_bool_exp
-  inserted_at: timestamp_comparison_exp
   is_fungible_v2: Boolean_comparison_exp
   is_soulbound_v2: Boolean_comparison_exp
   last_transaction_timestamp: timestamp_comparison_exp
@@ -4684,7 +4622,6 @@ input current_token_ownerships_v2_bool_exp {
 """aggregate max on columns"""
 type current_token_ownerships_v2_max_fields {
   amount: numeric
-  inserted_at: timestamp
   last_transaction_timestamp: timestamp
   last_transaction_version: bigint
   owner_address: String
@@ -4700,7 +4637,6 @@ order by max() on columns of table "current_token_ownerships_v2"
 """
 input current_token_ownerships_v2_max_order_by {
   amount: order_by
-  inserted_at: order_by
   last_transaction_timestamp: order_by
   last_transaction_version: order_by
   owner_address: order_by
@@ -4714,7 +4650,6 @@ input current_token_ownerships_v2_max_order_by {
 """aggregate min on columns"""
 type current_token_ownerships_v2_min_fields {
   amount: numeric
-  inserted_at: timestamp
   last_transaction_timestamp: timestamp
   last_transaction_version: bigint
   owner_address: String
@@ -4730,7 +4665,6 @@ order by min() on columns of table "current_token_ownerships_v2"
 """
 input current_token_ownerships_v2_min_order_by {
   amount: order_by
-  inserted_at: order_by
   last_transaction_timestamp: order_by
   last_transaction_version: order_by
   owner_address: order_by
@@ -4748,7 +4682,6 @@ input current_token_ownerships_v2_order_by {
   amount: order_by
   composed_nfts_aggregate: current_token_ownerships_v2_aggregate_order_by
   current_token_data: current_token_datas_v2_order_by
-  inserted_at: order_by
   is_fungible_v2: order_by
   is_soulbound_v2: order_by
   last_transaction_timestamp: order_by
@@ -4769,8 +4702,6 @@ select columns of table "current_token_ownerships_v2"
 enum current_token_ownerships_v2_select_column {
   """column name"""
   amount
-  """column name"""
-  inserted_at
   """column name"""
   is_fungible_v2
   """column name"""
@@ -4882,7 +4813,6 @@ input current_token_ownerships_v2_stream_cursor_input {
 """Initial value of the column from where the streaming should start"""
 input current_token_ownerships_v2_stream_cursor_value_input {
   amount: numeric
-  inserted_at: timestamp
   is_fungible_v2: Boolean
   is_soulbound_v2: Boolean
   last_transaction_timestamp: timestamp
@@ -4969,7 +4899,7 @@ type current_token_ownerships_var_pop_fields {
 }
 
 """
-order by var_pop() on columns of table "current_token_ownerships"
+order by var_pop() on columns of table "legacy_migration_v1.current_token_ownerships"
 """
 input current_token_ownerships_var_pop_order_by {
   amount: order_by
@@ -4985,7 +4915,7 @@ type current_token_ownerships_var_samp_fields {
 }
 
 """
-order by var_samp() on columns of table "current_token_ownerships"
+order by var_samp() on columns of table "legacy_migration_v1.current_token_ownerships"
 """
 input current_token_ownerships_var_samp_order_by {
   amount: order_by
@@ -5001,7 +4931,7 @@ type current_token_ownerships_variance_fields {
 }
 
 """
-order by variance() on columns of table "current_token_ownerships"
+order by variance() on columns of table "legacy_migration_v1.current_token_ownerships"
 """
 input current_token_ownerships_variance_order_by {
   amount: order_by
@@ -5027,7 +4957,6 @@ type current_token_pending_claims {
   """An object relationship"""
   current_token_data_v2: current_token_datas_v2
   from_address: String!
-  inserted_at: timestamp!
   last_transaction_timestamp: timestamp!
   last_transaction_version: bigint!
   name: String!
@@ -5057,7 +4986,6 @@ input current_token_pending_claims_bool_exp {
   current_token_data: current_token_datas_bool_exp
   current_token_data_v2: current_token_datas_v2_bool_exp
   from_address: String_comparison_exp
-  inserted_at: timestamp_comparison_exp
   last_transaction_timestamp: timestamp_comparison_exp
   last_transaction_version: bigint_comparison_exp
   name: String_comparison_exp
@@ -5083,7 +5011,6 @@ input current_token_pending_claims_order_by {
   current_token_data: current_token_datas_order_by
   current_token_data_v2: current_token_datas_v2_order_by
   from_address: order_by
-  inserted_at: order_by
   last_transaction_timestamp: order_by
   last_transaction_version: order_by
   name: order_by
@@ -5111,8 +5038,6 @@ enum current_token_pending_claims_select_column {
   creator_address
   """column name"""
   from_address
-  """column name"""
-  inserted_at
   """column name"""
   last_transaction_timestamp
   """column name"""
@@ -5149,7 +5074,6 @@ input current_token_pending_claims_stream_cursor_value_input {
   collection_name: String
   creator_address: String
   from_address: String
-  inserted_at: timestamp
   last_transaction_timestamp: timestamp
   last_transaction_version: bigint
   name: String
@@ -5158,6 +5082,81 @@ input current_token_pending_claims_stream_cursor_value_input {
   to_address: String
   token_data_id: String
   token_data_id_hash: String
+}
+
+"""
+columns and relationships of "current_token_royalty_v1"
+"""
+type current_token_royalty_v1 {
+  last_transaction_timestamp: timestamp!
+  last_transaction_version: bigint!
+  payee_address: String!
+  royalty_points_denominator: numeric!
+  royalty_points_numerator: numeric!
+  token_data_id: String!
+}
+
+"""
+Boolean expression to filter rows from the table "current_token_royalty_v1". All fields are combined with a logical 'AND'.
+"""
+input current_token_royalty_v1_bool_exp {
+  _and: [current_token_royalty_v1_bool_exp!]
+  _not: current_token_royalty_v1_bool_exp
+  _or: [current_token_royalty_v1_bool_exp!]
+  last_transaction_timestamp: timestamp_comparison_exp
+  last_transaction_version: bigint_comparison_exp
+  payee_address: String_comparison_exp
+  royalty_points_denominator: numeric_comparison_exp
+  royalty_points_numerator: numeric_comparison_exp
+  token_data_id: String_comparison_exp
+}
+
+"""Ordering options when selecting data from "current_token_royalty_v1"."""
+input current_token_royalty_v1_order_by {
+  last_transaction_timestamp: order_by
+  last_transaction_version: order_by
+  payee_address: order_by
+  royalty_points_denominator: order_by
+  royalty_points_numerator: order_by
+  token_data_id: order_by
+}
+
+"""
+select columns of table "current_token_royalty_v1"
+"""
+enum current_token_royalty_v1_select_column {
+  """column name"""
+  last_transaction_timestamp
+  """column name"""
+  last_transaction_version
+  """column name"""
+  payee_address
+  """column name"""
+  royalty_points_denominator
+  """column name"""
+  royalty_points_numerator
+  """column name"""
+  token_data_id
+}
+
+"""
+Streaming cursor of the table "current_token_royalty_v1"
+"""
+input current_token_royalty_v1_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: current_token_royalty_v1_stream_cursor_value_input!
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input current_token_royalty_v1_stream_cursor_value_input {
+  last_transaction_timestamp: timestamp
+  last_transaction_version: bigint
+  payee_address: String
+  royalty_points_denominator: numeric
+  royalty_points_numerator: numeric
+  token_data_id: String
 }
 
 """ordering argument of a cursor"""
@@ -5176,7 +5175,6 @@ type delegated_staking_activities {
   delegator_address: String!
   event_index: bigint!
   event_type: String!
-  inserted_at: timestamp!
   pool_address: String!
   transaction_version: bigint!
 }
@@ -5218,7 +5216,6 @@ input delegated_staking_activities_bool_exp {
   delegator_address: String_comparison_exp
   event_index: bigint_comparison_exp
   event_type: String_comparison_exp
-  inserted_at: timestamp_comparison_exp
   pool_address: String_comparison_exp
   transaction_version: bigint_comparison_exp
 }
@@ -5231,7 +5228,6 @@ input delegated_staking_activities_max_order_by {
   delegator_address: order_by
   event_index: order_by
   event_type: order_by
-  inserted_at: order_by
   pool_address: order_by
   transaction_version: order_by
 }
@@ -5244,7 +5240,6 @@ input delegated_staking_activities_min_order_by {
   delegator_address: order_by
   event_index: order_by
   event_type: order_by
-  inserted_at: order_by
   pool_address: order_by
   transaction_version: order_by
 }
@@ -5257,7 +5252,6 @@ input delegated_staking_activities_order_by {
   delegator_address: order_by
   event_index: order_by
   event_type: order_by
-  inserted_at: order_by
   pool_address: order_by
   transaction_version: order_by
 }
@@ -5274,8 +5268,6 @@ enum delegated_staking_activities_select_column {
   event_index
   """column name"""
   event_type
-  """column name"""
-  inserted_at
   """column name"""
   pool_address
   """column name"""
@@ -5325,7 +5317,6 @@ input delegated_staking_activities_stream_cursor_value_input {
   delegator_address: String
   event_index: bigint
   event_type: String
-  inserted_at: timestamp
   pool_address: String
   transaction_version: bigint
 }
@@ -5372,7 +5363,6 @@ columns and relationships of "delegated_staking_pool_balances"
 type delegated_staking_pool_balances {
   active_table_handle: String!
   inactive_table_handle: String!
-  inserted_at: timestamp!
   operator_commission_percentage: numeric!
   staking_pool_address: String!
   total_coins: numeric!
@@ -5422,7 +5412,6 @@ input delegated_staking_pool_balances_bool_exp {
   _or: [delegated_staking_pool_balances_bool_exp!]
   active_table_handle: String_comparison_exp
   inactive_table_handle: String_comparison_exp
-  inserted_at: timestamp_comparison_exp
   operator_commission_percentage: numeric_comparison_exp
   staking_pool_address: String_comparison_exp
   total_coins: numeric_comparison_exp
@@ -5434,7 +5423,6 @@ input delegated_staking_pool_balances_bool_exp {
 type delegated_staking_pool_balances_max_fields {
   active_table_handle: String
   inactive_table_handle: String
-  inserted_at: timestamp
   operator_commission_percentage: numeric
   staking_pool_address: String
   total_coins: numeric
@@ -5446,7 +5434,6 @@ type delegated_staking_pool_balances_max_fields {
 type delegated_staking_pool_balances_min_fields {
   active_table_handle: String
   inactive_table_handle: String
-  inserted_at: timestamp
   operator_commission_percentage: numeric
   staking_pool_address: String
   total_coins: numeric
@@ -5460,7 +5447,6 @@ Ordering options when selecting data from "delegated_staking_pool_balances".
 input delegated_staking_pool_balances_order_by {
   active_table_handle: order_by
   inactive_table_handle: order_by
-  inserted_at: order_by
   operator_commission_percentage: order_by
   staking_pool_address: order_by
   total_coins: order_by
@@ -5476,8 +5462,6 @@ enum delegated_staking_pool_balances_select_column {
   active_table_handle
   """column name"""
   inactive_table_handle
-  """column name"""
-  inserted_at
   """column name"""
   operator_commission_percentage
   """column name"""
@@ -5528,7 +5512,6 @@ input delegated_staking_pool_balances_stream_cursor_input {
 input delegated_staking_pool_balances_stream_cursor_value_input {
   active_table_handle: String
   inactive_table_handle: String
-  inserted_at: timestamp
   operator_commission_percentage: numeric
   staking_pool_address: String
   total_coins: numeric
@@ -5575,7 +5558,6 @@ type delegated_staking_pools {
   """An object relationship"""
   current_staking_pool: current_staking_pool_voter
   first_transaction_version: bigint!
-  inserted_at: timestamp!
   staking_pool_address: String!
 }
 
@@ -5588,7 +5570,6 @@ input delegated_staking_pools_bool_exp {
   _or: [delegated_staking_pools_bool_exp!]
   current_staking_pool: current_staking_pool_voter_bool_exp
   first_transaction_version: bigint_comparison_exp
-  inserted_at: timestamp_comparison_exp
   staking_pool_address: String_comparison_exp
 }
 
@@ -5596,7 +5577,6 @@ input delegated_staking_pools_bool_exp {
 input delegated_staking_pools_order_by {
   current_staking_pool: current_staking_pool_voter_order_by
   first_transaction_version: order_by
-  inserted_at: order_by
   staking_pool_address: order_by
 }
 
@@ -5606,8 +5586,6 @@ select columns of table "delegated_staking_pools"
 enum delegated_staking_pools_select_column {
   """column name"""
   first_transaction_version
-  """column name"""
-  inserted_at
   """column name"""
   staking_pool_address
 }
@@ -5625,7 +5603,6 @@ input delegated_staking_pools_stream_cursor_input {
 """Initial value of the column from where the streaming should start"""
 input delegated_staking_pools_stream_cursor_value_input {
   first_transaction_version: bigint
-  inserted_at: timestamp
   staking_pool_address: String
 }
 
@@ -5729,7 +5706,6 @@ type events {
   ): jsonb!
   event_index: bigint!
   indexed_type: String!
-  inserted_at: timestamp!
   sequence_number: bigint!
   transaction_block_height: bigint!
   transaction_version: bigint!
@@ -5748,7 +5724,6 @@ input events_bool_exp {
   data: jsonb_comparison_exp
   event_index: bigint_comparison_exp
   indexed_type: String_comparison_exp
-  inserted_at: timestamp_comparison_exp
   sequence_number: bigint_comparison_exp
   transaction_block_height: bigint_comparison_exp
   transaction_version: bigint_comparison_exp
@@ -5762,7 +5737,6 @@ input events_order_by {
   data: order_by
   event_index: order_by
   indexed_type: order_by
-  inserted_at: order_by
   sequence_number: order_by
   transaction_block_height: order_by
   transaction_version: order_by
@@ -5783,8 +5757,6 @@ enum events_select_column {
   event_index
   """column name"""
   indexed_type
-  """column name"""
-  inserted_at
   """column name"""
   sequence_number
   """column name"""
@@ -5812,7 +5784,6 @@ input events_stream_cursor_value_input {
   data: jsonb
   event_index: bigint
   indexed_type: String
-  inserted_at: timestamp
   sequence_number: bigint
   transaction_block_height: bigint
   transaction_version: bigint
@@ -5829,7 +5800,6 @@ type fungible_asset_activities {
   entry_function_id_str: String
   event_index: bigint!
   gas_fee_payer_address: String
-  inserted_at: timestamp!
   is_frozen: Boolean
   is_gas_fee: Boolean!
   is_transaction_success: Boolean!
@@ -5911,7 +5881,6 @@ input fungible_asset_activities_bool_exp {
   entry_function_id_str: String_comparison_exp
   event_index: bigint_comparison_exp
   gas_fee_payer_address: String_comparison_exp
-  inserted_at: timestamp_comparison_exp
   is_frozen: Boolean_comparison_exp
   is_gas_fee: Boolean_comparison_exp
   is_transaction_success: Boolean_comparison_exp
@@ -5937,7 +5906,6 @@ input fungible_asset_activities_max_order_by {
   entry_function_id_str: order_by
   event_index: order_by
   gas_fee_payer_address: order_by
-  inserted_at: order_by
   owner_address: order_by
   storage_id: order_by
   storage_refund_amount: order_by
@@ -5957,7 +5925,6 @@ input fungible_asset_activities_min_order_by {
   entry_function_id_str: order_by
   event_index: order_by
   gas_fee_payer_address: order_by
-  inserted_at: order_by
   owner_address: order_by
   storage_id: order_by
   storage_refund_amount: order_by
@@ -5975,7 +5942,6 @@ input fungible_asset_activities_order_by {
   entry_function_id_str: order_by
   event_index: order_by
   gas_fee_payer_address: order_by
-  inserted_at: order_by
   is_frozen: order_by
   is_gas_fee: order_by
   is_transaction_success: order_by
@@ -6006,8 +5972,6 @@ enum fungible_asset_activities_select_column {
   event_index
   """column name"""
   gas_fee_payer_address
-  """column name"""
-  inserted_at
   """column name"""
   is_frozen
   """column name"""
@@ -6081,7 +6045,6 @@ input fungible_asset_activities_stream_cursor_value_input {
   entry_function_id_str: String
   event_index: bigint
   gas_fee_payer_address: String
-  inserted_at: timestamp
   is_frozen: Boolean
   is_gas_fee: Boolean
   is_transaction_success: Boolean
@@ -6146,7 +6109,6 @@ type fungible_asset_metadata {
   creator_address: String!
   decimals: Int!
   icon_uri: String
-  inserted_at: timestamp!
   last_transaction_timestamp: timestamp!
   last_transaction_version: bigint!
   maximum_v2: numeric
@@ -6170,7 +6132,6 @@ input fungible_asset_metadata_bool_exp {
   creator_address: String_comparison_exp
   decimals: Int_comparison_exp
   icon_uri: String_comparison_exp
-  inserted_at: timestamp_comparison_exp
   last_transaction_timestamp: timestamp_comparison_exp
   last_transaction_version: bigint_comparison_exp
   maximum_v2: numeric_comparison_exp
@@ -6189,7 +6150,6 @@ input fungible_asset_metadata_order_by {
   creator_address: order_by
   decimals: order_by
   icon_uri: order_by
-  inserted_at: order_by
   last_transaction_timestamp: order_by
   last_transaction_version: order_by
   maximum_v2: order_by
@@ -6214,8 +6174,6 @@ enum fungible_asset_metadata_select_column {
   decimals
   """column name"""
   icon_uri
-  """column name"""
-  inserted_at
   """column name"""
   last_transaction_timestamp
   """column name"""
@@ -6254,7 +6212,6 @@ input fungible_asset_metadata_stream_cursor_value_input {
   creator_address: String
   decimals: Int
   icon_uri: String
-  inserted_at: timestamp
   last_transaction_timestamp: timestamp
   last_transaction_version: bigint
   maximum_v2: numeric
@@ -6351,14 +6308,14 @@ input jsonb_comparison_exp {
 }
 
 """
-columns and relationships of "ledger_infos"
+columns and relationships of "processor_metadata.ledger_infos"
 """
 type ledger_infos {
   chain_id: bigint!
 }
 
 """
-Boolean expression to filter rows from the table "ledger_infos". All fields are combined with a logical 'AND'.
+Boolean expression to filter rows from the table "processor_metadata.ledger_infos". All fields are combined with a logical 'AND'.
 """
 input ledger_infos_bool_exp {
   _and: [ledger_infos_bool_exp!]
@@ -6367,13 +6324,15 @@ input ledger_infos_bool_exp {
   chain_id: bigint_comparison_exp
 }
 
-"""Ordering options when selecting data from "ledger_infos"."""
+"""
+Ordering options when selecting data from "processor_metadata.ledger_infos".
+"""
 input ledger_infos_order_by {
   chain_id: order_by
 }
 
 """
-select columns of table "ledger_infos"
+select columns of table "processor_metadata.ledger_infos"
 """
 enum ledger_infos_select_column {
   """column name"""
@@ -6396,16 +6355,15 @@ input ledger_infos_stream_cursor_value_input {
 }
 
 """
-columns and relationships of "move_resources"
+columns and relationships of "legacy_migration_v1.move_resources"
 """
 type move_resources {
-  address: String!
-  inserted_at: timestamp!
-  transaction_version: bigint!
+  address: String
+  transaction_version: bigint
 }
 
 """
-aggregated selection of "move_resources"
+aggregated selection of "legacy_migration_v1.move_resources"
 """
 type move_resources_aggregate {
   aggregate: move_resources_aggregate_fields
@@ -6413,7 +6371,7 @@ type move_resources_aggregate {
 }
 
 """
-aggregate fields of "move_resources"
+aggregate fields of "legacy_migration_v1.move_resources"
 """
 type move_resources_aggregate_fields {
   avg: move_resources_avg_fields
@@ -6435,46 +6393,42 @@ type move_resources_avg_fields {
 }
 
 """
-Boolean expression to filter rows from the table "move_resources". All fields are combined with a logical 'AND'.
+Boolean expression to filter rows from the table "legacy_migration_v1.move_resources". All fields are combined with a logical 'AND'.
 """
 input move_resources_bool_exp {
   _and: [move_resources_bool_exp!]
   _not: move_resources_bool_exp
   _or: [move_resources_bool_exp!]
   address: String_comparison_exp
-  inserted_at: timestamp_comparison_exp
   transaction_version: bigint_comparison_exp
 }
 
 """aggregate max on columns"""
 type move_resources_max_fields {
   address: String
-  inserted_at: timestamp
   transaction_version: bigint
 }
 
 """aggregate min on columns"""
 type move_resources_min_fields {
   address: String
-  inserted_at: timestamp
   transaction_version: bigint
 }
 
-"""Ordering options when selecting data from "move_resources"."""
+"""
+Ordering options when selecting data from "legacy_migration_v1.move_resources".
+"""
 input move_resources_order_by {
   address: order_by
-  inserted_at: order_by
   transaction_version: order_by
 }
 
 """
-select columns of table "move_resources"
+select columns of table "legacy_migration_v1.move_resources"
 """
 enum move_resources_select_column {
   """column name"""
   address
-  """column name"""
-  inserted_at
   """column name"""
   transaction_version
 }
@@ -6507,7 +6461,6 @@ input move_resources_stream_cursor_input {
 """Initial value of the column from where the streaming should start"""
 input move_resources_stream_cursor_value_input {
   address: String
-  inserted_at: timestamp
   transaction_version: bigint
 }
 
@@ -6541,7 +6494,6 @@ type nft_metadata_crawler_parsed_asset_uris {
   cdn_image_uri: String
   cdn_json_uri: String
   image_optimizer_retry_count: Int!
-  inserted_at: timestamp!
   json_parser_retry_count: Int!
   raw_animation_uri: String
   raw_image_uri: String
@@ -6560,7 +6512,6 @@ input nft_metadata_crawler_parsed_asset_uris_bool_exp {
   cdn_image_uri: String_comparison_exp
   cdn_json_uri: String_comparison_exp
   image_optimizer_retry_count: Int_comparison_exp
-  inserted_at: timestamp_comparison_exp
   json_parser_retry_count: Int_comparison_exp
   raw_animation_uri: String_comparison_exp
   raw_image_uri: String_comparison_exp
@@ -6576,7 +6527,6 @@ input nft_metadata_crawler_parsed_asset_uris_order_by {
   cdn_image_uri: order_by
   cdn_json_uri: order_by
   image_optimizer_retry_count: order_by
-  inserted_at: order_by
   json_parser_retry_count: order_by
   raw_animation_uri: order_by
   raw_image_uri: order_by
@@ -6598,8 +6548,6 @@ enum nft_metadata_crawler_parsed_asset_uris_select_column {
   cdn_json_uri
   """column name"""
   image_optimizer_retry_count
-  """column name"""
-  inserted_at
   """column name"""
   json_parser_retry_count
   """column name"""
@@ -6626,7 +6574,6 @@ input nft_metadata_crawler_parsed_asset_uris_stream_cursor_value_input {
   cdn_image_uri: String
   cdn_json_uri: String
   image_optimizer_retry_count: Int
-  inserted_at: timestamp
   json_parser_retry_count: Int
   raw_animation_uri: String
   raw_image_uri: String
@@ -6719,7 +6666,7 @@ enum order_by {
 }
 
 """
-columns and relationships of "processor_status"
+columns and relationships of "processor_metadata.processor_status"
 """
 type processor_status {
   last_success_version: bigint!
@@ -6729,7 +6676,7 @@ type processor_status {
 }
 
 """
-Boolean expression to filter rows from the table "processor_status". All fields are combined with a logical 'AND'.
+Boolean expression to filter rows from the table "processor_metadata.processor_status". All fields are combined with a logical 'AND'.
 """
 input processor_status_bool_exp {
   _and: [processor_status_bool_exp!]
@@ -6741,7 +6688,9 @@ input processor_status_bool_exp {
   processor: String_comparison_exp
 }
 
-"""Ordering options when selecting data from "processor_status"."""
+"""
+Ordering options when selecting data from "processor_metadata.processor_status".
+"""
 input processor_status_order_by {
   last_success_version: order_by
   last_transaction_timestamp: order_by
@@ -6750,7 +6699,7 @@ input processor_status_order_by {
 }
 
 """
-select columns of table "processor_status"
+select columns of table "processor_metadata.processor_status"
 """
 enum processor_status_select_column {
   """column name"""
@@ -6785,7 +6734,6 @@ input processor_status_stream_cursor_value_input {
 columns and relationships of "proposal_votes"
 """
 type proposal_votes {
-  inserted_at: timestamp!
   num_votes: numeric!
   proposal_id: bigint!
   should_pass: Boolean!
@@ -6834,7 +6782,6 @@ input proposal_votes_bool_exp {
   _and: [proposal_votes_bool_exp!]
   _not: proposal_votes_bool_exp
   _or: [proposal_votes_bool_exp!]
-  inserted_at: timestamp_comparison_exp
   num_votes: numeric_comparison_exp
   proposal_id: bigint_comparison_exp
   should_pass: Boolean_comparison_exp
@@ -6846,7 +6793,6 @@ input proposal_votes_bool_exp {
 
 """aggregate max on columns"""
 type proposal_votes_max_fields {
-  inserted_at: timestamp
   num_votes: numeric
   proposal_id: bigint
   staking_pool_address: String
@@ -6857,7 +6803,6 @@ type proposal_votes_max_fields {
 
 """aggregate min on columns"""
 type proposal_votes_min_fields {
-  inserted_at: timestamp
   num_votes: numeric
   proposal_id: bigint
   staking_pool_address: String
@@ -6868,7 +6813,6 @@ type proposal_votes_min_fields {
 
 """Ordering options when selecting data from "proposal_votes"."""
 input proposal_votes_order_by {
-  inserted_at: order_by
   num_votes: order_by
   proposal_id: order_by
   should_pass: order_by
@@ -6882,8 +6826,6 @@ input proposal_votes_order_by {
 select columns of table "proposal_votes"
 """
 enum proposal_votes_select_column {
-  """column name"""
-  inserted_at
   """column name"""
   num_votes
   """column name"""
@@ -6933,7 +6875,6 @@ input proposal_votes_stream_cursor_input {
 
 """Initial value of the column from where the streaming should start"""
 input proposal_votes_stream_cursor_value_input {
-  inserted_at: timestamp
   num_votes: numeric
   proposal_id: bigint
   should_pass: Boolean
@@ -7052,7 +6993,7 @@ type query_root {
     where: address_version_from_events_bool_exp
   ): address_version_from_events_aggregate!
   """
-  fetch data from the table: "address_version_from_move_resources"
+  fetch data from the table: "legacy_migration_v1.address_version_from_move_resources"
   """
   address_version_from_move_resources(
     """distinct select on columns"""
@@ -7067,7 +7008,7 @@ type query_root {
     where: address_version_from_move_resources_bool_exp
   ): [address_version_from_move_resources!]!
   """
-  fetch aggregated fields from the table: "address_version_from_move_resources"
+  fetch aggregated fields from the table: "legacy_migration_v1.address_version_from_move_resources"
   """
   address_version_from_move_resources_aggregate(
     """distinct select on columns"""
@@ -7126,10 +7067,8 @@ type query_root {
     """filter the rows returned"""
     where: coin_activities_bool_exp
   ): coin_activities_aggregate!
-  """fetch data from the table: "coin_activities" using primary key columns"""
-  coin_activities_by_pk(event_account_address: String!, event_creation_number: bigint!, event_sequence_number: bigint!, transaction_version: bigint!): coin_activities
   """
-  fetch data from the table: "coin_balances"
+  fetch data from the table: "legacy_migration_v1.coin_balances"
   """
   coin_balances(
     """distinct select on columns"""
@@ -7143,10 +7082,8 @@ type query_root {
     """filter the rows returned"""
     where: coin_balances_bool_exp
   ): [coin_balances!]!
-  """fetch data from the table: "coin_balances" using primary key columns"""
-  coin_balances_by_pk(coin_type_hash: String!, owner_address: String!, transaction_version: bigint!): coin_balances
   """
-  fetch data from the table: "coin_infos"
+  fetch data from the table: "legacy_migration_v1.coin_infos"
   """
   coin_infos(
     """distinct select on columns"""
@@ -7160,8 +7097,6 @@ type query_root {
     """filter the rows returned"""
     where: coin_infos_bool_exp
   ): [coin_infos!]!
-  """fetch data from the table: "coin_infos" using primary key columns"""
-  coin_infos_by_pk(coin_type_hash: String!): coin_infos
   """
   fetch data from the table: "coin_supply"
   """
@@ -7180,7 +7115,7 @@ type query_root {
   """fetch data from the table: "coin_supply" using primary key columns"""
   coin_supply_by_pk(coin_type_hash: String!, transaction_version: bigint!): coin_supply
   """
-  fetch data from the table: "collection_datas"
+  fetch data from the table: "legacy_migration_v1.collection_datas"
   """
   collection_datas(
     """distinct select on columns"""
@@ -7195,11 +7130,7 @@ type query_root {
     where: collection_datas_bool_exp
   ): [collection_datas!]!
   """
-  fetch data from the table: "collection_datas" using primary key columns
-  """
-  collection_datas_by_pk(collection_data_id_hash: String!, transaction_version: bigint!): collection_datas
-  """
-  fetch data from the table: "current_ans_lookup"
+  fetch data from the table: "legacy_migration_v1.current_ans_lookup"
   """
   current_ans_lookup(
     """distinct select on columns"""
@@ -7213,10 +7144,6 @@ type query_root {
     """filter the rows returned"""
     where: current_ans_lookup_bool_exp
   ): [current_ans_lookup!]!
-  """
-  fetch data from the table: "current_ans_lookup" using primary key columns
-  """
-  current_ans_lookup_by_pk(domain: String!, subdomain: String!): current_ans_lookup
   """
   fetch data from the table: "current_ans_lookup_v2"
   """
@@ -7236,25 +7163,6 @@ type query_root {
   fetch data from the table: "current_ans_lookup_v2" using primary key columns
   """
   current_ans_lookup_v2_by_pk(domain: String!, subdomain: String!, token_standard: String!): current_ans_lookup_v2
-  """
-  fetch data from the table: "current_ans_primary_name_v2"
-  """
-  current_ans_primary_name_v2(
-    """distinct select on columns"""
-    distinct_on: [current_ans_primary_name_v2_select_column!]
-    """limit the number of rows returned"""
-    limit: Int
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-    """sort the rows by one or more columns"""
-    order_by: [current_ans_primary_name_v2_order_by!]
-    """filter the rows returned"""
-    where: current_ans_primary_name_v2_bool_exp
-  ): [current_ans_primary_name_v2!]!
-  """
-  fetch data from the table: "current_ans_primary_name_v2" using primary key columns
-  """
-  current_ans_primary_name_v2_by_pk(registered_address: String!, token_standard: String!): current_ans_primary_name_v2
   """
   fetch data from the table: "current_aptos_names"
   """
@@ -7286,7 +7194,7 @@ type query_root {
     where: current_aptos_names_bool_exp
   ): current_aptos_names_aggregate!
   """
-  fetch data from the table: "current_coin_balances"
+  fetch data from the table: "legacy_migration_v1.current_coin_balances"
   """
   current_coin_balances(
     """distinct select on columns"""
@@ -7301,11 +7209,7 @@ type query_root {
     where: current_coin_balances_bool_exp
   ): [current_coin_balances!]!
   """
-  fetch data from the table: "current_coin_balances" using primary key columns
-  """
-  current_coin_balances_by_pk(coin_type_hash: String!, owner_address: String!): current_coin_balances
-  """
-  fetch data from the table: "current_collection_datas"
+  fetch data from the table: "legacy_migration_v1.current_collection_datas"
   """
   current_collection_datas(
     """distinct select on columns"""
@@ -7319,10 +7223,6 @@ type query_root {
     """filter the rows returned"""
     where: current_collection_datas_bool_exp
   ): [current_collection_datas!]!
-  """
-  fetch data from the table: "current_collection_datas" using primary key columns
-  """
-  current_collection_datas_by_pk(collection_data_id_hash: String!): current_collection_datas
   """
   fetch data from the table: "current_collection_ownership_v2_view"
   """
@@ -7519,7 +7419,7 @@ type query_root {
   """
   current_table_items_by_pk(key_hash: String!, table_handle: String!): current_table_items
   """
-  fetch data from the table: "current_token_datas"
+  fetch data from the table: "legacy_migration_v1.current_token_datas"
   """
   current_token_datas(
     """distinct select on columns"""
@@ -7533,10 +7433,6 @@ type query_root {
     """filter the rows returned"""
     where: current_token_datas_bool_exp
   ): [current_token_datas!]!
-  """
-  fetch data from the table: "current_token_datas" using primary key columns
-  """
-  current_token_datas_by_pk(token_data_id_hash: String!): current_token_datas
   """
   fetch data from the table: "current_token_datas_v2"
   """
@@ -7557,7 +7453,7 @@ type query_root {
   """
   current_token_datas_v2_by_pk(token_data_id: String!): current_token_datas_v2
   """
-  fetch data from the table: "current_token_ownerships"
+  fetch data from the table: "legacy_migration_v1.current_token_ownerships"
   """
   current_token_ownerships(
     """distinct select on columns"""
@@ -7572,7 +7468,7 @@ type query_root {
     where: current_token_ownerships_bool_exp
   ): [current_token_ownerships!]!
   """
-  fetch aggregated fields from the table: "current_token_ownerships"
+  fetch aggregated fields from the table: "legacy_migration_v1.current_token_ownerships"
   """
   current_token_ownerships_aggregate(
     """distinct select on columns"""
@@ -7586,10 +7482,6 @@ type query_root {
     """filter the rows returned"""
     where: current_token_ownerships_bool_exp
   ): current_token_ownerships_aggregate!
-  """
-  fetch data from the table: "current_token_ownerships" using primary key columns
-  """
-  current_token_ownerships_by_pk(owner_address: String!, property_version: numeric!, token_data_id_hash: String!): current_token_ownerships
   """
   fetch data from the table: "current_token_ownerships_v2"
   """
@@ -7643,6 +7535,25 @@ type query_root {
   fetch data from the table: "current_token_pending_claims" using primary key columns
   """
   current_token_pending_claims_by_pk(from_address: String!, property_version: numeric!, to_address: String!, token_data_id_hash: String!): current_token_pending_claims
+  """
+  fetch data from the table: "current_token_royalty_v1"
+  """
+  current_token_royalty_v1(
+    """distinct select on columns"""
+    distinct_on: [current_token_royalty_v1_select_column!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    order_by: [current_token_royalty_v1_order_by!]
+    """filter the rows returned"""
+    where: current_token_royalty_v1_bool_exp
+  ): [current_token_royalty_v1!]!
+  """
+  fetch data from the table: "current_token_royalty_v1" using primary key columns
+  """
+  current_token_royalty_v1_by_pk(token_data_id: String!): current_token_royalty_v1
   """An array relationship"""
   delegated_staking_activities(
     """distinct select on columns"""
@@ -7814,7 +7725,7 @@ type query_root {
   """fetch data from the table: "indexer_status" using primary key columns"""
   indexer_status_by_pk(db: String!): indexer_status
   """
-  fetch data from the table: "ledger_infos"
+  fetch data from the table: "processor_metadata.ledger_infos"
   """
   ledger_infos(
     """distinct select on columns"""
@@ -7828,10 +7739,12 @@ type query_root {
     """filter the rows returned"""
     where: ledger_infos_bool_exp
   ): [ledger_infos!]!
-  """fetch data from the table: "ledger_infos" using primary key columns"""
+  """
+  fetch data from the table: "processor_metadata.ledger_infos" using primary key columns
+  """
   ledger_infos_by_pk(chain_id: bigint!): ledger_infos
   """
-  fetch data from the table: "move_resources"
+  fetch data from the table: "legacy_migration_v1.move_resources"
   """
   move_resources(
     """distinct select on columns"""
@@ -7846,7 +7759,7 @@ type query_root {
     where: move_resources_bool_exp
   ): [move_resources!]!
   """
-  fetch aggregated fields from the table: "move_resources"
+  fetch aggregated fields from the table: "legacy_migration_v1.move_resources"
   """
   move_resources_aggregate(
     """distinct select on columns"""
@@ -7895,7 +7808,7 @@ type query_root {
     where: num_active_delegator_per_pool_bool_exp
   ): [num_active_delegator_per_pool!]!
   """
-  fetch data from the table: "processor_status"
+  fetch data from the table: "processor_metadata.processor_status"
   """
   processor_status(
     """distinct select on columns"""
@@ -7910,7 +7823,7 @@ type query_root {
     where: processor_status_bool_exp
   ): [processor_status!]!
   """
-  fetch data from the table: "processor_status" using primary key columns
+  fetch data from the table: "processor_metadata.processor_status" using primary key columns
   """
   processor_status_by_pk(processor: String!): processor_status
   """
@@ -8022,10 +7935,6 @@ type query_root {
     """filter the rows returned"""
     where: token_activities_bool_exp
   ): token_activities_aggregate!
-  """
-  fetch data from the table: "token_activities" using primary key columns
-  """
-  token_activities_by_pk(event_account_address: String!, event_creation_number: bigint!, event_sequence_number: bigint!, transaction_version: bigint!): token_activities
   """An array relationship"""
   token_activities_v2(
     """distinct select on columns"""
@@ -8057,7 +7966,7 @@ type query_root {
   """
   token_activities_v2_by_pk(event_index: bigint!, transaction_version: bigint!): token_activities_v2
   """
-  fetch data from the table: "token_datas"
+  fetch data from the table: "legacy_migration_v1.token_datas"
   """
   token_datas(
     """distinct select on columns"""
@@ -8071,10 +7980,8 @@ type query_root {
     """filter the rows returned"""
     where: token_datas_bool_exp
   ): [token_datas!]!
-  """fetch data from the table: "token_datas" using primary key columns"""
-  token_datas_by_pk(token_data_id_hash: String!, transaction_version: bigint!): token_datas
   """
-  fetch data from the table: "token_ownerships"
+  fetch data from the table: "legacy_migration_v1.token_ownerships"
   """
   token_ownerships(
     """distinct select on columns"""
@@ -8089,11 +7996,7 @@ type query_root {
     where: token_ownerships_bool_exp
   ): [token_ownerships!]!
   """
-  fetch data from the table: "token_ownerships" using primary key columns
-  """
-  token_ownerships_by_pk(property_version: numeric!, table_handle: String!, token_data_id_hash: String!, transaction_version: bigint!): token_ownerships
-  """
-  fetch data from the table: "tokens"
+  fetch data from the table: "legacy_migration_v1.tokens"
   """
   tokens(
     """distinct select on columns"""
@@ -8107,8 +8010,6 @@ type query_root {
     """filter the rows returned"""
     where: tokens_bool_exp
   ): [tokens!]!
-  """fetch data from the table: "tokens" using primary key columns"""
-  tokens_by_pk(property_version: numeric!, token_data_id_hash: String!, transaction_version: bigint!): tokens
   """
   fetch data from the table: "user_transactions"
   """
@@ -8125,21 +8026,6 @@ type query_root {
     where: user_transactions_bool_exp
   ): [user_transactions!]!
   """
-  fetch aggregated fields from the table: "user_transactions"
-  """
-  user_transactions_aggregate(
-    """distinct select on columns"""
-    distinct_on: [user_transactions_select_column!]
-    """limit the number of rows returned"""
-    limit: Int
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-    """sort the rows by one or more columns"""
-    order_by: [user_transactions_order_by!]
-    """filter the rows returned"""
-    where: user_transactions_bool_exp
-  ): user_transactions_aggregate!
-  """
   fetch data from the table: "user_transactions" using primary key columns
   """
   user_transactions_by_pk(version: bigint!): user_transactions
@@ -8149,7 +8035,6 @@ type query_root {
 columns and relationships of "signatures"
 """
 type signatures {
-  inserted_at: timestamp!
   is_sender_primary: Boolean!
   multi_agent_index: bigint!
   multi_sig_index: bigint!
@@ -8173,7 +8058,6 @@ input signatures_bool_exp {
   _and: [signatures_bool_exp!]
   _not: signatures_bool_exp
   _or: [signatures_bool_exp!]
-  inserted_at: timestamp_comparison_exp
   is_sender_primary: Boolean_comparison_exp
   multi_agent_index: bigint_comparison_exp
   multi_sig_index: bigint_comparison_exp
@@ -8189,7 +8073,6 @@ input signatures_bool_exp {
 
 """Ordering options when selecting data from "signatures"."""
 input signatures_order_by {
-  inserted_at: order_by
   is_sender_primary: order_by
   multi_agent_index: order_by
   multi_sig_index: order_by
@@ -8207,8 +8090,6 @@ input signatures_order_by {
 select columns of table "signatures"
 """
 enum signatures_select_column {
-  """column name"""
-  inserted_at
   """column name"""
   is_sender_primary
   """column name"""
@@ -8245,7 +8126,6 @@ input signatures_stream_cursor_input {
 
 """Initial value of the column from where the streaming should start"""
 input signatures_stream_cursor_value_input {
-  inserted_at: timestamp
   is_sender_primary: Boolean
   multi_agent_index: bigint
   multi_sig_index: bigint
@@ -8373,7 +8253,7 @@ type subscription_root {
     where: address_version_from_events_bool_exp
   ): [address_version_from_events!]!
   """
-  fetch data from the table: "address_version_from_move_resources"
+  fetch data from the table: "legacy_migration_v1.address_version_from_move_resources"
   """
   address_version_from_move_resources(
     """distinct select on columns"""
@@ -8388,7 +8268,7 @@ type subscription_root {
     where: address_version_from_move_resources_bool_exp
   ): [address_version_from_move_resources!]!
   """
-  fetch aggregated fields from the table: "address_version_from_move_resources"
+  fetch aggregated fields from the table: "legacy_migration_v1.address_version_from_move_resources"
   """
   address_version_from_move_resources_aggregate(
     """distinct select on columns"""
@@ -8403,7 +8283,7 @@ type subscription_root {
     where: address_version_from_move_resources_bool_exp
   ): address_version_from_move_resources_aggregate!
   """
-  fetch data from the table in a streaming manner: "address_version_from_move_resources"
+  fetch data from the table in a streaming manner: "legacy_migration_v1.address_version_from_move_resources"
   """
   address_version_from_move_resources_stream(
     """maximum number of rows returned in a single batch"""
@@ -8469,10 +8349,8 @@ type subscription_root {
     """filter the rows returned"""
     where: coin_activities_bool_exp
   ): coin_activities_aggregate!
-  """fetch data from the table: "coin_activities" using primary key columns"""
-  coin_activities_by_pk(event_account_address: String!, event_creation_number: bigint!, event_sequence_number: bigint!, transaction_version: bigint!): coin_activities
   """
-  fetch data from the table in a streaming manner: "coin_activities"
+  fetch data from the table in a streaming manner: "legacy_migration_v1.coin_activities"
   """
   coin_activities_stream(
     """maximum number of rows returned in a single batch"""
@@ -8483,7 +8361,7 @@ type subscription_root {
     where: coin_activities_bool_exp
   ): [coin_activities!]!
   """
-  fetch data from the table: "coin_balances"
+  fetch data from the table: "legacy_migration_v1.coin_balances"
   """
   coin_balances(
     """distinct select on columns"""
@@ -8497,10 +8375,8 @@ type subscription_root {
     """filter the rows returned"""
     where: coin_balances_bool_exp
   ): [coin_balances!]!
-  """fetch data from the table: "coin_balances" using primary key columns"""
-  coin_balances_by_pk(coin_type_hash: String!, owner_address: String!, transaction_version: bigint!): coin_balances
   """
-  fetch data from the table in a streaming manner: "coin_balances"
+  fetch data from the table in a streaming manner: "legacy_migration_v1.coin_balances"
   """
   coin_balances_stream(
     """maximum number of rows returned in a single batch"""
@@ -8511,7 +8387,7 @@ type subscription_root {
     where: coin_balances_bool_exp
   ): [coin_balances!]!
   """
-  fetch data from the table: "coin_infos"
+  fetch data from the table: "legacy_migration_v1.coin_infos"
   """
   coin_infos(
     """distinct select on columns"""
@@ -8525,10 +8401,8 @@ type subscription_root {
     """filter the rows returned"""
     where: coin_infos_bool_exp
   ): [coin_infos!]!
-  """fetch data from the table: "coin_infos" using primary key columns"""
-  coin_infos_by_pk(coin_type_hash: String!): coin_infos
   """
-  fetch data from the table in a streaming manner: "coin_infos"
+  fetch data from the table in a streaming manner: "legacy_migration_v1.coin_infos"
   """
   coin_infos_stream(
     """maximum number of rows returned in a single batch"""
@@ -8567,7 +8441,7 @@ type subscription_root {
     where: coin_supply_bool_exp
   ): [coin_supply!]!
   """
-  fetch data from the table: "collection_datas"
+  fetch data from the table: "legacy_migration_v1.collection_datas"
   """
   collection_datas(
     """distinct select on columns"""
@@ -8582,11 +8456,7 @@ type subscription_root {
     where: collection_datas_bool_exp
   ): [collection_datas!]!
   """
-  fetch data from the table: "collection_datas" using primary key columns
-  """
-  collection_datas_by_pk(collection_data_id_hash: String!, transaction_version: bigint!): collection_datas
-  """
-  fetch data from the table in a streaming manner: "collection_datas"
+  fetch data from the table in a streaming manner: "legacy_migration_v1.collection_datas"
   """
   collection_datas_stream(
     """maximum number of rows returned in a single batch"""
@@ -8597,7 +8467,7 @@ type subscription_root {
     where: collection_datas_bool_exp
   ): [collection_datas!]!
   """
-  fetch data from the table: "current_ans_lookup"
+  fetch data from the table: "legacy_migration_v1.current_ans_lookup"
   """
   current_ans_lookup(
     """distinct select on columns"""
@@ -8612,11 +8482,7 @@ type subscription_root {
     where: current_ans_lookup_bool_exp
   ): [current_ans_lookup!]!
   """
-  fetch data from the table: "current_ans_lookup" using primary key columns
-  """
-  current_ans_lookup_by_pk(domain: String!, subdomain: String!): current_ans_lookup
-  """
-  fetch data from the table in a streaming manner: "current_ans_lookup"
+  fetch data from the table in a streaming manner: "legacy_migration_v1.current_ans_lookup"
   """
   current_ans_lookup_stream(
     """maximum number of rows returned in a single batch"""
@@ -8656,36 +8522,6 @@ type subscription_root {
     """filter the rows returned"""
     where: current_ans_lookup_v2_bool_exp
   ): [current_ans_lookup_v2!]!
-  """
-  fetch data from the table: "current_ans_primary_name_v2"
-  """
-  current_ans_primary_name_v2(
-    """distinct select on columns"""
-    distinct_on: [current_ans_primary_name_v2_select_column!]
-    """limit the number of rows returned"""
-    limit: Int
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-    """sort the rows by one or more columns"""
-    order_by: [current_ans_primary_name_v2_order_by!]
-    """filter the rows returned"""
-    where: current_ans_primary_name_v2_bool_exp
-  ): [current_ans_primary_name_v2!]!
-  """
-  fetch data from the table: "current_ans_primary_name_v2" using primary key columns
-  """
-  current_ans_primary_name_v2_by_pk(registered_address: String!, token_standard: String!): current_ans_primary_name_v2
-  """
-  fetch data from the table in a streaming manner: "current_ans_primary_name_v2"
-  """
-  current_ans_primary_name_v2_stream(
-    """maximum number of rows returned in a single batch"""
-    batch_size: Int!
-    """cursor to stream the results returned by the query"""
-    cursor: [current_ans_primary_name_v2_stream_cursor_input]!
-    """filter the rows returned"""
-    where: current_ans_primary_name_v2_bool_exp
-  ): [current_ans_primary_name_v2!]!
   """
   fetch data from the table: "current_aptos_names"
   """
@@ -8728,7 +8564,7 @@ type subscription_root {
     where: current_aptos_names_bool_exp
   ): [current_aptos_names!]!
   """
-  fetch data from the table: "current_coin_balances"
+  fetch data from the table: "legacy_migration_v1.current_coin_balances"
   """
   current_coin_balances(
     """distinct select on columns"""
@@ -8743,11 +8579,7 @@ type subscription_root {
     where: current_coin_balances_bool_exp
   ): [current_coin_balances!]!
   """
-  fetch data from the table: "current_coin_balances" using primary key columns
-  """
-  current_coin_balances_by_pk(coin_type_hash: String!, owner_address: String!): current_coin_balances
-  """
-  fetch data from the table in a streaming manner: "current_coin_balances"
+  fetch data from the table in a streaming manner: "legacy_migration_v1.current_coin_balances"
   """
   current_coin_balances_stream(
     """maximum number of rows returned in a single batch"""
@@ -8758,7 +8590,7 @@ type subscription_root {
     where: current_coin_balances_bool_exp
   ): [current_coin_balances!]!
   """
-  fetch data from the table: "current_collection_datas"
+  fetch data from the table: "legacy_migration_v1.current_collection_datas"
   """
   current_collection_datas(
     """distinct select on columns"""
@@ -8773,11 +8605,7 @@ type subscription_root {
     where: current_collection_datas_bool_exp
   ): [current_collection_datas!]!
   """
-  fetch data from the table: "current_collection_datas" using primary key columns
-  """
-  current_collection_datas_by_pk(collection_data_id_hash: String!): current_collection_datas
-  """
-  fetch data from the table in a streaming manner: "current_collection_datas"
+  fetch data from the table in a streaming manner: "legacy_migration_v1.current_collection_datas"
   """
   current_collection_datas_stream(
     """maximum number of rows returned in a single batch"""
@@ -9082,7 +8910,7 @@ type subscription_root {
     where: current_table_items_bool_exp
   ): [current_table_items!]!
   """
-  fetch data from the table: "current_token_datas"
+  fetch data from the table: "legacy_migration_v1.current_token_datas"
   """
   current_token_datas(
     """distinct select on columns"""
@@ -9097,11 +8925,7 @@ type subscription_root {
     where: current_token_datas_bool_exp
   ): [current_token_datas!]!
   """
-  fetch data from the table: "current_token_datas" using primary key columns
-  """
-  current_token_datas_by_pk(token_data_id_hash: String!): current_token_datas
-  """
-  fetch data from the table in a streaming manner: "current_token_datas"
+  fetch data from the table in a streaming manner: "legacy_migration_v1.current_token_datas"
   """
   current_token_datas_stream(
     """maximum number of rows returned in a single batch"""
@@ -9142,7 +8966,7 @@ type subscription_root {
     where: current_token_datas_v2_bool_exp
   ): [current_token_datas_v2!]!
   """
-  fetch data from the table: "current_token_ownerships"
+  fetch data from the table: "legacy_migration_v1.current_token_ownerships"
   """
   current_token_ownerships(
     """distinct select on columns"""
@@ -9157,7 +8981,7 @@ type subscription_root {
     where: current_token_ownerships_bool_exp
   ): [current_token_ownerships!]!
   """
-  fetch aggregated fields from the table: "current_token_ownerships"
+  fetch aggregated fields from the table: "legacy_migration_v1.current_token_ownerships"
   """
   current_token_ownerships_aggregate(
     """distinct select on columns"""
@@ -9172,11 +8996,7 @@ type subscription_root {
     where: current_token_ownerships_bool_exp
   ): current_token_ownerships_aggregate!
   """
-  fetch data from the table: "current_token_ownerships" using primary key columns
-  """
-  current_token_ownerships_by_pk(owner_address: String!, property_version: numeric!, token_data_id_hash: String!): current_token_ownerships
-  """
-  fetch data from the table in a streaming manner: "current_token_ownerships"
+  fetch data from the table in a streaming manner: "legacy_migration_v1.current_token_ownerships"
   """
   current_token_ownerships_stream(
     """maximum number of rows returned in a single batch"""
@@ -9261,6 +9081,36 @@ type subscription_root {
     """filter the rows returned"""
     where: current_token_pending_claims_bool_exp
   ): [current_token_pending_claims!]!
+  """
+  fetch data from the table: "current_token_royalty_v1"
+  """
+  current_token_royalty_v1(
+    """distinct select on columns"""
+    distinct_on: [current_token_royalty_v1_select_column!]
+    """limit the number of rows returned"""
+    limit: Int
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+    """sort the rows by one or more columns"""
+    order_by: [current_token_royalty_v1_order_by!]
+    """filter the rows returned"""
+    where: current_token_royalty_v1_bool_exp
+  ): [current_token_royalty_v1!]!
+  """
+  fetch data from the table: "current_token_royalty_v1" using primary key columns
+  """
+  current_token_royalty_v1_by_pk(token_data_id: String!): current_token_royalty_v1
+  """
+  fetch data from the table in a streaming manner: "current_token_royalty_v1"
+  """
+  current_token_royalty_v1_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+    """cursor to stream the results returned by the query"""
+    cursor: [current_token_royalty_v1_stream_cursor_input]!
+    """filter the rows returned"""
+    where: current_token_royalty_v1_bool_exp
+  ): [current_token_royalty_v1!]!
   """An array relationship"""
   delegated_staking_activities(
     """distinct select on columns"""
@@ -9520,7 +9370,7 @@ type subscription_root {
     where: indexer_status_bool_exp
   ): [indexer_status!]!
   """
-  fetch data from the table: "ledger_infos"
+  fetch data from the table: "processor_metadata.ledger_infos"
   """
   ledger_infos(
     """distinct select on columns"""
@@ -9534,10 +9384,12 @@ type subscription_root {
     """filter the rows returned"""
     where: ledger_infos_bool_exp
   ): [ledger_infos!]!
-  """fetch data from the table: "ledger_infos" using primary key columns"""
+  """
+  fetch data from the table: "processor_metadata.ledger_infos" using primary key columns
+  """
   ledger_infos_by_pk(chain_id: bigint!): ledger_infos
   """
-  fetch data from the table in a streaming manner: "ledger_infos"
+  fetch data from the table in a streaming manner: "processor_metadata.ledger_infos"
   """
   ledger_infos_stream(
     """maximum number of rows returned in a single batch"""
@@ -9548,7 +9400,7 @@ type subscription_root {
     where: ledger_infos_bool_exp
   ): [ledger_infos!]!
   """
-  fetch data from the table: "move_resources"
+  fetch data from the table: "legacy_migration_v1.move_resources"
   """
   move_resources(
     """distinct select on columns"""
@@ -9563,7 +9415,7 @@ type subscription_root {
     where: move_resources_bool_exp
   ): [move_resources!]!
   """
-  fetch aggregated fields from the table: "move_resources"
+  fetch aggregated fields from the table: "legacy_migration_v1.move_resources"
   """
   move_resources_aggregate(
     """distinct select on columns"""
@@ -9578,7 +9430,7 @@ type subscription_root {
     where: move_resources_bool_exp
   ): move_resources_aggregate!
   """
-  fetch data from the table in a streaming manner: "move_resources"
+  fetch data from the table in a streaming manner: "legacy_migration_v1.move_resources"
   """
   move_resources_stream(
     """maximum number of rows returned in a single batch"""
@@ -9645,7 +9497,7 @@ type subscription_root {
     where: num_active_delegator_per_pool_bool_exp
   ): [num_active_delegator_per_pool!]!
   """
-  fetch data from the table: "processor_status"
+  fetch data from the table: "processor_metadata.processor_status"
   """
   processor_status(
     """distinct select on columns"""
@@ -9660,11 +9512,11 @@ type subscription_root {
     where: processor_status_bool_exp
   ): [processor_status!]!
   """
-  fetch data from the table: "processor_status" using primary key columns
+  fetch data from the table: "processor_metadata.processor_status" using primary key columns
   """
   processor_status_by_pk(processor: String!): processor_status
   """
-  fetch data from the table in a streaming manner: "processor_status"
+  fetch data from the table in a streaming manner: "processor_metadata.processor_status"
   """
   processor_status_stream(
     """maximum number of rows returned in a single batch"""
@@ -9828,11 +9680,7 @@ type subscription_root {
     where: token_activities_bool_exp
   ): token_activities_aggregate!
   """
-  fetch data from the table: "token_activities" using primary key columns
-  """
-  token_activities_by_pk(event_account_address: String!, event_creation_number: bigint!, event_sequence_number: bigint!, transaction_version: bigint!): token_activities
-  """
-  fetch data from the table in a streaming manner: "token_activities"
+  fetch data from the table in a streaming manner: "legacy_migration_v1.token_activities"
   """
   token_activities_stream(
     """maximum number of rows returned in a single batch"""
@@ -9884,7 +9732,7 @@ type subscription_root {
     where: token_activities_v2_bool_exp
   ): [token_activities_v2!]!
   """
-  fetch data from the table: "token_datas"
+  fetch data from the table: "legacy_migration_v1.token_datas"
   """
   token_datas(
     """distinct select on columns"""
@@ -9898,10 +9746,8 @@ type subscription_root {
     """filter the rows returned"""
     where: token_datas_bool_exp
   ): [token_datas!]!
-  """fetch data from the table: "token_datas" using primary key columns"""
-  token_datas_by_pk(token_data_id_hash: String!, transaction_version: bigint!): token_datas
   """
-  fetch data from the table in a streaming manner: "token_datas"
+  fetch data from the table in a streaming manner: "legacy_migration_v1.token_datas"
   """
   token_datas_stream(
     """maximum number of rows returned in a single batch"""
@@ -9912,7 +9758,7 @@ type subscription_root {
     where: token_datas_bool_exp
   ): [token_datas!]!
   """
-  fetch data from the table: "token_ownerships"
+  fetch data from the table: "legacy_migration_v1.token_ownerships"
   """
   token_ownerships(
     """distinct select on columns"""
@@ -9927,11 +9773,7 @@ type subscription_root {
     where: token_ownerships_bool_exp
   ): [token_ownerships!]!
   """
-  fetch data from the table: "token_ownerships" using primary key columns
-  """
-  token_ownerships_by_pk(property_version: numeric!, table_handle: String!, token_data_id_hash: String!, transaction_version: bigint!): token_ownerships
-  """
-  fetch data from the table in a streaming manner: "token_ownerships"
+  fetch data from the table in a streaming manner: "legacy_migration_v1.token_ownerships"
   """
   token_ownerships_stream(
     """maximum number of rows returned in a single batch"""
@@ -9942,7 +9784,7 @@ type subscription_root {
     where: token_ownerships_bool_exp
   ): [token_ownerships!]!
   """
-  fetch data from the table: "tokens"
+  fetch data from the table: "legacy_migration_v1.tokens"
   """
   tokens(
     """distinct select on columns"""
@@ -9956,10 +9798,8 @@ type subscription_root {
     """filter the rows returned"""
     where: tokens_bool_exp
   ): [tokens!]!
-  """fetch data from the table: "tokens" using primary key columns"""
-  tokens_by_pk(property_version: numeric!, token_data_id_hash: String!, transaction_version: bigint!): tokens
   """
-  fetch data from the table in a streaming manner: "tokens"
+  fetch data from the table in a streaming manner: "legacy_migration_v1.tokens"
   """
   tokens_stream(
     """maximum number of rows returned in a single batch"""
@@ -9984,21 +9824,6 @@ type subscription_root {
     """filter the rows returned"""
     where: user_transactions_bool_exp
   ): [user_transactions!]!
-  """
-  fetch aggregated fields from the table: "user_transactions"
-  """
-  user_transactions_aggregate(
-    """distinct select on columns"""
-    distinct_on: [user_transactions_select_column!]
-    """limit the number of rows returned"""
-    limit: Int
-    """skip the first n rows. Use only with order_by"""
-    offset: Int
-    """sort the rows by one or more columns"""
-    order_by: [user_transactions_order_by!]
-    """filter the rows returned"""
-    where: user_transactions_bool_exp
-  ): user_transactions_aggregate!
   """
   fetch data from the table: "user_transactions" using primary key columns
   """
@@ -10028,7 +9853,6 @@ type table_items {
     """JSON select path"""
     path: String
   ): jsonb
-  inserted_at: timestamp!
   key: String!
   table_handle: String!
   transaction_version: bigint!
@@ -10044,7 +9868,6 @@ input table_items_bool_exp {
   _or: [table_items_bool_exp!]
   decoded_key: jsonb_comparison_exp
   decoded_value: jsonb_comparison_exp
-  inserted_at: timestamp_comparison_exp
   key: String_comparison_exp
   table_handle: String_comparison_exp
   transaction_version: bigint_comparison_exp
@@ -10055,7 +9878,6 @@ input table_items_bool_exp {
 input table_items_order_by {
   decoded_key: order_by
   decoded_value: order_by
-  inserted_at: order_by
   key: order_by
   table_handle: order_by
   transaction_version: order_by
@@ -10070,8 +9892,6 @@ enum table_items_select_column {
   decoded_key
   """column name"""
   decoded_value
-  """column name"""
-  inserted_at
   """column name"""
   key
   """column name"""
@@ -10096,7 +9916,6 @@ input table_items_stream_cursor_input {
 input table_items_stream_cursor_value_input {
   decoded_key: jsonb
   decoded_value: jsonb
-  inserted_at: timestamp
   key: String
   table_handle: String
   transaction_version: bigint
@@ -10108,7 +9927,6 @@ columns and relationships of "table_metadatas"
 """
 type table_metadatas {
   handle: String!
-  inserted_at: timestamp!
   key_type: String!
   value_type: String!
 }
@@ -10121,7 +9939,6 @@ input table_metadatas_bool_exp {
   _not: table_metadatas_bool_exp
   _or: [table_metadatas_bool_exp!]
   handle: String_comparison_exp
-  inserted_at: timestamp_comparison_exp
   key_type: String_comparison_exp
   value_type: String_comparison_exp
 }
@@ -10129,7 +9946,6 @@ input table_metadatas_bool_exp {
 """Ordering options when selecting data from "table_metadatas"."""
 input table_metadatas_order_by {
   handle: order_by
-  inserted_at: order_by
   key_type: order_by
   value_type: order_by
 }
@@ -10140,8 +9956,6 @@ select columns of table "table_metadatas"
 enum table_metadatas_select_column {
   """column name"""
   handle
-  """column name"""
-  inserted_at
   """column name"""
   key_type
   """column name"""
@@ -10161,7 +9975,6 @@ input table_metadatas_stream_cursor_input {
 """Initial value of the column from where the streaming should start"""
 input table_metadatas_stream_cursor_value_input {
   handle: String
-  inserted_at: timestamp
   key_type: String
   value_type: String
 }
@@ -10184,7 +9997,7 @@ input timestamp_comparison_exp {
 }
 
 """
-columns and relationships of "token_activities"
+columns and relationships of "legacy_migration_v1.token_activities"
 """
 type token_activities {
   """An array relationship"""
@@ -10239,31 +10052,30 @@ type token_activities {
     """filter the rows returned"""
     where: current_aptos_names_bool_exp
   ): current_aptos_names_aggregate!
-  coin_amount: numeric
+  coin_amount: String
   coin_type: String
-  collection_data_id_hash: String!
-  collection_name: String!
-  creator_address: String!
+  collection_data_id_hash: String
+  collection_name: String
+  creator_address: String
   """An object relationship"""
   current_token_data: current_token_datas
-  event_account_address: String!
-  event_creation_number: bigint!
+  event_account_address: String
+  event_creation_number: Int
   event_index: bigint
-  event_sequence_number: bigint!
+  event_sequence_number: Int
   from_address: String
-  inserted_at: timestamp!
-  name: String!
-  property_version: numeric!
+  name: String
+  property_version: numeric
   to_address: String
-  token_amount: numeric!
-  token_data_id_hash: String!
-  transaction_timestamp: timestamp!
-  transaction_version: bigint!
-  transfer_type: String!
+  token_amount: numeric
+  token_data_id_hash: String
+  transaction_timestamp: timestamp
+  transaction_version: bigint
+  transfer_type: String
 }
 
 """
-aggregated selection of "token_activities"
+aggregated selection of "legacy_migration_v1.token_activities"
 """
 type token_activities_aggregate {
   aggregate: token_activities_aggregate_fields
@@ -10282,7 +10094,7 @@ input token_activities_aggregate_bool_exp_count {
 }
 
 """
-aggregate fields of "token_activities"
+aggregate fields of "legacy_migration_v1.token_activities"
 """
 type token_activities_aggregate_fields {
   avg: token_activities_avg_fields
@@ -10299,7 +10111,7 @@ type token_activities_aggregate_fields {
 }
 
 """
-order by aggregate values of table "token_activities"
+order by aggregate values of table "legacy_migration_v1.token_activities"
 """
 input token_activities_aggregate_order_by {
   avg: token_activities_avg_order_by
@@ -10317,7 +10129,6 @@ input token_activities_aggregate_order_by {
 
 """aggregate avg on columns"""
 type token_activities_avg_fields {
-  coin_amount: Float
   event_creation_number: Float
   event_index: Float
   event_sequence_number: Float
@@ -10327,10 +10138,9 @@ type token_activities_avg_fields {
 }
 
 """
-order by avg() on columns of table "token_activities"
+order by avg() on columns of table "legacy_migration_v1.token_activities"
 """
 input token_activities_avg_order_by {
-  coin_amount: order_by
   event_creation_number: order_by
   event_index: order_by
   event_sequence_number: order_by
@@ -10340,7 +10150,7 @@ input token_activities_avg_order_by {
 }
 
 """
-Boolean expression to filter rows from the table "token_activities". All fields are combined with a logical 'AND'.
+Boolean expression to filter rows from the table "legacy_migration_v1.token_activities". All fields are combined with a logical 'AND'.
 """
 input token_activities_bool_exp {
   _and: [token_activities_bool_exp!]
@@ -10350,18 +10160,17 @@ input token_activities_bool_exp {
   aptos_names_owner_aggregate: current_aptos_names_aggregate_bool_exp
   aptos_names_to: current_aptos_names_bool_exp
   aptos_names_to_aggregate: current_aptos_names_aggregate_bool_exp
-  coin_amount: numeric_comparison_exp
+  coin_amount: String_comparison_exp
   coin_type: String_comparison_exp
   collection_data_id_hash: String_comparison_exp
   collection_name: String_comparison_exp
   creator_address: String_comparison_exp
   current_token_data: current_token_datas_bool_exp
   event_account_address: String_comparison_exp
-  event_creation_number: bigint_comparison_exp
+  event_creation_number: Int_comparison_exp
   event_index: bigint_comparison_exp
-  event_sequence_number: bigint_comparison_exp
+  event_sequence_number: Int_comparison_exp
   from_address: String_comparison_exp
-  inserted_at: timestamp_comparison_exp
   name: String_comparison_exp
   property_version: numeric_comparison_exp
   to_address: String_comparison_exp
@@ -10374,17 +10183,16 @@ input token_activities_bool_exp {
 
 """aggregate max on columns"""
 type token_activities_max_fields {
-  coin_amount: numeric
+  coin_amount: String
   coin_type: String
   collection_data_id_hash: String
   collection_name: String
   creator_address: String
   event_account_address: String
-  event_creation_number: bigint
+  event_creation_number: Int
   event_index: bigint
-  event_sequence_number: bigint
+  event_sequence_number: Int
   from_address: String
-  inserted_at: timestamp
   name: String
   property_version: numeric
   to_address: String
@@ -10396,7 +10204,7 @@ type token_activities_max_fields {
 }
 
 """
-order by max() on columns of table "token_activities"
+order by max() on columns of table "legacy_migration_v1.token_activities"
 """
 input token_activities_max_order_by {
   coin_amount: order_by
@@ -10409,7 +10217,6 @@ input token_activities_max_order_by {
   event_index: order_by
   event_sequence_number: order_by
   from_address: order_by
-  inserted_at: order_by
   name: order_by
   property_version: order_by
   to_address: order_by
@@ -10422,17 +10229,16 @@ input token_activities_max_order_by {
 
 """aggregate min on columns"""
 type token_activities_min_fields {
-  coin_amount: numeric
+  coin_amount: String
   coin_type: String
   collection_data_id_hash: String
   collection_name: String
   creator_address: String
   event_account_address: String
-  event_creation_number: bigint
+  event_creation_number: Int
   event_index: bigint
-  event_sequence_number: bigint
+  event_sequence_number: Int
   from_address: String
-  inserted_at: timestamp
   name: String
   property_version: numeric
   to_address: String
@@ -10444,7 +10250,7 @@ type token_activities_min_fields {
 }
 
 """
-order by min() on columns of table "token_activities"
+order by min() on columns of table "legacy_migration_v1.token_activities"
 """
 input token_activities_min_order_by {
   coin_amount: order_by
@@ -10457,7 +10263,6 @@ input token_activities_min_order_by {
   event_index: order_by
   event_sequence_number: order_by
   from_address: order_by
-  inserted_at: order_by
   name: order_by
   property_version: order_by
   to_address: order_by
@@ -10468,7 +10273,9 @@ input token_activities_min_order_by {
   transfer_type: order_by
 }
 
-"""Ordering options when selecting data from "token_activities"."""
+"""
+Ordering options when selecting data from "legacy_migration_v1.token_activities".
+"""
 input token_activities_order_by {
   aptos_names_owner_aggregate: current_aptos_names_aggregate_order_by
   aptos_names_to_aggregate: current_aptos_names_aggregate_order_by
@@ -10483,7 +10290,6 @@ input token_activities_order_by {
   event_index: order_by
   event_sequence_number: order_by
   from_address: order_by
-  inserted_at: order_by
   name: order_by
   property_version: order_by
   to_address: order_by
@@ -10495,7 +10301,7 @@ input token_activities_order_by {
 }
 
 """
-select columns of table "token_activities"
+select columns of table "legacy_migration_v1.token_activities"
 """
 enum token_activities_select_column {
   """column name"""
@@ -10519,8 +10325,6 @@ enum token_activities_select_column {
   """column name"""
   from_address
   """column name"""
-  inserted_at
-  """column name"""
   name
   """column name"""
   property_version
@@ -10540,7 +10344,6 @@ enum token_activities_select_column {
 
 """aggregate stddev on columns"""
 type token_activities_stddev_fields {
-  coin_amount: Float
   event_creation_number: Float
   event_index: Float
   event_sequence_number: Float
@@ -10550,10 +10353,9 @@ type token_activities_stddev_fields {
 }
 
 """
-order by stddev() on columns of table "token_activities"
+order by stddev() on columns of table "legacy_migration_v1.token_activities"
 """
 input token_activities_stddev_order_by {
-  coin_amount: order_by
   event_creation_number: order_by
   event_index: order_by
   event_sequence_number: order_by
@@ -10564,7 +10366,6 @@ input token_activities_stddev_order_by {
 
 """aggregate stddev_pop on columns"""
 type token_activities_stddev_pop_fields {
-  coin_amount: Float
   event_creation_number: Float
   event_index: Float
   event_sequence_number: Float
@@ -10574,10 +10375,9 @@ type token_activities_stddev_pop_fields {
 }
 
 """
-order by stddev_pop() on columns of table "token_activities"
+order by stddev_pop() on columns of table "legacy_migration_v1.token_activities"
 """
 input token_activities_stddev_pop_order_by {
-  coin_amount: order_by
   event_creation_number: order_by
   event_index: order_by
   event_sequence_number: order_by
@@ -10588,7 +10388,6 @@ input token_activities_stddev_pop_order_by {
 
 """aggregate stddev_samp on columns"""
 type token_activities_stddev_samp_fields {
-  coin_amount: Float
   event_creation_number: Float
   event_index: Float
   event_sequence_number: Float
@@ -10598,10 +10397,9 @@ type token_activities_stddev_samp_fields {
 }
 
 """
-order by stddev_samp() on columns of table "token_activities"
+order by stddev_samp() on columns of table "legacy_migration_v1.token_activities"
 """
 input token_activities_stddev_samp_order_by {
-  coin_amount: order_by
   event_creation_number: order_by
   event_index: order_by
   event_sequence_number: order_by
@@ -10622,17 +10420,16 @@ input token_activities_stream_cursor_input {
 
 """Initial value of the column from where the streaming should start"""
 input token_activities_stream_cursor_value_input {
-  coin_amount: numeric
+  coin_amount: String
   coin_type: String
   collection_data_id_hash: String
   collection_name: String
   creator_address: String
   event_account_address: String
-  event_creation_number: bigint
+  event_creation_number: Int
   event_index: bigint
-  event_sequence_number: bigint
+  event_sequence_number: Int
   from_address: String
-  inserted_at: timestamp
   name: String
   property_version: numeric
   to_address: String
@@ -10645,20 +10442,18 @@ input token_activities_stream_cursor_value_input {
 
 """aggregate sum on columns"""
 type token_activities_sum_fields {
-  coin_amount: numeric
-  event_creation_number: bigint
+  event_creation_number: Int
   event_index: bigint
-  event_sequence_number: bigint
+  event_sequence_number: Int
   property_version: numeric
   token_amount: numeric
   transaction_version: bigint
 }
 
 """
-order by sum() on columns of table "token_activities"
+order by sum() on columns of table "legacy_migration_v1.token_activities"
 """
 input token_activities_sum_order_by {
-  coin_amount: order_by
   event_creation_number: order_by
   event_index: order_by
   event_sequence_number: order_by
@@ -10731,7 +10526,6 @@ type token_activities_v2 {
   event_account_address: String!
   event_index: bigint!
   from_address: String
-  inserted_at: timestamp!
   is_fungible_v2: Boolean
   property_version_v1: numeric!
   to_address: String
@@ -10848,7 +10642,6 @@ input token_activities_v2_bool_exp {
   event_account_address: String_comparison_exp
   event_index: bigint_comparison_exp
   from_address: String_comparison_exp
-  inserted_at: timestamp_comparison_exp
   is_fungible_v2: Boolean_comparison_exp
   property_version_v1: numeric_comparison_exp
   to_address: String_comparison_exp
@@ -10868,7 +10661,6 @@ type token_activities_v2_max_fields {
   event_account_address: String
   event_index: bigint
   from_address: String
-  inserted_at: timestamp
   property_version_v1: numeric
   to_address: String
   token_amount: numeric
@@ -10889,7 +10681,6 @@ input token_activities_v2_max_order_by {
   event_account_address: order_by
   event_index: order_by
   from_address: order_by
-  inserted_at: order_by
   property_version_v1: order_by
   to_address: order_by
   token_amount: order_by
@@ -10908,7 +10699,6 @@ type token_activities_v2_min_fields {
   event_account_address: String
   event_index: bigint
   from_address: String
-  inserted_at: timestamp
   property_version_v1: numeric
   to_address: String
   token_amount: numeric
@@ -10929,7 +10719,6 @@ input token_activities_v2_min_order_by {
   event_account_address: order_by
   event_index: order_by
   from_address: order_by
-  inserted_at: order_by
   property_version_v1: order_by
   to_address: order_by
   token_amount: order_by
@@ -10951,7 +10740,6 @@ input token_activities_v2_order_by {
   event_account_address: order_by
   event_index: order_by
   from_address: order_by
-  inserted_at: order_by
   is_fungible_v2: order_by
   property_version_v1: order_by
   to_address: order_by
@@ -10979,8 +10767,6 @@ enum token_activities_v2_select_column {
   event_index
   """column name"""
   from_address
-  """column name"""
-  inserted_at
   """column name"""
   is_fungible_v2
   """column name"""
@@ -11089,7 +10875,6 @@ input token_activities_v2_stream_cursor_value_input {
   event_account_address: String
   event_index: bigint
   from_address: String
-  inserted_at: timestamp
   is_fungible_v2: Boolean
   property_version_v1: numeric
   to_address: String
@@ -11175,7 +10960,6 @@ input token_activities_v2_variance_order_by {
 
 """aggregate var_pop on columns"""
 type token_activities_var_pop_fields {
-  coin_amount: Float
   event_creation_number: Float
   event_index: Float
   event_sequence_number: Float
@@ -11185,10 +10969,9 @@ type token_activities_var_pop_fields {
 }
 
 """
-order by var_pop() on columns of table "token_activities"
+order by var_pop() on columns of table "legacy_migration_v1.token_activities"
 """
 input token_activities_var_pop_order_by {
-  coin_amount: order_by
   event_creation_number: order_by
   event_index: order_by
   event_sequence_number: order_by
@@ -11199,7 +10982,6 @@ input token_activities_var_pop_order_by {
 
 """aggregate var_samp on columns"""
 type token_activities_var_samp_fields {
-  coin_amount: Float
   event_creation_number: Float
   event_index: Float
   event_sequence_number: Float
@@ -11209,10 +10991,9 @@ type token_activities_var_samp_fields {
 }
 
 """
-order by var_samp() on columns of table "token_activities"
+order by var_samp() on columns of table "legacy_migration_v1.token_activities"
 """
 input token_activities_var_samp_order_by {
-  coin_amount: order_by
   event_creation_number: order_by
   event_index: order_by
   event_sequence_number: order_by
@@ -11223,7 +11004,6 @@ input token_activities_var_samp_order_by {
 
 """aggregate variance on columns"""
 type token_activities_variance_fields {
-  coin_amount: Float
   event_creation_number: Float
   event_index: Float
   event_sequence_number: Float
@@ -11233,10 +11013,9 @@ type token_activities_variance_fields {
 }
 
 """
-order by variance() on columns of table "token_activities"
+order by variance() on columns of table "legacy_migration_v1.token_activities"
 """
 input token_activities_variance_order_by {
-  coin_amount: order_by
   event_creation_number: order_by
   event_index: order_by
   event_sequence_number: order_by
@@ -11246,38 +11025,37 @@ input token_activities_variance_order_by {
 }
 
 """
-columns and relationships of "token_datas"
+columns and relationships of "legacy_migration_v1.token_datas"
 """
 type token_datas {
-  collection_data_id_hash: String!
-  collection_name: String!
-  creator_address: String!
+  collection_data_id_hash: String
+  collection_name: String
+  creator_address: String
   default_properties(
     """JSON select path"""
     path: String
-  ): jsonb!
-  description: String!
-  description_mutable: Boolean!
-  inserted_at: timestamp!
-  largest_property_version: numeric!
-  maximum: numeric!
-  maximum_mutable: Boolean!
-  metadata_uri: String!
-  name: String!
-  payee_address: String!
-  properties_mutable: Boolean!
-  royalty_mutable: Boolean!
-  royalty_points_denominator: numeric!
-  royalty_points_numerator: numeric!
-  supply: numeric!
-  token_data_id_hash: String!
-  transaction_timestamp: timestamp!
-  transaction_version: bigint!
-  uri_mutable: Boolean!
+  ): jsonb
+  description: String
+  description_mutable: Boolean
+  largest_property_version: numeric
+  maximum: numeric
+  maximum_mutable: Boolean
+  metadata_uri: String
+  name: String
+  payee_address: String
+  properties_mutable: Boolean
+  royalty_mutable: Boolean
+  royalty_points_denominator: String
+  royalty_points_numerator: String
+  supply: numeric
+  token_data_id_hash: String
+  transaction_timestamp: timestamp
+  transaction_version: bigint
+  uri_mutable: Boolean
 }
 
 """
-Boolean expression to filter rows from the table "token_datas". All fields are combined with a logical 'AND'.
+Boolean expression to filter rows from the table "legacy_migration_v1.token_datas". All fields are combined with a logical 'AND'.
 """
 input token_datas_bool_exp {
   _and: [token_datas_bool_exp!]
@@ -11289,7 +11067,6 @@ input token_datas_bool_exp {
   default_properties: jsonb_comparison_exp
   description: String_comparison_exp
   description_mutable: Boolean_comparison_exp
-  inserted_at: timestamp_comparison_exp
   largest_property_version: numeric_comparison_exp
   maximum: numeric_comparison_exp
   maximum_mutable: Boolean_comparison_exp
@@ -11298,8 +11075,8 @@ input token_datas_bool_exp {
   payee_address: String_comparison_exp
   properties_mutable: Boolean_comparison_exp
   royalty_mutable: Boolean_comparison_exp
-  royalty_points_denominator: numeric_comparison_exp
-  royalty_points_numerator: numeric_comparison_exp
+  royalty_points_denominator: String_comparison_exp
+  royalty_points_numerator: String_comparison_exp
   supply: numeric_comparison_exp
   token_data_id_hash: String_comparison_exp
   transaction_timestamp: timestamp_comparison_exp
@@ -11307,7 +11084,9 @@ input token_datas_bool_exp {
   uri_mutable: Boolean_comparison_exp
 }
 
-"""Ordering options when selecting data from "token_datas"."""
+"""
+Ordering options when selecting data from "legacy_migration_v1.token_datas".
+"""
 input token_datas_order_by {
   collection_data_id_hash: order_by
   collection_name: order_by
@@ -11315,7 +11094,6 @@ input token_datas_order_by {
   default_properties: order_by
   description: order_by
   description_mutable: order_by
-  inserted_at: order_by
   largest_property_version: order_by
   maximum: order_by
   maximum_mutable: order_by
@@ -11334,7 +11112,7 @@ input token_datas_order_by {
 }
 
 """
-select columns of table "token_datas"
+select columns of table "legacy_migration_v1.token_datas"
 """
 enum token_datas_select_column {
   """column name"""
@@ -11349,8 +11127,6 @@ enum token_datas_select_column {
   description
   """column name"""
   description_mutable
-  """column name"""
-  inserted_at
   """column name"""
   largest_property_version
   """column name"""
@@ -11401,7 +11177,6 @@ input token_datas_stream_cursor_value_input {
   default_properties: jsonb
   description: String
   description_mutable: Boolean
-  inserted_at: timestamp
   largest_property_version: numeric
   maximum: numeric
   maximum_mutable: Boolean
@@ -11410,8 +11185,8 @@ input token_datas_stream_cursor_value_input {
   payee_address: String
   properties_mutable: Boolean
   royalty_mutable: Boolean
-  royalty_points_denominator: numeric
-  royalty_points_numerator: numeric
+  royalty_points_denominator: String
+  royalty_points_numerator: String
   supply: numeric
   token_data_id_hash: String
   transaction_timestamp: timestamp
@@ -11420,26 +11195,25 @@ input token_datas_stream_cursor_value_input {
 }
 
 """
-columns and relationships of "token_ownerships"
+columns and relationships of "legacy_migration_v1.token_ownerships"
 """
 type token_ownerships {
-  amount: numeric!
-  collection_data_id_hash: String!
-  collection_name: String!
-  creator_address: String!
-  inserted_at: timestamp!
-  name: String!
+  amount: numeric
+  collection_data_id_hash: String
+  collection_name: String
+  creator_address: String
+  name: String
   owner_address: String
-  property_version: numeric!
-  table_handle: String!
+  property_version: numeric
+  table_handle: String
   table_type: String
-  token_data_id_hash: String!
-  transaction_timestamp: timestamp!
-  transaction_version: bigint!
+  token_data_id_hash: String
+  transaction_timestamp: timestamp
+  transaction_version: bigint
 }
 
 """
-Boolean expression to filter rows from the table "token_ownerships". All fields are combined with a logical 'AND'.
+Boolean expression to filter rows from the table "legacy_migration_v1.token_ownerships". All fields are combined with a logical 'AND'.
 """
 input token_ownerships_bool_exp {
   _and: [token_ownerships_bool_exp!]
@@ -11449,7 +11223,6 @@ input token_ownerships_bool_exp {
   collection_data_id_hash: String_comparison_exp
   collection_name: String_comparison_exp
   creator_address: String_comparison_exp
-  inserted_at: timestamp_comparison_exp
   name: String_comparison_exp
   owner_address: String_comparison_exp
   property_version: numeric_comparison_exp
@@ -11460,13 +11233,14 @@ input token_ownerships_bool_exp {
   transaction_version: bigint_comparison_exp
 }
 
-"""Ordering options when selecting data from "token_ownerships"."""
+"""
+Ordering options when selecting data from "legacy_migration_v1.token_ownerships".
+"""
 input token_ownerships_order_by {
   amount: order_by
   collection_data_id_hash: order_by
   collection_name: order_by
   creator_address: order_by
-  inserted_at: order_by
   name: order_by
   owner_address: order_by
   property_version: order_by
@@ -11478,7 +11252,7 @@ input token_ownerships_order_by {
 }
 
 """
-select columns of table "token_ownerships"
+select columns of table "legacy_migration_v1.token_ownerships"
 """
 enum token_ownerships_select_column {
   """column name"""
@@ -11489,8 +11263,6 @@ enum token_ownerships_select_column {
   collection_name
   """column name"""
   creator_address
-  """column name"""
-  inserted_at
   """column name"""
   name
   """column name"""
@@ -11525,7 +11297,6 @@ input token_ownerships_stream_cursor_value_input {
   collection_data_id_hash: String
   collection_name: String
   creator_address: String
-  inserted_at: timestamp
   name: String
   owner_address: String
   property_version: numeric
@@ -11537,26 +11308,25 @@ input token_ownerships_stream_cursor_value_input {
 }
 
 """
-columns and relationships of "tokens"
+columns and relationships of "legacy_migration_v1.tokens"
 """
 type tokens {
-  collection_data_id_hash: String!
-  collection_name: String!
-  creator_address: String!
-  inserted_at: timestamp!
-  name: String!
-  property_version: numeric!
-  token_data_id_hash: String!
+  collection_data_id_hash: String
+  collection_name: String
+  creator_address: String
+  name: String
+  property_version: numeric
+  token_data_id_hash: String
   token_properties(
     """JSON select path"""
     path: String
-  ): jsonb!
-  transaction_timestamp: timestamp!
-  transaction_version: bigint!
+  ): jsonb
+  transaction_timestamp: timestamp
+  transaction_version: bigint
 }
 
 """
-Boolean expression to filter rows from the table "tokens". All fields are combined with a logical 'AND'.
+Boolean expression to filter rows from the table "legacy_migration_v1.tokens". All fields are combined with a logical 'AND'.
 """
 input tokens_bool_exp {
   _and: [tokens_bool_exp!]
@@ -11565,7 +11335,6 @@ input tokens_bool_exp {
   collection_data_id_hash: String_comparison_exp
   collection_name: String_comparison_exp
   creator_address: String_comparison_exp
-  inserted_at: timestamp_comparison_exp
   name: String_comparison_exp
   property_version: numeric_comparison_exp
   token_data_id_hash: String_comparison_exp
@@ -11574,12 +11343,13 @@ input tokens_bool_exp {
   transaction_version: bigint_comparison_exp
 }
 
-"""Ordering options when selecting data from "tokens"."""
+"""
+Ordering options when selecting data from "legacy_migration_v1.tokens".
+"""
 input tokens_order_by {
   collection_data_id_hash: order_by
   collection_name: order_by
   creator_address: order_by
-  inserted_at: order_by
   name: order_by
   property_version: order_by
   token_data_id_hash: order_by
@@ -11589,7 +11359,7 @@ input tokens_order_by {
 }
 
 """
-select columns of table "tokens"
+select columns of table "legacy_migration_v1.tokens"
 """
 enum tokens_select_column {
   """column name"""
@@ -11598,8 +11368,6 @@ enum tokens_select_column {
   collection_name
   """column name"""
   creator_address
-  """column name"""
-  inserted_at
   """column name"""
   name
   """column name"""
@@ -11629,7 +11397,6 @@ input tokens_stream_cursor_value_input {
   collection_data_id_hash: String
   collection_name: String
   creator_address: String
-  inserted_at: timestamp
   name: String
   property_version: numeric
   token_data_id_hash: String
@@ -11643,52 +11410,19 @@ columns and relationships of "user_transactions"
 """
 type user_transactions {
   block_height: bigint!
+  entry_function_contract_address: String
+  entry_function_function_name: String
   entry_function_id_str: String!
+  entry_function_module_name: String
   epoch: bigint!
   expiration_timestamp_secs: timestamp!
   gas_unit_price: numeric!
-  inserted_at: timestamp!
   max_gas_amount: numeric!
   parent_signature_type: String!
   sender: String!
-  sequence_number: bigint!
+  sequence_number: bigint
   timestamp: timestamp!
   version: bigint!
-}
-
-"""
-aggregated selection of "user_transactions"
-"""
-type user_transactions_aggregate {
-  aggregate: user_transactions_aggregate_fields
-  nodes: [user_transactions!]!
-}
-
-"""
-aggregate fields of "user_transactions"
-"""
-type user_transactions_aggregate_fields {
-  avg: user_transactions_avg_fields
-  count(columns: [user_transactions_select_column!], distinct: Boolean): Int!
-  max: user_transactions_max_fields
-  min: user_transactions_min_fields
-  stddev: user_transactions_stddev_fields
-  stddev_pop: user_transactions_stddev_pop_fields
-  stddev_samp: user_transactions_stddev_samp_fields
-  sum: user_transactions_sum_fields
-  var_pop: user_transactions_var_pop_fields
-  var_samp: user_transactions_var_samp_fields
-  variance: user_transactions_variance_fields
-}
-
-"""aggregate avg on columns"""
-type user_transactions_avg_fields {
-  block_height: Float
-  epoch: Float
-  gas_unit_price: Float
-  max_gas_amount: Float
-  sequence_number: Float
-  version: Float
 }
 
 """
@@ -11699,11 +11433,13 @@ input user_transactions_bool_exp {
   _not: user_transactions_bool_exp
   _or: [user_transactions_bool_exp!]
   block_height: bigint_comparison_exp
+  entry_function_contract_address: String_comparison_exp
+  entry_function_function_name: String_comparison_exp
   entry_function_id_str: String_comparison_exp
+  entry_function_module_name: String_comparison_exp
   epoch: bigint_comparison_exp
   expiration_timestamp_secs: timestamp_comparison_exp
   gas_unit_price: numeric_comparison_exp
-  inserted_at: timestamp_comparison_exp
   max_gas_amount: numeric_comparison_exp
   parent_signature_type: String_comparison_exp
   sender: String_comparison_exp
@@ -11712,46 +11448,16 @@ input user_transactions_bool_exp {
   version: bigint_comparison_exp
 }
 
-"""aggregate max on columns"""
-type user_transactions_max_fields {
-  block_height: bigint
-  entry_function_id_str: String
-  epoch: bigint
-  expiration_timestamp_secs: timestamp
-  gas_unit_price: numeric
-  inserted_at: timestamp
-  max_gas_amount: numeric
-  parent_signature_type: String
-  sender: String
-  sequence_number: bigint
-  timestamp: timestamp
-  version: bigint
-}
-
-"""aggregate min on columns"""
-type user_transactions_min_fields {
-  block_height: bigint
-  entry_function_id_str: String
-  epoch: bigint
-  expiration_timestamp_secs: timestamp
-  gas_unit_price: numeric
-  inserted_at: timestamp
-  max_gas_amount: numeric
-  parent_signature_type: String
-  sender: String
-  sequence_number: bigint
-  timestamp: timestamp
-  version: bigint
-}
-
 """Ordering options when selecting data from "user_transactions"."""
 input user_transactions_order_by {
   block_height: order_by
+  entry_function_contract_address: order_by
+  entry_function_function_name: order_by
   entry_function_id_str: order_by
+  entry_function_module_name: order_by
   epoch: order_by
   expiration_timestamp_secs: order_by
   gas_unit_price: order_by
-  inserted_at: order_by
   max_gas_amount: order_by
   parent_signature_type: order_by
   sender: order_by
@@ -11767,15 +11473,19 @@ enum user_transactions_select_column {
   """column name"""
   block_height
   """column name"""
+  entry_function_contract_address
+  """column name"""
+  entry_function_function_name
+  """column name"""
   entry_function_id_str
+  """column name"""
+  entry_function_module_name
   """column name"""
   epoch
   """column name"""
   expiration_timestamp_secs
   """column name"""
   gas_unit_price
-  """column name"""
-  inserted_at
   """column name"""
   max_gas_amount
   """column name"""
@@ -11788,36 +11498,6 @@ enum user_transactions_select_column {
   timestamp
   """column name"""
   version
-}
-
-"""aggregate stddev on columns"""
-type user_transactions_stddev_fields {
-  block_height: Float
-  epoch: Float
-  gas_unit_price: Float
-  max_gas_amount: Float
-  sequence_number: Float
-  version: Float
-}
-
-"""aggregate stddev_pop on columns"""
-type user_transactions_stddev_pop_fields {
-  block_height: Float
-  epoch: Float
-  gas_unit_price: Float
-  max_gas_amount: Float
-  sequence_number: Float
-  version: Float
-}
-
-"""aggregate stddev_samp on columns"""
-type user_transactions_stddev_samp_fields {
-  block_height: Float
-  epoch: Float
-  gas_unit_price: Float
-  max_gas_amount: Float
-  sequence_number: Float
-  version: Float
 }
 
 """
@@ -11833,55 +11513,17 @@ input user_transactions_stream_cursor_input {
 """Initial value of the column from where the streaming should start"""
 input user_transactions_stream_cursor_value_input {
   block_height: bigint
+  entry_function_contract_address: String
+  entry_function_function_name: String
   entry_function_id_str: String
+  entry_function_module_name: String
   epoch: bigint
   expiration_timestamp_secs: timestamp
   gas_unit_price: numeric
-  inserted_at: timestamp
   max_gas_amount: numeric
   parent_signature_type: String
   sender: String
   sequence_number: bigint
   timestamp: timestamp
   version: bigint
-}
-
-"""aggregate sum on columns"""
-type user_transactions_sum_fields {
-  block_height: bigint
-  epoch: bigint
-  gas_unit_price: numeric
-  max_gas_amount: numeric
-  sequence_number: bigint
-  version: bigint
-}
-
-"""aggregate var_pop on columns"""
-type user_transactions_var_pop_fields {
-  block_height: Float
-  epoch: Float
-  gas_unit_price: Float
-  max_gas_amount: Float
-  sequence_number: Float
-  version: Float
-}
-
-"""aggregate var_samp on columns"""
-type user_transactions_var_samp_fields {
-  block_height: Float
-  epoch: Float
-  gas_unit_price: Float
-  max_gas_amount: Float
-  sequence_number: Float
-  version: Float
-}
-
-"""aggregate variance on columns"""
-type user_transactions_variance_fields {
-  block_height: Float
-  epoch: Float
-  gas_unit_price: Float
-  max_gas_amount: Float
-  sequence_number: Float
-  version: Float
 }

@@ -2,10 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import { launchpadClient } from "@/lib/aptos";
 import { graphql } from "@/graphql/gql";
 import { executeGraphQL } from "@/graphql/executeGraphQL";
+import { normalizeHexAddress } from "@/lib/utils";
 
 const query = graphql(`
   query MintingCollections($collection_ids: [String!]!) {
-    current_collections_v2(where: { collection_id: { _in: $collection_ids } }) {
+    current_collections_v2(where: { collection_id: { _in: $collection_ids } }, order_by: { last_transaction_timestamp: desc }) {
       collection_id
       collection_name
       current_supply
@@ -25,7 +26,7 @@ export const useMintingCollections = () => {
         typeArguments: [],
       });
 
-      const collectionIds = registry.map((item) => item.inner);
+      const collectionIds = registry.map((item) => normalizeHexAddress(item.inner));
       const collections = await executeGraphQL(query, { collection_ids: collectionIds });
       return collections.current_collections_v2;
     },
