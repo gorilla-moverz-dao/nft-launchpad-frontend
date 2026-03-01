@@ -1,11 +1,22 @@
 import { WalletItem, groupAndSortWallets, isInstallRequired, truncateAddress, useWallet } from "@aptos-labs/wallet-adapter-react";
+import { isInMovementApp } from "@movement-labs/miniapp-sdk";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import type { AdapterNotDetectedWallet, AdapterWallet, NetworkInfo, WalletSortingOptions } from "@aptos-labs/wallet-adapter-react";
 import type { Dispatch, SetStateAction } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useMovementWallet } from "@/hooks/useMovementWallet";
 import { MOVE_NETWORK } from "@/constants";
+
+function MiniAppWalletDisplay() {
+  const { address, connected } = useMovementWallet();
+  return (
+    <Button variant="default" className="wallet-button" disabled>
+      {connected && address ? truncateAddress(address) : "Connecting..."}
+    </Button>
+  );
+}
 
 interface WalletSelectorProps extends WalletSortingOptions {
   isModalOpen?: boolean;
@@ -23,6 +34,10 @@ export function WalletSelector({ isModalOpen, setModalOpen, ...walletSortingOpti
   }, [isModalOpen]);
 
   const { account, connected, disconnect, wallets = [], network, wallet } = useWallet();
+
+  if (isInMovementApp()) {
+    return <MiniAppWalletDisplay />;
+  }
 
   const { availableWallets } = groupAndSortWallets(wallets, walletSortingOptions);
   const installableWallets = [] as Array<AdapterWallet>;

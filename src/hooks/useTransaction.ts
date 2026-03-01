@@ -7,13 +7,15 @@ export const useTransaction = ({ showError = true }: { showError?: boolean } = {
   const [transactionInProgress, setTransactionInProgress] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const executeTransaction = async <T extends { hash: string }>(transaction: Promise<T>) => {
+  const executeTransaction = async <T extends { hash: string }>(transaction: () => Promise<T> | undefined) => {
     setTransactionInProgress(true);
     setError(null);
     let tx: T;
     let result: CommittedTransactionResponse;
     try {
-      tx = await transaction;
+      const pending = transaction();
+      if (!pending) throw new Error("Transaction not available");
+      tx = await pending;
       result = await aptos.waitForTransaction({ transactionHash: tx.hash });
 
       return {
