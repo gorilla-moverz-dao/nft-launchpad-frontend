@@ -17,7 +17,7 @@ export const useMintBalance = (collectionAddress: `0x${string}`) => {
         const promises = stages.map((stage) =>
           launchpadClient.view
             .get_mint_balance({
-              functionArguments: [collectionAddress, stage.name, address],
+              functionArguments: [collectionAddress, stage.name, address as `0x${string}`],
               typeArguments: [],
             })
             .then((res) => ({ stage: stage.name, balance: Number(res[0]) })),

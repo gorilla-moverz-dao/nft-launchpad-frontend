@@ -1,15 +1,15 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { useState } from "react";
 import { Crown, HelpCircle, Menu, Palette, Sparkles, Zap } from "lucide-react";
 import { WalletSelector } from "./WalletSelector";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 import { Button } from "./ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { useMovementWallet } from "@/hooks/useMovementWallet";
 import { SINGLE_COLLECTION_MODE } from "@/constants";
 
 export default function Header() {
-  const { connected } = useWallet();
+  const { connected } = useMovementWallet();
   const [isOpen, setIsOpen] = useState(false);
   const [navMenuOpen, setNavMenuOpen] = useState(false);
   const location = useLocation();

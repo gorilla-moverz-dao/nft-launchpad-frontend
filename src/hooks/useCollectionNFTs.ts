@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import type { Current_Token_Ownerships_V2_Bool_Exp, Current_Token_Ownerships_V2_Order_By, Order_By } from "@/graphql/graphql";
 import type { CollectionSearch } from "./useCollectionSearch";
+import { useMovementWallet } from "@/hooks/useMovementWallet";
 import { graphql } from "@/graphql/gql";
 import { executeGraphQL } from "@/graphql/executeGraphQL";
 
@@ -152,7 +152,7 @@ const getWhere = ({ onlyOwned, collectionIds, tokenIds, search, traits }: NFTQue
 };
 
 export const useCollectionNFTs = (params: NFTQueryParams) => {
-  const { account, connected } = useWallet();
+  const { address, connected } = useMovementWallet();
 
   const orderBy = getOrderBy(params.sort ?? "newest");
   const limit = params.limit ?? 100;
@@ -160,11 +160,11 @@ export const useCollectionNFTs = (params: NFTQueryParams) => {
   const offset = (page - 1) * limit;
 
   return useQuery({
-    queryKey: ["nfts", account?.address.toString(), params],
-    enabled: (params.enabled ?? true) && (!params.onlyOwned || (!!account && connected)),
+    queryKey: ["nfts", address, params],
+    enabled: (params.enabled ?? true) && (!params.onlyOwned || (!!address && connected)),
     staleTime: 1000 * 60,
     queryFn: async () => {
-      const where = getWhere(params, account?.address.toString());
+      const where = getWhere(params, address);
 
       const res = await executeGraphQL(query, {
         where,
@@ -179,14 +179,14 @@ export const useCollectionNFTs = (params: NFTQueryParams) => {
 
 // Separate hook for trait aggregation
 export const useTraitAggregation = (params: NFTQueryFilter) => {
-  const { account, connected } = useWallet();
+  const { address, connected } = useMovementWallet();
 
   return useQuery({
-    queryKey: ["trait-aggregation", account?.address.toString(), params],
-    enabled: !params.onlyOwned || (!!account && connected),
+    queryKey: ["trait-aggregation", address, params],
+    enabled: !params.onlyOwned || (!!address && connected),
     staleTime: 1000 * 60,
     queryFn: async (): Promise<TraitAggregationResult> => {
-      const where = getWhere(params, account?.address.toString());
+      const where = getWhere(params, address);
       const res = await executeGraphQL(traitAggregationQuery, { where });
 
       // Aggregate traits from the fetched NFTs
